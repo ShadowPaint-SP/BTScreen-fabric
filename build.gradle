@@ -16,6 +16,17 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+
+	maven {
+    		name = 'babbaj-repo'
+    		url = 'https://babbaj.github.io/maven/'
+		}
+	maven {
+        url = "https://api.modrinth.com/maven"
+    }
+	flatDir {
+        dirs 'libs'
+    }
 }
 
 dependencies {
@@ -27,7 +38,19 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	
+	//Mods
+	modImplementation "maven.modrinth:mOgUt4GM:T7GjZmwP" // modmenu
+	//Baritone
+	implementation "dev.babbaj:nether-pathfinder:1.4.1"
+	implementation fileTree(dir: 'libs', include: '*.jar')
 }
+
+// For a mod named 'mymod.jar' in the 'libs' folder     
+// 'local' is a common arbitrary group name for flatDir dependencies     
+// 'mymod' is the artifact name, matching the JAR filename     
+// '0' is a placeholder version, or you can omit it if no version     modImplementation("local:mymod:0") {         
+// This is crucial for Fabric! Applying the correct mappings         
+// The artifact path needs to be specified for remap to work correctly         artifact {             name = "mymod"             extension = "jar"             type = "jar"         }     }
 
 processResources {
 	inputs.property "version", project.version
