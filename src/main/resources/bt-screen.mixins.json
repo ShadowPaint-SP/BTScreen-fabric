@@ -3,7 +3,11 @@
 	"package": "drvlabs.de.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"ExampleMixin"
+		"IMixinProfilerSystem"
+	],
+	"client":[
+		"MixinMinecraftClient",
+		"input.IMixinKeyBinding"
 	],
 	"injectors": {
 		"defaultRequire": 1
