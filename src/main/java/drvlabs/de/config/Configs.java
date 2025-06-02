@@ -15,10 +15,12 @@ import fi.dy.masa.malilib.config.IConfigHandler;
 import fi.dy.masa.malilib.config.options.*;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
+import fi.dy.masa.malilib.util.restrictions.UsageRestriction.ListType;
 
 public class Configs implements IConfigHandler {
 	private static final String CONFIG_FILE_NAME = Reference.MOD_ID + ".json";
 	private static final String GENERIC_KEY = Reference.MOD_ID + ".config.generic";
+	private static final String LISTS_KEY = Reference.MOD_ID + ".config.lists";
 
 	public static class Generic {
 		public static final ConfigBoolean DEBUG_LOGGING = new ConfigBoolean("debugLogging", true).apply(GENERIC_KEY);
@@ -35,6 +37,20 @@ public class Configs implements IConfigHandler {
 				AUTO_EAT,
 				AUTO_HASTE,
 				AUTO_DROP);
+	}
+
+	public static class Lists {
+		public static final ConfigOptionList BARITONE_SETTINGS_PRESET_MODE = new ConfigOptionList(
+				"baritoneSettingsPresetMode", ListType.NONE).apply(LISTS_KEY);
+		public static final ConfigOptionList BLOCK_BREAK_IGNORE_LIST = new ConfigOptionList("blockBreakIgnoreList",
+				ListType.BLACKLIST).apply(LISTS_KEY);
+		public static final ConfigOptionList BLOCK_BREAK_PRIORITY_LIST = new ConfigOptionList("blockBreakPriorityList",
+				ListType.WHITELIST).apply(LISTS_KEY);
+
+		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
+				BARITONE_SETTINGS_PRESET_MODE,
+				BLOCK_BREAK_IGNORE_LIST,
+				BLOCK_BREAK_PRIORITY_LIST);
 	}
 
 	public static void loadFromFile() {
