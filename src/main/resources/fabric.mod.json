@@ -1,6 +1,6 @@
 {
 	"schemaVersion": 1,
-	"id": "bt-screen",
+	"id": "btscreen",
 	"version": "${version}",
 	"name": "BT Screen",
 	"description": "Make Baritone into a mining bot Interface",
@@ -12,7 +12,7 @@
 		"sources": "https://github.com/ShadowPaint-SP/BTScreen-fabric"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/bt-screen/icon.png",
+	"icon": "assets/btscreen/icon.png",
 	"environment": "client",
 	"entrypoints": {
 		"main": [
@@ -23,7 +23,7 @@
 		]
 	},
 	"mixins": [
-		"bt-screen.mixins.json"
+		"btscreen.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.16.14",

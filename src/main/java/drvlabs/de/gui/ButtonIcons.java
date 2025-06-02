@@ -7,7 +7,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 
 public enum ButtonIcons implements IGuiIcon {
-	CONFIGURATION(102, 0, 14, 14),;
+	CONFIGURATION(102, 84, 14, 14),;
 
 	public static final Identifier TEXTURE = Identifier.of(Reference.MOD_ID, "textures/gui/gui_widgets.png");
 

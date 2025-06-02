@@ -3,6 +3,7 @@ package drvlabs.de;
 import drvlabs.de.config.Configs;
 import drvlabs.de.event.InputHandler;
 import drvlabs.de.event.KeyCallbacks;
+import drvlabs.de.event.WorldLoadListener;
 import drvlabs.de.gui.GuiConfigs;
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.event.*;
@@ -21,6 +22,10 @@ public class InitHandler implements IInitializationHandler {
 
 		InputEventHandler.getKeybindManager().registerKeybindProvider(InputHandler.getInstance());
 		InputEventHandler.getInputManager().registerKeyboardInputHandler(InputHandler.getInstance());
+
+		WorldLoadListener listener = new WorldLoadListener();
+		WorldLoadHandler.getInstance().registerWorldLoadPreHandler(listener);
+		WorldLoadHandler.getInstance().registerWorldLoadPostHandler(listener);
 
 		KeyCallbacks.init(MinecraftClient.getInstance());
 	}

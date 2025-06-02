@@ -22,9 +22,19 @@ public class Configs implements IConfigHandler {
 
 	public static class Generic {
 		public static final ConfigBoolean DEBUG_LOGGING = new ConfigBoolean("debugLogging", true).apply(GENERIC_KEY);
+		public static final ConfigBoolean AUTO_SLEEP = new ConfigBoolean("autoSleep", false).apply(GENERIC_KEY);
+		public static final ConfigBoolean AUTO_REPAIR = new ConfigBoolean("autoRepair", false).apply(GENERIC_KEY);
+		public static final ConfigBoolean AUTO_EAT = new ConfigBoolean("autoEat", false).apply(GENERIC_KEY);
+		public static final ConfigBoolean AUTO_HASTE = new ConfigBoolean("autoHaste", false).apply(GENERIC_KEY);
+		public static final ConfigBoolean AUTO_DROP = new ConfigBoolean("autoDrop", false).apply(GENERIC_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
-				DEBUG_LOGGING);
+				DEBUG_LOGGING,
+				AUTO_SLEEP,
+				AUTO_REPAIR,
+				AUTO_EAT,
+				AUTO_HASTE,
+				AUTO_DROP);
 	}
 
 	public static void loadFromFile() {
