@@ -26,12 +26,16 @@ public class GuiMainMenu extends GuiBase {
 	private int createButton(int x, int y, int width, ButtonListener.Type type) {
 		ButtonListener listener = new ButtonListener(type, this);
 		String label = StringUtils.translate(type.getTranslationKey());
+		ButtonIcons icon = type.getIcon();
 
 		if (width == -1) {
 			width = this.getStringWidth(label) + 10;
 		}
+		if (icon != null) {
+			width += icon.getWidth() + 10;
+		}
 
-		ButtonGeneric button = new ButtonGeneric(x, y, width, 20, label, type.getIcon());
+		ButtonGeneric button = new ButtonGeneric(x, y, width, 20, label, icon);
 
 		if (type == ButtonListener.Type.CONFIGURATION) {
 			button.setHoverStrings(StringUtils.translate("btscreen.gui.button.hover.config_info_text"));

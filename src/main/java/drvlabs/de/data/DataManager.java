@@ -5,6 +5,8 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -12,9 +14,10 @@ import com.google.gson.JsonPrimitive;
 import drvlabs.de.BTScreen;
 import drvlabs.de.Reference;
 import drvlabs.de.gui.GuiConfigs.ConfigGuiTab;
+import fi.dy.masa.malilib.gui.interfaces.IDirectoryCache;
 import fi.dy.masa.malilib.util.*;
 
-public class DataManager {
+public class DataManager implements IDirectoryCache {
 
 	private static final DataManager INSTANCE = new DataManager();
 
@@ -58,6 +61,17 @@ public class DataManager {
 				Reference.MOD_ID + "_", ".json", "default"));
 	}
 
+	@Override
+	@Nullable
+	public Path getCurrentDirectoryForContext(String context) {
+		return LAST_DIRECTORIES.get(context);
+	}
+
+	@Override
+	public void setCurrentDirectoryForContext(String context, Path dir) {
+		LAST_DIRECTORIES.put(context, dir);
+	}
+
 	public static void load() {
 		Path file = getCurrentStorageFile(true);
 		JsonElement element = JsonUtils.parseJsonFileAsPath(file);
@@ -88,6 +102,7 @@ public class DataManager {
 				try {
 					configGuiTab = ConfigGuiTab.valueOf(root.get("config_gui_tab").getAsString());
 				} catch (Exception ignored) {
+					BTScreen.LOGGER.error("Failed to load config gui tab");
 				}
 
 				if (configGuiTab == null) {

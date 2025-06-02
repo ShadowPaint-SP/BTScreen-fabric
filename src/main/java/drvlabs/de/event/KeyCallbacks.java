@@ -1,6 +1,7 @@
 package drvlabs.de.event;
 
 import drvlabs.de.config.Hotkeys;
+import drvlabs.de.gui.GuiConfigs;
 import drvlabs.de.gui.GuiMainMenu;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.hotkeys.IHotkeyCallback;
@@ -13,6 +14,7 @@ public class KeyCallbacks {
 		IHotkeyCallback callbackHotkeys = new KeyCallbackHotkeys(mc);
 
 		Hotkeys.OPEN_GUI_MAIN_MENU.getKeybind().setCallback(callbackHotkeys);
+		Hotkeys.OPEN_GUI_SETTINGS.getKeybind().setCallback(callbackHotkeys);
 	}
 
 	private static class KeyCallbackHotkeys implements IHotkeyCallback {
@@ -31,20 +33,10 @@ public class KeyCallbacks {
 			if (key == Hotkeys.OPEN_GUI_MAIN_MENU.getKeybind()) {
 				GuiBase.openGui(new GuiMainMenu());
 				return true;
+			} else if (key == Hotkeys.OPEN_GUI_SETTINGS.getKeybind()) {
+				GuiBase.openGui(new GuiConfigs());
+				return true;
 			}
-			// else if (key == Hotkeys.OPEN_GUI_SETTINGS.getKeybind())
-			// {
-			// if (DataManager.getConfigGuiTab() == ConfigGuiTab.RENDER_LAYERS)
-			// {
-			// GuiBase.openGui(new GuiRenderLayer());
-			// }
-			// else
-			// {
-			// GuiBase.openGui(new GuiConfigs());
-			// }
-
-			// return true;
-			// }
 
 			// else if (key == Hotkeys.LAYER_NEXT.getKeybind())
 			// {

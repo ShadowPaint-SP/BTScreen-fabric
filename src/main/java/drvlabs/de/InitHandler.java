@@ -21,7 +21,6 @@ public class InitHandler implements IInitializationHandler {
 				new ModInfo(Reference.MOD_ID, Reference.MOD_NAME, GuiConfigs::new));
 
 		InputEventHandler.getKeybindManager().registerKeybindProvider(InputHandler.getInstance());
-		InputEventHandler.getInputManager().registerKeyboardInputHandler(InputHandler.getInstance());
 
 		WorldLoadListener listener = new WorldLoadListener();
 		WorldLoadHandler.getInstance().registerWorldLoadPreHandler(listener);
