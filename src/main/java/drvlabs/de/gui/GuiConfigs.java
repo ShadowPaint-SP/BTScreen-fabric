@@ -29,6 +29,7 @@ public class GuiConfigs extends GuiConfigsBase {
 		int y = 26;
 
 		x += this.createButton(x, y, -1, ConfigGuiTab.GENERIC);
+		x += this.createButton(x, y, -1, ConfigGuiTab.LISTS);
 		x += this.createButton(x, y, -1, ConfigGuiTab.HOTKEYS);
 	}
 
@@ -45,6 +46,7 @@ public class GuiConfigs extends GuiConfigsBase {
 		ConfigGuiTab tab = DataManager.getConfigGuiTab();
 		configs = switch (tab) {
 			case GENERIC -> Configs.Generic.OPTIONS;
+			case LISTS -> Configs.Lists.OPTIONS;
 			case HOTKEYS -> Hotkeys.HOTKEY_LIST;
 		};
 		return ConfigOptionWrapper.createFor(configs);
@@ -62,6 +64,7 @@ public class GuiConfigs extends GuiConfigsBase {
 
 	public enum ConfigGuiTab {
 		GENERIC("btscreen.gui.button.config_gui.generic"),
+		LISTS("btscreen.gui.button.config_gui.lists"),
 		HOTKEYS("btscreen.gui.button.config_gui.hotkeys");
 
 		private final String translationKey;

@@ -13,6 +13,7 @@ import com.google.gson.JsonPrimitive;
 
 import drvlabs.de.BTScreen;
 import drvlabs.de.Reference;
+import drvlabs.de.baritone.preset.PresetMode;
 import drvlabs.de.gui.GuiConfigs.ConfigGuiTab;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryCache;
 import fi.dy.masa.malilib.util.*;
@@ -25,6 +26,7 @@ public class DataManager implements IDirectoryCache {
 	private static ConfigGuiTab configGuiTab = ConfigGuiTab.GENERIC;
 	private static boolean canSave;
 	private static long clientTickStart;
+	private PresetMode operationMode = PresetMode.DEFAULT;
 
 	private DataManager() {
 	}
@@ -39,6 +41,14 @@ public class DataManager implements IDirectoryCache {
 
 	public static void setConfigGuiTab(ConfigGuiTab tab) {
 		configGuiTab = tab;
+	}
+
+	public static PresetMode getPresetMode() {
+		return getInstance().operationMode;
+	}
+
+	public static void setPresetMode(PresetMode mode) {
+		getInstance().operationMode = mode;
 	}
 
 	public static Path getCurrentConfigDirectory() {
@@ -73,6 +83,7 @@ public class DataManager implements IDirectoryCache {
 	}
 
 	public static void load() {
+		getInstance().loadPerDimensionData();
 		Path file = getCurrentStorageFile(true);
 		JsonElement element = JsonUtils.parseJsonFileAsPath(file);
 
@@ -122,6 +133,7 @@ public class DataManager implements IDirectoryCache {
 		if (canSave == false && forceSave == false) {
 			return;
 		}
+		getInstance().savePerDimensionData();
 
 		JsonObject root = new JsonObject();
 		JsonObject objDirs = new JsonObject();
@@ -138,6 +150,45 @@ public class DataManager implements IDirectoryCache {
 		JsonUtils.writeJsonToFileAsPath(root, file);
 
 		canSave = false;
+	}
+
+	private void savePerDimensionData() {
+		JsonObject root = this.toJson();
+
+		Path file = getCurrentStorageFile(false);
+		JsonUtils.writeJsonToFileAsPath(root, file);
+	}
+
+	private void loadPerDimensionData() {
+		Path file = getCurrentStorageFile(false);
+		JsonElement element = JsonUtils.parseJsonFileAsPath(file);
+
+		if (element != null && element.isJsonObject()) {
+			JsonObject root = element.getAsJsonObject();
+			this.fromJson(root);
+		}
+	}
+
+	private void fromJson(JsonObject obj) {
+
+		if (JsonUtils.hasString(obj, "operation_mode")) {
+			try {
+				this.operationMode = PresetMode.valueOf(obj.get("operation_mode").getAsString());
+			} catch (Exception ignored) {
+			}
+
+			if (this.operationMode == null) {
+				this.operationMode = PresetMode.DEFAULT;
+			}
+		}
+	}
+
+	private JsonObject toJson() {
+		JsonObject obj = new JsonObject();
+
+		obj.add("operation_mode", new JsonPrimitive(this.operationMode.name()));
+
+		return obj;
 	}
 
 	public static void onClientTickStart() {

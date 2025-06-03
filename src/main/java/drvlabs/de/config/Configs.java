@@ -40,17 +40,17 @@ public class Configs implements IConfigHandler {
 	}
 
 	public static class Lists {
-		public static final ConfigOptionList BARITONE_SETTINGS_PRESET_MODE = new ConfigOptionList(
-				"baritoneSettingsPresetMode", ListType.NONE).apply(LISTS_KEY);
-		public static final ConfigOptionList BLOCK_BREAK_IGNORE_LIST = new ConfigOptionList("blockBreakIgnoreList",
-				ListType.BLACKLIST).apply(LISTS_KEY);
-		public static final ConfigOptionList BLOCK_BREAK_PRIORITY_LIST = new ConfigOptionList("blockBreakPriorityList",
-				ListType.WHITELIST).apply(LISTS_KEY);
+		public static final ConfigOptionList BLOCK_TYPE_BREAK_RESTRICTION_LIST_TYPE = new ConfigOptionList(
+				"blockTypeBreakRestrictionListType", ListType.BLACKLIST).apply(LISTS_KEY);
+		public static final ConfigStringList BLOCK_TYPE_BREAK_RESTRICTION_BLACKLIST = new ConfigStringList(
+				"blockTypeBreakRestrictionBlackList", ImmutableList.of("minecraft:budding_amethyst")).apply(LISTS_KEY);
+		public static final ConfigStringList BLOCK_TYPE_BREAK_RESTRICTION_WHITELIST = new ConfigStringList(
+				"blockTypeBreakRestrictionWhiteList", ImmutableList.of()).apply(LISTS_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
-				BARITONE_SETTINGS_PRESET_MODE,
-				BLOCK_BREAK_IGNORE_LIST,
-				BLOCK_BREAK_PRIORITY_LIST);
+				BLOCK_TYPE_BREAK_RESTRICTION_LIST_TYPE,
+				BLOCK_TYPE_BREAK_RESTRICTION_BLACKLIST,
+				BLOCK_TYPE_BREAK_RESTRICTION_WHITELIST);
 	}
 
 	public static void loadFromFile() {

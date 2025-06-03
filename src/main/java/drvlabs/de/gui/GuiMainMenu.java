@@ -1,12 +1,15 @@
 package drvlabs.de.gui;
 
 import drvlabs.de.Reference;
+import drvlabs.de.baritone.preset.PresetMode;
+import drvlabs.de.data.DataManager;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.util.StringUtils;
+import net.minecraft.client.MinecraftClient;
 
 public class GuiMainMenu extends GuiBase {
 	public GuiMainMenu() {
@@ -19,8 +22,16 @@ public class GuiMainMenu extends GuiBase {
 		super.initGui();
 		int x = 12;
 		int y = 30;
+		String label;
 
 		x += this.createButton(x, y, -1, ButtonListener.Type.CONFIGURATION);
+
+		label = StringUtils.translate("btscreen.gui.button.preset_mode", DataManager.getPresetMode().getName());
+		int width2 = this.getStringWidth(label) + 10;
+		x = 12;
+		y = this.getScreenHeight() - 26;
+		ButtonGeneric button = new ButtonGeneric(x, y, width2, 20, label);
+		this.addButton(button, new ButtonListenerCyclePresetMode(this));
 	}
 
 	private int createButton(int x, int y, int width, ButtonListener.Type type) {
@@ -83,6 +94,21 @@ public class GuiMainMenu extends GuiBase {
 			public ButtonIcons getIcon() {
 				return this.icon;
 			}
+		}
+	}
+
+	private static class ButtonListenerCyclePresetMode implements IButtonActionListener {
+		private final GuiMainMenu gui;
+
+		private ButtonListenerCyclePresetMode(GuiMainMenu gui) {
+			this.gui = gui;
+		}
+
+		@Override
+		public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
+			PresetMode mode = DataManager.getPresetMode().cycle(MinecraftClient.getInstance().player, mouseButton == 0);
+			DataManager.setPresetMode(mode);
+			this.gui.initGui();
 		}
 	}
 }
