@@ -1,5 +1,6 @@
 package drvlabs.de.gui;
 
+import drvlabs.de.BTScreen;
 import drvlabs.de.Reference;
 import drvlabs.de.baritone.preset.PresetMode;
 import drvlabs.de.data.DataManager;
@@ -48,9 +49,9 @@ public class GuiMainMenu extends GuiBase {
 
 		ButtonGeneric button = new ButtonGeneric(x, y, width, 20, label, icon);
 
-		if (type == ButtonListener.Type.CONFIGURATION) {
-			button.setHoverStrings(StringUtils.translate("btscreen.gui.button.hover.config_info_text"));
-		}
+		// if (type == ButtonListener.Type.CONFIGURATION) {
+		// button.setHoverStrings(StringUtils.translate("btscreen.gui.button.hover.config_info_text"));
+		// }
 
 		this.addButton(button, listener);
 
@@ -109,6 +110,7 @@ public class GuiMainMenu extends GuiBase {
 			PresetMode mode = DataManager.getPresetMode().cycle(MinecraftClient.getInstance().player, mouseButton == 0);
 			DataManager.setPresetMode(mode);
 			this.gui.initGui();
+			BTScreen.LOGGER.info("Preset Mode: " + mode);
 		}
 	}
 }
