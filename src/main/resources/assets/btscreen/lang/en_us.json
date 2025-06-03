@@ -7,6 +7,9 @@
 	"btscreen.gui.button.config_gui.hotkeys": "Hotkeys",
 	"btscreen.gui.button.configuration_menu": "Settings",
 	"btscreen.gui.button.preset_mode": "Preset: %s",
+	"btscreen.gui.button.selection_pos_one": "POS 1",
+	"btscreen.gui.button.selection_pos_two": "POS 2",
+  "btscreen.gui.button.hover.plus_minus_tip_ctrl_alt_shift": "Left click to increase\nRight click to decrease\nShift/Alt/Ctrl to increase the step size (multiplicative)",
 	"btscreen.preset_mode.name.farm": "Farm",
 	"btscreen.preset_mode.name.default": "Default",
 

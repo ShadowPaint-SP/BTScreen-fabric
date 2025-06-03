@@ -3,6 +3,9 @@ package drvlabs.de.baritone.preset;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 
+import baritone.api.BaritoneAPI;
+import drvlabs.de.BTScreen;
+import drvlabs.de.config.Configs;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.StringIdentifiable;
@@ -62,5 +65,29 @@ public enum PresetMode implements StringIdentifiable {
 		}
 
 		return values[nextIndex];
+	}
+
+	public void setSettings() {
+		if (this.asString().equals(DEFAULT.asString())) {
+			BaritoneAPI.getSettings().allowBreak.value = true;
+			BaritoneAPI.getSettings().allowPlace.value = true;
+			BaritoneAPI.getSettings().buildInLayers.value = true;
+			BaritoneAPI.getSettings().blockBreakSpeed.value = 0;
+			BaritoneAPI.getSettings().layerHeight.value = 5;
+			BaritoneAPI.getSettings().layerOrder.value = true;
+			BaritoneAPI.getSettings().itemSaver.value = true;
+			BaritoneAPI.getSettings().itemSaverThreshold.value = 10;
+			BTScreen.LOGGER.info("Updated settings do default");
+			// TODO: Update Blacklist
+		}
+		if (this.asString().equals(FARM.asString())) {
+			BaritoneAPI.getSettings().allowBreak.value = false;
+			BaritoneAPI.getSettings().allowPlace.value = false;
+			BaritoneAPI.getSettings().buildInLayers.value = false;
+			BTScreen.LOGGER.info("Updated settings do farm");
+			// TODO: Update Blacklist
+			Configs.Lists.BLOCK_TYPE_BREAK_RESTRICTION_BLACKLIST.setStrings(ImmutableList.of("minecraft:farmland"));
+
+		}
 	}
 }

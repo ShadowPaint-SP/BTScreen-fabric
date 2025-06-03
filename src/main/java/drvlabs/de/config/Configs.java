@@ -46,6 +46,7 @@ public class Configs implements IConfigHandler {
 				"blockTypeBreakRestrictionBlackList", ImmutableList.of("minecraft:budding_amethyst")).apply(LISTS_KEY);
 		public static final ConfigStringList BLOCK_TYPE_BREAK_RESTRICTION_WHITELIST = new ConfigStringList(
 				"blockTypeBreakRestrictionWhiteList", ImmutableList.of()).apply(LISTS_KEY);
+		// TODO: Think about adding black list for Default farm and custom mode
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
 				BLOCK_TYPE_BREAK_RESTRICTION_LIST_TYPE,
@@ -63,6 +64,7 @@ public class Configs implements IConfigHandler {
 				JsonObject root = element.getAsJsonObject();
 
 				ConfigUtils.readConfigBase(root, "Generic", Generic.OPTIONS);
+				ConfigUtils.readConfigBase(root, "Lists", Lists.OPTIONS);
 				ConfigUtils.readConfigBase(root, "Hotkeys", Hotkeys.HOTKEY_LIST);
 
 				// BTScreen.debugLog("loadFromFile(): Successfully loaded config file '{}'.",
@@ -86,6 +88,7 @@ public class Configs implements IConfigHandler {
 			JsonObject root = new JsonObject();
 
 			ConfigUtils.writeConfigBase(root, "Generic", Generic.OPTIONS);
+			ConfigUtils.writeConfigBase(root, "Lists", Lists.OPTIONS);
 			ConfigUtils.writeConfigBase(root, "Hotkeys", Hotkeys.HOTKEY_LIST);
 
 			JsonUtils.writeJsonToFileAsPath(root, dir.resolve(CONFIG_FILE_NAME));
