@@ -6,17 +6,15 @@ import drvlabs.de.Reference;
 import drvlabs.de.baritone.preset.PresetMode;
 import drvlabs.de.data.DataManager;
 import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
-import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.client.MinecraftClient;
 
 public class GuiMainMenu extends GuiBase {
-	private int selStepAmount;
+	private final int textColor = 0xFEFEFEFE;
 
 	public GuiMainMenu() {
 		String version = String.format("v%s", Reference.MOD_VERSION);
@@ -31,29 +29,56 @@ public class GuiMainMenu extends GuiBase {
 		int width = 68;
 		String label;
 
-		x += this.createButton(x, y, -1, ButtonListener.Type.CONFIGURATION);
-		this.createButton(x, y, -1, ButtonListener.Type.SELPOSONE);
+		this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.selManagement");
 		y += 22;
-		this.createButton(x, y, -1, ButtonListener.Type.SELPOSTWO);
-		y += 22;
+		x += 5;
+		x += this.createButton(x, y, -1, ButtonListener.Type.SELPOSONE);
+		x += this.createButton(x, y, -1, ButtonListener.Type.SELPOSTWO);
+		x += this.createButton(x, y, -1, ButtonListener.Type.SELDELETE);
 
-		this.createCoordinateInput(x, y, width, CoordinateType.UP);
-		y += 20;
-		this.createCoordinateInput(x, y, width, CoordinateType.DOWN);
-		y += 20;
+		//////////////////////////////////////////////////
+		y += 30;
+		x = 12;
+		this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.botControl");
+		y += 22;
+		x += 5;
+		x += this.createButton(x, y, -1, ButtonListener.Type.START);
+		this.createButton(x, y, -1, ButtonListener.Type.STOP);
+
+		//////////////////////////////////////////////////
+		x = this.getScreenWidth() / 2;
+		y = 30;
+		this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.boxResizing");
+		y += 22;
+		x += 5;
 		this.createCoordinateInput(x, y, width, CoordinateType.NORTH);
-		y += 20;
-		this.createCoordinateInput(x, y, width, CoordinateType.SOUTH);
 		y += 20;
 		this.createCoordinateInput(x, y, width, CoordinateType.WEST);
 		y += 20;
+		x += this.createCoordinateInput(x, y, width, CoordinateType.SOUTH) + 10;
+		y -= 40;
+		this.createCoordinateInput(x, y, width, CoordinateType.UP);
+		y += 20;
 		this.createCoordinateInput(x, y, width, CoordinateType.EAST);
-		y += 22;
+		y += 20;
+		this.createCoordinateInput(x, y, width, CoordinateType.DOWN);
 
-		label = StringUtils.translate("btscreen.gui.button.preset_mode", DataManager.getPresetMode().getName());
-		int width2 = this.getStringWidth(label) + 10;
+		//////////////////////////////////////////////////
+		x = this.getScreenWidth() / 2;
+		y += 30;
+		this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.boxMoving");
+		y += 22;
+		x += 5;
+		x += this.createCoordinateInput(x, y, width, CoordinateType.SHIFTX) + 3;
+		x += this.createCoordinateInput(x, y, width, CoordinateType.SHIFTY) + 3;
+		this.createCoordinateInput(x, y, width, CoordinateType.SHIFTZ);
+
+		//////////////////////////////////////////////////
 		x = 12;
 		y = this.getScreenHeight() - 26;
+		x += this.createButton(x, y, -1, ButtonListener.Type.CONFIGURATION);
+		label = StringUtils.translate("btscreen.gui.button.preset_mode", DataManager.getPresetMode().getName());
+		int width2 = this.getStringWidth(label) + 10;
 		ButtonGeneric button = new ButtonGeneric(x, y, width2, 20, label);
 		this.addButton(button, new ButtonListenerCyclePresetMode(this));
 	}
@@ -67,14 +92,20 @@ public class GuiMainMenu extends GuiBase {
 			width = this.getStringWidth(label) + 10;
 		}
 		if (icon != null) {
-			width += icon.getWidth() + 10;
+			width += icon.getWidth() + 5;
 		}
 
 		ButtonGeneric button = new ButtonGeneric(x, y, width, 20, label, icon);
 
-		// if (type == ButtonListener.Type.CONFIGURATION) {
-		// button.setHoverStrings(StringUtils.translate("btscreen.gui.button.hover.config_info_text"));
-		// }
+		if (type == ButtonListener.Type.START) {
+			button.setHoverStrings(StringUtils.translate("btscreen.gui.button.hover.startBotInfoText"));
+		} else if (type == ButtonListener.Type.SELDELETE) {
+			button.setHoverStrings(StringUtils.translate("btscreen.gui.button.hover.selDeleteInfoText"));
+		} else if (type == ButtonListener.Type.SELPOSONE) {
+			button.setHoverStrings(StringUtils.translate("btscreen.gui.button.hover.selPosOneInfoText"));
+		} else if (type == ButtonListener.Type.SELPOSTWO) {
+			button.setHoverStrings(StringUtils.translate("btscreen.gui.button.hover.selPosTwoInfoText"));
+		}
 
 		this.addButton(button, listener);
 
@@ -105,7 +136,14 @@ public class GuiMainMenu extends GuiBase {
 			switch (this.type) {
 				case Type.CONFIGURATION:
 					GuiBase.openGui(new GuiConfigs());
-					this.gui.addMessage(MessageType.SUCCESS, "btscreen.info.main_menu.CONFIGURATION");
+					return;
+				case Type.START:
+					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel cleararea");
+					this.gui.addMessage(MessageType.ERROR, 1000, "btscreen.info.main_menu.startBot");
+					return;
+				case Type.STOP:
+					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("stop");
+					this.gui.addMessage(MessageType.SUCCESS, 1000, "btscreen.info.main_menu.stopBot");
 					return;
 				case Type.SELPOSONE:
 					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel pos1");
@@ -113,14 +151,18 @@ public class GuiMainMenu extends GuiBase {
 				case Type.SELPOSTWO:
 					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel pos2");
 					return;
+				case Type.SELDELETE:
+					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel clear");
+					this.gui.addMessage(MessageType.WARNING, 1000, "btscreen.info.main_menu.selDelete");
+					return;
 				case Type.SHIFTX:
-
+					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel shift all east " + amount);
 					return;
 				case Type.SHIFTY:
-
+					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel shift all up " + amount);
 					return;
 				case Type.SHIFTZ:
-
+					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel shift all north " + amount);
 					return;
 				case Type.UP:
 					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel expand all up " + amount);
@@ -143,13 +185,16 @@ public class GuiMainMenu extends GuiBase {
 				default:
 					break;
 			}
-			// TODO: add the different button functionalitys
+
 		}
 
 		public enum Type {
 			CONFIGURATION("btscreen.gui.button.configuration_menu", ButtonIcons.CONFIGURATION),
-			SELPOSONE("btscreen.gui.button.selection_pos_one", null),
-			SELPOSTWO("btscreen.gui.button.selection_pos_two", null),
+			START("btscreen.gui.button.startBot", ButtonIcons.RUNNER),
+			STOP("btscreen.gui.button.stopBot", null),
+			SELPOSONE("btscreen.gui.button.selPosOne", null),
+			SELPOSTWO("btscreen.gui.button.selPosTwo", null),
+			SELDELETE("btscreen.gui.button.selDelete", null),
 			SHIFTX("btscreen.gui.button.shift_sel_x", null),
 			SHIFTY("btscreen.gui.button.shift_sel_y", null),
 			SHIFTZ("btscreen.gui.button.shift_sel_z", null),
@@ -195,12 +240,21 @@ public class GuiMainMenu extends GuiBase {
 		}
 	}
 
-	protected void createCoordinateInput(int x, int y, int width, CoordinateType coordType) {
+	protected int createCoordinateInput(int x, int y, int width, CoordinateType coordType) {
 
 		y += 2;
 		ButtonListener.Type type = null;
 
 		switch (coordType) {
+			case SHIFTX:
+				type = ButtonListener.Type.SHIFTX;
+				break;
+			case SHIFTY:
+				type = ButtonListener.Type.SHIFTY;
+				break;
+			case SHIFTZ:
+				type = ButtonListener.Type.SHIFTZ;
+				break;
 			case UP:
 				type = ButtonListener.Type.UP;
 				break;
@@ -219,11 +273,14 @@ public class GuiMainMenu extends GuiBase {
 			case EAST:
 				type = ButtonListener.Type.EAST;
 				break;
+			default:
+				return 0;
 		}
 
 		this.createCoordinateButton(x, y, type);
-		String label = ":" + coordType.name();
-		this.addLabel(x + 20, y, 20, 20, 0xFFFFFFFF, label);
+		String label = StringUtils.translate(type.getTranslationKey());
+		this.addLabel(x + 18, y, 20, 20, textColor, label);
+		return 20 + this.getStringWidth(label);
 	}
 
 	protected void createCoordinateButton(int x, int y,
@@ -234,26 +291,10 @@ public class GuiMainMenu extends GuiBase {
 		this.addButton(button, listener);
 	}
 
-	protected static class TextFieldListener implements ITextFieldListener<GuiTextFieldGeneric> {
-		private final GuiMainMenu parent;
-
-		public TextFieldListener(GuiMainMenu parent) {
-			this.parent = parent;
-		}
-
-		@Override
-		public boolean onTextChange(GuiTextFieldGeneric textField) {
-			this.parent.selStepAmount = Integer.parseInt(textField.getText());
-			return false;
-		}
-	}
-
-	public enum TextFieldType {
-		BOX_SHIFT,
-		BOX_TRANSFORM
-	}
-
 	public enum CoordinateType {
+		SHIFTX,
+		SHIFTY,
+		SHIFTZ,
 		UP,
 		DOWN,
 		NORTH,

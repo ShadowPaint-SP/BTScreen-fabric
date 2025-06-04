@@ -8,6 +8,7 @@ import net.minecraft.util.Identifier;
 
 public enum ButtonIcons implements IGuiIcon {
 	CONFIGURATION(102, 84, 14, 14),
+	RUNNER(102, 126, 14, 14),
 	BUTTON_PLUS_MINUS_8(0, 0, 8, 8),
 	BUTTON_PLUS_MINUS_12(24, 0, 12, 12),
 	BUTTON_PLUS_MINUS_16(0, 128, 16, 16),;

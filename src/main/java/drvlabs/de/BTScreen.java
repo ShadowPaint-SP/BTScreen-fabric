@@ -15,9 +15,7 @@ public class BTScreen implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Initializing BTScreen");
-		LOGGER.info("-------------------------");
 		InitializationHandler.getInstance().registerInitializationHandler(new InitHandler());
-		LOGGER.info("BTScreen is running!!");
 	}
 
 	public static void debugLog(String msg, Object... args) {
