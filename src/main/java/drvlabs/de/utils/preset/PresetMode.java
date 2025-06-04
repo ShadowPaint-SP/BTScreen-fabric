@@ -1,4 +1,4 @@
-package drvlabs.de.baritone.preset;
+package drvlabs.de.utils.preset;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;

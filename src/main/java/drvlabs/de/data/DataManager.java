@@ -13,8 +13,8 @@ import com.google.gson.JsonPrimitive;
 
 import drvlabs.de.BTScreen;
 import drvlabs.de.Reference;
-import drvlabs.de.baritone.preset.PresetMode;
 import drvlabs.de.gui.GuiConfigs.ConfigGuiTab;
+import drvlabs.de.utils.preset.PresetMode;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryCache;
 import fi.dy.masa.malilib.util.*;
 

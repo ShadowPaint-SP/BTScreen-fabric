@@ -12,7 +12,7 @@
 		"sources": "https://github.com/ShadowPaint-SP/BTScreen-fabric"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/btscreen/icon.png",
+	"icon": "assets/btscreen/btscreen_icon.png",
 	"environment": "client",
 	"entrypoints": {
 		"main": [
