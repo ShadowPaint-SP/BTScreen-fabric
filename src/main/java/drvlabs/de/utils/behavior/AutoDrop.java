@@ -3,7 +3,6 @@ package drvlabs.de.utils.behavior;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.SlotActionType;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 
 import java.util.ArrayList;
@@ -14,9 +13,6 @@ import drvlabs.de.BTScreen;
 import drvlabs.de.data.DataManager;
 import drvlabs.de.utils.BotStatus;
 import drvlabs.de.utils.CommandUtils;
-
-import java.util.LinkedList;
-import java.util.Queue;
 
 public class AutoDrop {
 	private static List<Integer> workingSlots;
@@ -79,56 +75,13 @@ public class AutoDrop {
 	}
 
 	public static void dropInventory() {
-		AutoDropScheduler.startDropping(workingSlots);
-		BTScreen.LOGGER.info("Dropping inventory: ");
 		for (Integer slot : workingSlots) {
 			// TODO add wait()
-			// mc.interactionManager.clickSlot(0, slot, 1, SlotActionType.THROW, mc.player);
+			BTScreen.LOGGER.info("Dropping inventory: ");
+			mc.interactionManager.clickSlot(0, slot, 1, SlotActionType.THROW, mc.player);
 
 		}
-	}
 
-	public static class AutoDropScheduler {
-		private static Queue<Integer> dropQueue = new LinkedList<>();
-		private static int tickDelay = 4; // Delay between drops
-		private static int tickCounter = 0;
-		private static boolean active = false;
-
-		public static void startDropping(List<Integer> slotsToDrop) {
-			if (active)
-				return;
-
-			dropQueue.clear();
-			dropQueue.addAll(slotsToDrop);
-			tickCounter = 0;
-			active = true;
-		}
-
-		public static void registerTickHandler() {
-			ClientTickEvents.END_CLIENT_TICK.register(client -> {
-				if (!active || dropQueue.isEmpty())
-					return;
-
-				if (tickCounter > 0) {
-					tickCounter--;
-					return;
-				}
-
-				int slot = dropQueue.poll();
-				client.interactionManager.clickSlot(0, slot, 1, SlotActionType.THROW, client.player);
-				BTScreen.LOGGER.info("Dropped slot: " + slot);
-
-				tickCounter = tickDelay;
-
-				if (dropQueue.isEmpty()) {
-					active = false;
-					BTScreen.LOGGER.info("Finished dropping inventory.");
-					// Resume bot if needed here
-					DataManager.setBotStatus(BotStatus.MINING);
-					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("resume");
-				}
-			});
-		}
 	}
 
 }
