@@ -49,58 +49,9 @@
 //	// }
 //	// }
 
-//	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;playSound(DDDLnet/minecraft/sound/SoundEvent;Lnet/minecraft/sound/SoundCategory;FFZ)V"), method = "onItemPickupAnimation")
-//	public void onItemPickupAnimation(ItemPickupAnimationS2CPacket packet, CallbackInfo info) {
-//		assert client.world != null;
-//		final Entity e = client.world.getEntityById(packet.getEntityId());
-//		LivingEntity c = (LivingEntity) client.world.getEntityById(packet.getCollectorEntityId());
-//		if (c == null) {
-//			c = client.player;
-//		}
-//		assert c != null;
-//		if (c.equals(client.player) && e instanceof ItemEntity) {
-//			BTScreen.LOGGER.info("Item picked up!!!!!!!!!!!!!!!!!!!!!!!!!!");
-//			// AutoDrop.checkInventory(client.player, client);
-//		}
-//	}
-
 //	// @Inject(at = @At("TAIL"), method = "onGameJoin")
 //	// public void onGameJoin(GameJoinS2CPacket packet, CallbackInfo info) {
 //	// // TODO anti lock system
-//	// }
-
-//	// @Inject(method = "onEntityStatusEffect", at = @At(value = "INVOKE", target =
-//	// "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/util/thread/ThreadExecutor;)V",
-//	// shift = At.Shift.AFTER))
-//	// public void onEntityStatusEffect(EntityStatusEffectS2CPacket packet,
-//	// CallbackInfo info) {
-//	// assert client.player != null;
-//	// if (packet.getEntityId() == client.player.getId()) {
-//	// StatusEffectInstance newEffect = new
-//	// StatusEffectInstance(packet.getEffectId(), packet.getDuration(),
-//	// packet.getAmplifier(), packet.isAmbient(), packet.shouldShowParticles(),
-//	// packet.shouldShowIcon(), null);
-//	// StatusEffectInstance oldEffect =
-//	// client.player.getStatusEffect(packet.getEffectId());
-//	// new EventStatusEffectUpdate(oldEffect == null ? null : new
-//	// StatusEffectHelper(oldEffect),
-//	// new StatusEffectHelper(newEffect), true).trigger();
-//	// }
-//	// }
-
-//	// @Inject(method = "onRemoveEntityStatusEffect", at = @At(value = "INVOKE",
-//	// target =
-//	// "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/util/thread/ThreadExecutor;)V",
-//	// shift = At.Shift.AFTER))
-//	// public void onEntityStatusEffect(RemoveEntityStatusEffectS2CPacket packet,
-//	// CallbackInfo info) {
-//	// if (packet.getEntity(client.world) == client.player) {
-//	// assert client.player != null;
-//	// new EventStatusEffectUpdate(new
-//	// StatusEffectHelper(client.player.getStatusEffect(packet.effect())), null,
-//	// false)
-//	// .trigger();
-//	// }
 //	// }
 
 //	// @Inject(method = "onScreenHandlerSlotUpdate", at = @At(value = "INVOKE",
@@ -168,12 +119,16 @@ import drvlabs.de.BTScreen;
 import drvlabs.de.config.Configs;
 import drvlabs.de.data.DataManager;
 import drvlabs.de.utils.BotStatus;
+import drvlabs.de.utils.CommandUtils;
 import drvlabs.de.utils.behavior.AutoDrop;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class MixinClientPlayNetworkHandler {
+	MinecraftClient mc = MinecraftClient.getInstance();
 
 	@Inject(method = "onItemPickupAnimation", at = @At("RETURN"))
 	public void btscreen_onItemPickupAnimation(net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket packet,
@@ -199,8 +154,48 @@ public abstract class MixinClientPlayNetworkHandler {
 	}
 
 	@Inject(method = "onGameJoin", at = @At("RETURN"))
-	private void btscreen_onPostGameJoin(GameJoinS2CPacket packet, CallbackInfo ci) {
+	private void btscreen_onPostGameJoin(net.minecraft.network.packet.s2c.play.GameJoinS2CPacket packet,
+			CallbackInfo ci) {
 		// DataStorage.getInstance().setSimulationDistance(packet.simulationDistance());
 	}
 
+	@Inject(method = "onRemoveEntityStatusEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/util/thread/ThreadExecutor;)V", shift = At.Shift.AFTER))
+	public void onEntityStatusEffect(net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket packet,
+			CallbackInfo info) {
+		assert mc.player != null;
+
+		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING
+				&& Configs.Generic.AUTO_DROP.getBooleanValue()) {
+			if (packet.getEntity(mc.world) == mc.player) {
+
+				BTScreen.LOGGER.info("Removing status effect: " + mc.player.getStatusEffect(packet.effect()));
+				if (packet.effect().matches(StatusEffects.HASTE::matchesKey)) {
+					CommandUtils.execute("pause");
+					DataManager.setBotStatus(BotStatus.HASTING);
+					CommandUtils.sendCommand("teleport to beacon"); // TODO home system
+
+				}
+			}
+		}
+	}
+
+	@Inject(method = "onEntityStatusEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/util/thread/ThreadExecutor;)V", shift = At.Shift.AFTER))
+	public void onEntityStatusEffect(net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket packet,
+			CallbackInfo info) {
+		assert mc.player != null;
+
+		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.HASTING
+				&& Configs.Generic.AUTO_DROP.getBooleanValue()) {
+			if (packet.getEntityId() == mc.player.getId()) {
+
+				StatusEffectInstance oldEffect = mc.player.getStatusEffect(packet.getEffectId());
+				if (oldEffect == null && packet.getEffectId().matches(StatusEffects.HASTE::matchesKey)) {
+					BTScreen.LOGGER.info("HASTE given");
+					CommandUtils.sendCommand("teleport to beacon"); // TODO home system
+					DataManager.setBotStatus(BotStatus.MINING);
+					CommandUtils.execute("resume");
+				}
+			}
+		}
+	}
 }
