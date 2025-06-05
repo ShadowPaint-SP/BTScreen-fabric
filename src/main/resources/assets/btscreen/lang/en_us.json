@@ -46,7 +46,7 @@
 	"btscreen.config.generic.name.autoSleep": "Auto Sleep",
 	"btscreen.config.generic.comment.autoSleep": "Auto Sleep",
 	"btscreen.config.generic.name.autoEat": "Auto Eat",
-	"btscreen.config.generic.comment.autoEat": "Auto Eat",
+	"btscreen.config.generic.comment.autoEat": "Auto Eat\nRequires food in offhand!!",
 	"btscreen.config.generic.name.autoRepair": "Auto Repair",
 	"btscreen.config.generic.comment.autoRepair": "Auto Repair",
 	"btscreen.config.generic.name.autoHaste": "Auto Haste",

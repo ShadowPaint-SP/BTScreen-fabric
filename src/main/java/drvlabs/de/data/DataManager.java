@@ -30,6 +30,7 @@ public class DataManager implements IDirectoryCache {
 	private PresetMode operationMode = PresetMode.DEFAULT;
 	private BotStatus botStatus = BotStatus.IDLE;
 	private boolean isActive = false;
+	private boolean needsToEat = false;
 
 	private DataManager() {
 	}
@@ -69,6 +70,14 @@ public class DataManager implements IDirectoryCache {
 
 	public void setActive(boolean active) {
 		getInstance().isActive = active;
+	}
+
+	public static boolean getNeedsToEat() {
+		return getInstance().needsToEat;
+	}
+
+	public static void setNeedsToEat(boolean needsToEat) {
+		getInstance().needsToEat = needsToEat;
 	}
 
 	public static Path getCurrentConfigDirectory() {
@@ -175,6 +184,7 @@ public class DataManager implements IDirectoryCache {
 	public static void clear() {
 		getInstance().botStatus = BotStatus.IDLE;
 		getInstance().setActive(false);
+		getInstance().needsToEat = false;
 	}
 
 	private void savePerDimensionData() {

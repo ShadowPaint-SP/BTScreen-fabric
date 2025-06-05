@@ -8,7 +8,8 @@
 	"client":[
 		"MixinMinecraftClient",
 		"input.IMixinKeyBinding",
-		"network.MixinClientPlayNetworkHandler"
+		"network.MixinClientPlayNetworkHandler",
+		"player.MixinHungerManager"
 	],
 	"injectors": {
 		"defaultRequire": 1

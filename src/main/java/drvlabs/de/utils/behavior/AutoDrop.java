@@ -79,9 +79,7 @@ public class AutoDrop {
 			// TODO add wait()
 			BTScreen.LOGGER.info("Dropping inventory: ");
 			mc.interactionManager.clickSlot(0, slot, 1, SlotActionType.THROW, mc.player);
-
 		}
-
 	}
 
 }

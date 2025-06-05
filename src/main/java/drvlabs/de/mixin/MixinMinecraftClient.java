@@ -1,20 +1,41 @@
 package drvlabs.de.mixin;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import drvlabs.de.config.Configs;
 import drvlabs.de.data.DataManager;
+import drvlabs.de.utils.BotStatus;
 
 @Mixin(value = MinecraftClient.class)
 public abstract class MixinMinecraftClient extends ReentrantThreadExecutor<Runnable> {
+	@Shadow
+	@Nullable
+	public Screen currentScreen;
+
+	@Shadow
+	@Nullable
+	public ClientPlayerInteractionManager interactionManager;
+
+	@Shadow
+	@Final
+	public GameOptions options;
+
 	public MixinMinecraftClient(String string_1) {
 		super(string_1);
 	}
@@ -24,7 +45,16 @@ public abstract class MixinMinecraftClient extends ReentrantThreadExecutor<Runna
 		DataManager.onClientTickStart();
 	}
 
-	@Shadow
-	@Nullable
-	public ClientPlayerInteractionManager interactionManager;
+	@Inject(method = "handleInputEvents", at = @At("HEAD"))
+	private void onProcessKeybindsPre(CallbackInfo ci) {
+		if (this.currentScreen == null) {
+			if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING
+					&& Configs.Generic.AUTO_EAT.getBooleanValue() && DataManager.getNeedsToEat()) {
+				FoodComponent food = MinecraftClient.getInstance().player.getOffHandStack().get(DataComponentTypes.FOOD);
+				if (food != null) {
+					KeyBinding.setKeyPressed(InputUtil.fromTranslationKey(this.options.useKey.getBoundKeyTranslationKey()), true);
+				}
+			}
+		}
+	}
 }
