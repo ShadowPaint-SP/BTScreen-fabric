@@ -1,6 +1,7 @@
 package drvlabs.de;
 
 import drvlabs.de.config.Configs;
+import drvlabs.de.event.ClientTickHandler;
 import drvlabs.de.event.InputHandler;
 import drvlabs.de.event.KeyCallbacks;
 import drvlabs.de.event.WorldLoadListener;
@@ -27,6 +28,8 @@ public class InitHandler implements IInitializationHandler {
 		WorldLoadHandler.getInstance().registerWorldLoadPostHandler(listener);
 
 		KeyCallbacks.init(MinecraftClient.getInstance());
+
+		TickHandler.getInstance().registerClientTickHandler(new ClientTickHandler());
 	}
 
 }

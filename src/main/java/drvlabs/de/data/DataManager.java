@@ -14,6 +14,7 @@ import com.google.gson.JsonPrimitive;
 import drvlabs.de.BTScreen;
 import drvlabs.de.Reference;
 import drvlabs.de.gui.GuiConfigs.ConfigGuiTab;
+import drvlabs.de.utils.BotStatus;
 import drvlabs.de.utils.preset.PresetMode;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryCache;
 import fi.dy.masa.malilib.util.*;
@@ -27,6 +28,8 @@ public class DataManager implements IDirectoryCache {
 	private static boolean canSave;
 	private static long clientTickStart;
 	private PresetMode operationMode = PresetMode.DEFAULT;
+	private BotStatus botStatus = BotStatus.IDLE;
+	private boolean isActive = false;
 
 	private DataManager() {
 	}
@@ -49,6 +52,23 @@ public class DataManager implements IDirectoryCache {
 
 	public static void setPresetMode(PresetMode mode) {
 		getInstance().operationMode = mode;
+	}
+
+	public static BotStatus getBotStatus() {
+		return getInstance().botStatus;
+	}
+
+	public static void setBotStatus(BotStatus status) {
+		BTScreen.LOGGER.info("Bot Status: " + status);
+		getInstance().botStatus = status;
+	}
+
+	public static boolean getActive() {
+		return getInstance().isActive;
+	}
+
+	public void setActive(boolean active) {
+		getInstance().isActive = active;
 	}
 
 	public static Path getCurrentConfigDirectory() {
@@ -150,6 +170,11 @@ public class DataManager implements IDirectoryCache {
 		JsonUtils.writeJsonToFileAsPath(root, file);
 
 		canSave = false;
+	}
+
+	public static void clear() {
+		getInstance().botStatus = BotStatus.IDLE;
+		getInstance().setActive(false);
 	}
 
 	private void savePerDimensionData() {

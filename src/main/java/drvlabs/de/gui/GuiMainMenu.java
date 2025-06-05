@@ -1,9 +1,11 @@
 package drvlabs.de.gui;
 
-import baritone.api.BaritoneAPI;
 import drvlabs.de.BTScreen;
 import drvlabs.de.Reference;
 import drvlabs.de.data.DataManager;
+import drvlabs.de.utils.BotStatus;
+import drvlabs.de.utils.CommandUtils;
+import drvlabs.de.utils.behavior.AutoDrop;
 import drvlabs.de.utils.preset.PresetMode;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
@@ -138,49 +140,53 @@ public class GuiMainMenu extends GuiBase {
 					GuiBase.openGui(new GuiConfigs());
 					return;
 				case Type.START:
-					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel cleararea");
+					CommandUtils.execute("sel cleararea");
+					DataManager.getInstance().setActive(true);
+					AutoDrop.updateMaxSlots();
 					this.gui.addMessage(MessageType.ERROR, 1000, "btscreen.info.main_menu.startBot");
 					return;
 				case Type.STOP:
-					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("stop");
+					CommandUtils.execute("stop");
+					DataManager.getInstance().setActive(false);
+					DataManager.setBotStatus(BotStatus.IDLE);
 					this.gui.addMessage(MessageType.SUCCESS, 1000, "btscreen.info.main_menu.stopBot");
 					return;
 				case Type.SELPOSONE:
-					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel pos1");
+					CommandUtils.execute("sel pos1");
 					return;
 				case Type.SELPOSTWO:
-					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel pos2");
+					CommandUtils.execute("sel pos2");
 					return;
 				case Type.SELDELETE:
-					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel clear");
+					CommandUtils.execute("sel clear");
 					this.gui.addMessage(MessageType.WARNING, 1000, "btscreen.info.main_menu.selDelete");
 					return;
 				case Type.SHIFTX:
-					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel shift all east " + amount);
+					CommandUtils.execute("sel shift all east " + amount);
 					return;
 				case Type.SHIFTY:
-					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel shift all up " + amount);
+					CommandUtils.execute("sel shift all up " + amount);
 					return;
 				case Type.SHIFTZ:
-					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel shift all north " + amount);
+					CommandUtils.execute("sel shift all north " + amount);
 					return;
 				case Type.UP:
-					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel expand all up " + amount);
+					CommandUtils.execute("sel expand all up " + amount);
 					return;
 				case Type.DOWN:
-					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel expand all down " + amount);
+					CommandUtils.execute("sel expand all down " + amount);
 					return;
 				case Type.NORTH:
-					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel expand all north " + amount);
+					CommandUtils.execute("sel expand all north " + amount);
 					return;
 				case Type.EAST:
-					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel expand all east " + amount);
+					CommandUtils.execute("sel expand all east " + amount);
 					return;
 				case Type.SOUTH:
-					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel expand all south " + amount);
+					CommandUtils.execute("sel expand all south " + amount);
 					return;
 				case Type.WEST:
-					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("sel expand all west " + amount);
+					CommandUtils.execute("sel expand all west " + amount);
 					return;
 				default:
 					break;

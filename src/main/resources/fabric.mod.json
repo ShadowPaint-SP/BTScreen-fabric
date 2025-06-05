@@ -3,7 +3,7 @@
 	"id": "btscreen",
 	"version": "${version}",
 	"name": "BT Screen",
-	"description": "Make Baritone into a mining bot Interface",
+	"description": "The cool way to use baritone",
 	"authors": [
 		"ShadowPaint_SP"
 	],
