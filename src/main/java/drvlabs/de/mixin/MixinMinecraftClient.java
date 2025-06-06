@@ -21,9 +21,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import drvlabs.de.config.Configs;
 import drvlabs.de.data.DataManager;
 import drvlabs.de.utils.BotStatus;
+import drvlabs.de.utils.IMinecraftClientInvoker;
 
 @Mixin(value = MinecraftClient.class)
-public abstract class MixinMinecraftClient extends ReentrantThreadExecutor<Runnable> {
+public abstract class MixinMinecraftClient extends ReentrantThreadExecutor<Runnable>
+		implements IMinecraftClientInvoker {
 	@Shadow
 	@Nullable
 	public Screen currentScreen;
@@ -33,8 +35,26 @@ public abstract class MixinMinecraftClient extends ReentrantThreadExecutor<Runna
 	public ClientPlayerInteractionManager interactionManager;
 
 	@Shadow
+	private boolean doAttack() {
+		return false;
+	}
+
+	@Shadow
 	@Final
 	public GameOptions options;
+
+	@Shadow
+	private int itemUseCooldown;
+
+	@Override
+	public void btscreen_setItemUseCooldown(int value) {
+		this.itemUseCooldown = value;
+	}
+
+	@Override
+	public boolean btscreen_invokeDoAttack() {
+		return this.doAttack();
+	}
 
 	public MixinMinecraftClient(String string_1) {
 		super(string_1);

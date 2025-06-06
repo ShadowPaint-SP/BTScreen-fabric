@@ -2,10 +2,9 @@ package drvlabs.de.event;
 
 import baritone.api.BaritoneAPI;
 import drvlabs.de.BTScreen;
-//import drvlabs.de.BTScreen;
 import drvlabs.de.data.DataManager;
 import drvlabs.de.utils.BotStatus;
-//import drvlabs.de.utils.behavior.AutoDrop;
+import drvlabs.de.utils.behavior.AutoRepair;
 import fi.dy.masa.malilib.interfaces.IClientTickHandler;
 import net.minecraft.client.MinecraftClient;
 
@@ -17,19 +16,22 @@ public class ClientTickHandler implements IClientTickHandler {
 	 */
 	@Override
 	public void onClientTick(MinecraftClient mc) {
-		if (BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl().isPresent()) {
-			if (DataManager.getBotStatus() == BotStatus.IDLE) {
-				BTScreen.LOGGER.info("BOT SHOULD BE IN MINING");
-				DataManager.setBotStatus(BotStatus.MINING);
-			}
-		} else {
-			if (DataManager.getBotStatus() == BotStatus.MINING) {
-				BTScreen.LOGGER.info("BOT SHOULD BE IN IDLE");
-				DataManager.getInstance().setActive(false);
-				DataManager.setBotStatus(BotStatus.IDLE);
+		if (mc.world != null && mc.player != null) {
+			if (BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager().mostRecentInControl().isPresent()) {
+				if (DataManager.getBotStatus() == BotStatus.IDLE) {
+					BTScreen.LOGGER.info("BOT SHOULD BE IN MINING");
+					DataManager.setBotStatus(BotStatus.MINING);
+				}
+				if (DataManager.getBotStatus() == BotStatus.REPAIRING) {
+					AutoRepair.onTick(mc);
+				}
+			} else {
+				if (DataManager.getBotStatus() == BotStatus.MINING) {
+					BTScreen.LOGGER.info("BOT SHOULD BE IN IDLE");
+					DataManager.getInstance().setActive(false);
+					DataManager.setBotStatus(BotStatus.IDLE);
+				}
 			}
 		}
-
 	}
-
 }

@@ -9,6 +9,7 @@
 		"MixinMinecraftClient",
 		"input.IMixinKeyBinding",
 		"network.MixinClientPlayNetworkHandler",
+		"network.MixinClientPlayerInteractionManager",
 		"player.MixinHungerManager"
 	],
 	"injectors": {

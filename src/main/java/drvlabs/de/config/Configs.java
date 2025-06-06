@@ -29,6 +29,10 @@ public class Configs implements IConfigHandler {
 		public static final ConfigBoolean AUTO_EAT = new ConfigBoolean("autoEat", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_HASTE = new ConfigBoolean("autoHaste", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_DROP = new ConfigBoolean("autoDrop", false).apply(GENERIC_KEY);
+		public static final ConfigInteger PERIODIC_ATTACK_INTERVAL = new ConfigInteger("periodicAttackInterval", 200, 0,
+				Integer.MAX_VALUE).apply(GENERIC_KEY);
+		public static final ConfigInteger ITEM_DURABILITY_THRESHOLD = new ConfigInteger("itemDurabilityThreshold", 40, 10,
+				Integer.MAX_VALUE).apply(GENERIC_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
 				DEBUG_LOGGING,
@@ -36,7 +40,9 @@ public class Configs implements IConfigHandler {
 				AUTO_REPAIR,
 				AUTO_EAT,
 				AUTO_HASTE,
-				AUTO_DROP);
+				AUTO_DROP,
+				PERIODIC_ATTACK_INTERVAL,
+				ITEM_DURABILITY_THRESHOLD);
 	}
 
 	public static class Lists {
