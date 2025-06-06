@@ -13,31 +13,37 @@ import drvlabs.de.BTScreen;
 import drvlabs.de.data.DataManager;
 import drvlabs.de.utils.BotStatus;
 import drvlabs.de.utils.CommandUtils;
+import drvlabs.de.utils.IntervalStepper;
+import drvlabs.de.utils.Waiter;
 
 public class AutoDrop {
-	private static List<Integer> workingSlots;
-	private static MinecraftClient mc = MinecraftClient.getInstance();
+	private static final MinecraftClient mc = MinecraftClient.getInstance();
+	private static final int DROP_INTERVAL_TICKS = 5;
+
+	private static List<Integer> workingSlots = new ArrayList<>();
+	private static int currentDropIndex = 0;
+	private static boolean dropWaitFinished = false;
+
+	private static final IntervalStepper<Integer> dropStepper = new IntervalStepper<>((i) -> dropNextSlot());
 
 	public static void checkInventory() {
-
 		PlayerInventory inventory = mc.player.getInventory();
 		boolean hasFreeSlot = false;
+
 		BTScreen.LOGGER.info("Checking Inventory");
-		if (DataManager.getBotStatus() != BotStatus.MINING) {
+
+		if (DataManager.getBotStatus() != BotStatus.MINING)
 			return;
-		}
-		if (workingSlots.isEmpty()) {
+		if (workingSlots.isEmpty())
 			return;
-		}
-		// Check if there's at least one empty slot in the inventory
+
 		for (int slot : workingSlots) {
-			ItemStack stack = inventory.getStack(slot);
-			if (stack.isEmpty()) {
+			if (inventory.getStack(slot).isEmpty()) {
 				hasFreeSlot = true;
 				break;
 			}
-
 		}
+
 		BTScreen.LOGGER.info("Has Free Slot: " + hasFreeSlot);
 
 		if (!hasFreeSlot) {
@@ -46,27 +52,25 @@ public class AutoDrop {
 			BTScreen.LOGGER.info("Inventory full, pausing bot");
 			BTScreen.LOGGER.info("Teleport to drop off location");
 			CommandUtils.sendCommand("gamemode creative");
-			// TODO: needs a wait function
 
-			dropInventory();
-
-			BTScreen.LOGGER.info("Teleporting back to mine");
-			BTScreen.LOGGER.info("Resuming bot");
-			DataManager.setBotStatus(BotStatus.MINING);
-			BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("resume");
+			currentDropIndex = 0; // start from the first slot
+			Waiter.wait("drop_wait", 200, () -> {
+				BTScreen.LOGGER.info("Wait over, starting to drop inventory");
+				dropWaitFinished = true;
+			});
 		}
 	}
 
 	public static void updateMaxSlots() {
-
 		List<Integer> emptySlots = new ArrayList<>();
 
 		for (int i = 0; i <= 35; i++) {
-			ItemStack stack = MinecraftClient.getInstance().player.getInventory().getStack(i);
+			ItemStack stack = mc.player.getInventory().getStack(i);
 			if (stack.isEmpty()) {
 				emptySlots.add(i);
 			}
 		}
+
 		BTScreen.LOGGER.info("Free Slots: " + emptySlots.size());
 		BTScreen.LOGGER.info("Empty Slots: " + emptySlots.toString());
 		DataManager.setBotStatus(BotStatus.MINING);
@@ -74,12 +78,38 @@ public class AutoDrop {
 		AutoDrop.workingSlots = emptySlots;
 	}
 
-	public static void dropInventory() {
-		for (Integer slot : workingSlots) {
-			// TODO add wait()
-			BTScreen.LOGGER.info("Dropping inventory: ");
-			mc.interactionManager.clickSlot(0, slot, 1, SlotActionType.THROW, mc.player);
+	private static void dropNextSlot() {
+		if (currentDropIndex >= workingSlots.size()) {
+			BTScreen.LOGGER.info("Finished dropping inventory");
+
+			// Reset state
+			currentDropIndex = 0;
+			workingSlots.clear();
+
+			// Resume mining
+			CommandUtils.sendCommand("tp back to mine");
+			DataManager.setBotStatus(BotStatus.MINING);
+			BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("resume");
+
+			return;
 		}
+
+		int slot = workingSlots.get(currentDropIndex);
+		BTScreen.LOGGER.info("Dropping slot: " + slot);
+		mc.interactionManager.clickSlot(0, slot, 1, SlotActionType.THROW, mc.player);
+
+		currentDropIndex++;
 	}
 
+	// Call this from your tick handler
+	public static void onTick() {
+		if (DataManager.getBotStatus() == BotStatus.DROPPING) {
+			if (!dropWaitFinished)
+				return;
+			dropStepper.tick(DROP_INTERVAL_TICKS, 0); // Context is unused
+		} else {
+			dropStepper.reset(); // In case the bot changes state
+			dropWaitFinished = false;
+		}
+	}
 }

@@ -6,6 +6,8 @@ import drvlabs.de.config.Configs;
 import drvlabs.de.data.DataManager;
 import drvlabs.de.utils.BotStatus;
 import drvlabs.de.utils.CommandUtils;
+import drvlabs.de.utils.Waiter;
+import drvlabs.de.utils.behavior.AutoDrop;
 import drvlabs.de.utils.behavior.AutoRepair;
 import drvlabs.de.utils.behavior.AutoSleep;
 import fi.dy.masa.malilib.interfaces.IClientTickHandler;
@@ -22,16 +24,19 @@ public class ClientTickHandler implements IClientTickHandler {
 	@Override
 	public void onClientTick(MinecraftClient mc) {
 		if (mc.world != null && mc.player != null) {
+			Waiter.tickAll();
 			// BTScreen.LOGGER.info(AutoSleep.isNight() + " " + AutoSleep.isDay());
 			if (DataManager.getActive() && BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager()
 					.mostRecentInControl().isPresent()) {
-				BTScreen.LOGGER.info("we are alive");
 				if (DataManager.getBotStatus() == BotStatus.IDLE) {
 					BTScreen.LOGGER.info("BOT SHOULD BE IN MINING");
 					DataManager.setBotStatus(BotStatus.MINING);
 				}
 				if (DataManager.getBotStatus() == BotStatus.REPAIRING) {
 					AutoRepair.onTick(mc);
+				}
+				if (Configs.Generic.AUTO_DROP.getBooleanValue() && DataManager.getBotStatus() == BotStatus.DROPPING) {
+					AutoDrop.onTick();
 				}
 				if (Configs.Generic.AUTO_SLEEP.getBooleanValue()) {
 					if (DataManager.getBotStatus() == BotStatus.MINING
