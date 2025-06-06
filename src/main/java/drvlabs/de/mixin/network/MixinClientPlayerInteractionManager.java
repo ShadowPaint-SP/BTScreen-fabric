@@ -24,25 +24,6 @@ public abstract class MixinClientPlayerInteractionManager {
 	@Shadow
 	private int blockBreakingCooldown;
 
-	// @Inject(method = "attackBlock", slice = @Slice(from = @At(value = "FIELD",
-	// ordinal = 0, target =
-	// "Lnet/minecraft/client/network/ClientPlayerInteractionManager;breakingBlock:Z")),
-	// at = @At(value = "INVOKE", target =
-	// "Lnet/minecraft/client/world/ClientWorld;getBlockState("
-	// +
-	// "Lnet/minecraft/util/math/BlockPos;" +
-	// ")Lnet/minecraft/block/BlockState;", ordinal = 0), cancellable = true)
-	// private void onClickBlockPre(BlockPos pos, Direction face,
-	// CallbackInfoReturnable<Boolean> cir) {
-	// if (this.client.player != null && this.client.world != null) {
-	// BTScreen.LOGGER.info("onClickBlockPre");
-	// if (Configs.Generic.AUTO_REPAIR.getBooleanValue()) {
-	// // InventoryUtils.trySwitchToEffectiveTool(pos);
-	// cir.setReturnValue(false);
-	// }
-	// }
-	// }
-
 	@Inject(method = "attackBlock", at = @At("HEAD"), cancellable = true)
 	private void handleBreakingRestriction1(BlockPos pos, Direction side, CallbackInfoReturnable<Boolean> cir) {
 		if (this.client.player != null && this.client.world != null) {
@@ -52,33 +33,4 @@ public abstract class MixinClientPlayerInteractionManager {
 			}
 		}
 	}
-
-	// @Inject(method = "updateBlockBreakingProgress", at = @At("HEAD"), cancellable
-	// = true) // MCP: onPlayerDamageBlock
-	// private void handleBreakingRestriction2(BlockPos pos, Direction side,
-	// CallbackInfoReturnable<Boolean> cir) {
-	// BTScreen.LOGGER.info("handleBreakingRestriction2");
-	// if (Configs.Disable.DISABLE_BLOCK_BREAK_COOLDOWN.getBooleanValue())
-	//// && this.client.player.isCreative() == false)
-	// {
-	// this.blockBreakingCooldown = 0;
-	// }
-
-	// if (CameraUtils.shouldPreventPlayerInputs() ||
-	// PlacementTweaks.isPositionAllowedByBreakingRestriction(pos, side) == false) {
-	// cir.setReturnValue(true);
-	// } else {
-	// InventoryUtils.trySwapCurrentToolIfNearlyBroken();
-	// }
-	// }
-
-	// @Inject(method = "hasLimitedAttackSpeed", at = @At("HEAD"), cancellable =
-	// true)
-	// private void overrideLimitedAttackSpeed(CallbackInfoReturnable<Boolean> cir)
-	// {
-	// if (FeatureToggle.TWEAK_FAST_LEFT_CLICK.getBooleanValue())
-	// {
-	// cir.setReturnValue(false);
-	// }
-	// }
 }

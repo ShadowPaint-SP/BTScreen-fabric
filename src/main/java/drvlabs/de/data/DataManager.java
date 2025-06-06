@@ -27,10 +27,10 @@ public class DataManager implements IDirectoryCache {
 	private static ConfigGuiTab configGuiTab = ConfigGuiTab.GENERIC;
 	private static boolean canSave;
 	private static long clientTickStart;
-	private PresetMode operationMode = PresetMode.DEFAULT;
-	private BotStatus botStatus = BotStatus.IDLE;
-	private boolean isActive = false;
-	private boolean needsToEat = false;
+	private static PresetMode operationMode = PresetMode.DEFAULT;
+	private static BotStatus botStatus = BotStatus.IDLE;
+	private static boolean isActive = false;
+	private static boolean needsToEat = false;
 
 	private DataManager() {
 	}
@@ -48,36 +48,36 @@ public class DataManager implements IDirectoryCache {
 	}
 
 	public static PresetMode getPresetMode() {
-		return getInstance().operationMode;
+		return operationMode;
 	}
 
 	public static void setPresetMode(PresetMode mode) {
-		getInstance().operationMode = mode;
+		operationMode = mode;
 	}
 
 	public static BotStatus getBotStatus() {
-		return getInstance().botStatus;
+		return botStatus;
 	}
 
 	public static void setBotStatus(BotStatus status) {
 		BTScreen.LOGGER.info("Bot Status: " + status);
-		getInstance().botStatus = status;
+		botStatus = status;
 	}
 
 	public static boolean getActive() {
-		return getInstance().isActive;
+		return isActive;
 	}
 
 	public void setActive(boolean active) {
-		getInstance().isActive = active;
+		isActive = active;
 	}
 
 	public static boolean getNeedsToEat() {
-		return getInstance().needsToEat;
+		return needsToEat;
 	}
 
-	public static void setNeedsToEat(boolean needsToEat) {
-		getInstance().needsToEat = needsToEat;
+	public static void setNeedsToEat(boolean bool) {
+		needsToEat = bool;
 	}
 
 	public static Path getCurrentConfigDirectory() {
@@ -182,9 +182,9 @@ public class DataManager implements IDirectoryCache {
 	}
 
 	public static void clear() {
-		getInstance().botStatus = BotStatus.IDLE;
+		botStatus = BotStatus.IDLE;
 		getInstance().setActive(false);
-		getInstance().needsToEat = false;
+		needsToEat = false;
 	}
 
 	private void savePerDimensionData() {
@@ -208,12 +208,12 @@ public class DataManager implements IDirectoryCache {
 
 		if (JsonUtils.hasString(obj, "operation_mode")) {
 			try {
-				this.operationMode = PresetMode.valueOf(obj.get("operation_mode").getAsString());
+				operationMode = PresetMode.valueOf(obj.get("operation_mode").getAsString());
 			} catch (Exception ignored) {
 			}
 
-			if (this.operationMode == null) {
-				this.operationMode = PresetMode.DEFAULT;
+			if (operationMode == null) {
+				operationMode = PresetMode.DEFAULT;
 			}
 		}
 	}
@@ -221,7 +221,7 @@ public class DataManager implements IDirectoryCache {
 	private JsonObject toJson() {
 		JsonObject obj = new JsonObject();
 
-		obj.add("operation_mode", new JsonPrimitive(this.operationMode.name()));
+		obj.add("operation_mode", new JsonPrimitive(operationMode.name()));
 
 		return obj;
 	}
@@ -233,4 +233,5 @@ public class DataManager implements IDirectoryCache {
 	public static long getClientTickStartTime() {
 		return clientTickStart;
 	}
+
 }
