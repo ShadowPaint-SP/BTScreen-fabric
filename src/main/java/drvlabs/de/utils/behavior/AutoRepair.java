@@ -50,7 +50,7 @@ public class AutoRepair {
 		}
 
 		if (!player.getStackInHand(Hand.MAIN_HAND).isDamaged()) {
-			CommandUtils.sendCommand("tp back to mine");
+			CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
 			DataManager.setBotStatus(BotStatus.MINING);
 			CommandUtils.execute("resume");
 			return;
@@ -96,7 +96,7 @@ public class AutoRepair {
 				BTScreen.LOGGER.info("STARTING REPAIR");
 				CommandUtils.execute("pause");
 				DataManager.setBotStatus(BotStatus.REPAIRING);
-				CommandUtils.sendCommand("tp to xp");
+				CommandUtils.tpTo(Configs.Generic.REPAIR_HOME.getStringValue());
 			}
 		}
 	}

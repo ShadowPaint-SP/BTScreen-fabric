@@ -44,7 +44,7 @@ public class ClientTickHandler implements IClientTickHandler {
 						if (!hasExecutedFirstBlock) {
 							DataManager.setBotStatus(BotStatus.SLEEPING);
 							CommandUtils.execute("pause");
-							CommandUtils.sendCommand("tp 72 76 67");
+							CommandUtils.tpTo(Configs.Generic.SLEEP_HOME.getStringValue());
 							hasExecutedFirstBlock = true;
 							hasExecutedSecondBlock = false;
 						}
@@ -58,7 +58,7 @@ public class ClientTickHandler implements IClientTickHandler {
 
 						if (!hasExecutedSecondBlock) {
 							BTScreen.LOGGER.info("Teleporting back to Mining location");
-							CommandUtils.sendCommand("tp 0 0 0");
+							CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
 							DataManager.setBotStatus(BotStatus.MINING);
 							CommandUtils.execute("resume");
 							hasExecutedSecondBlock = true;

@@ -123,7 +123,6 @@ import drvlabs.de.utils.CommandUtils;
 import drvlabs.de.utils.behavior.AutoDrop;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 
 @Mixin(ClientPlayNetworkHandler.class)
@@ -165,14 +164,16 @@ public abstract class MixinClientPlayNetworkHandler {
 		assert mc.player != null;
 
 		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING
-				&& Configs.Generic.AUTO_DROP.getBooleanValue()) {
+				&& Configs.Generic.AUTO_HASTE.getBooleanValue()) {
 			if (packet.getEntity(mc.world) == mc.player) {
 
 				BTScreen.LOGGER.info("Removing status effect: " + mc.player.getStatusEffect(packet.effect()));
 				if (packet.effect().matches(StatusEffects.HASTE::matchesKey)) {
 					CommandUtils.execute("pause");
 					DataManager.setBotStatus(BotStatus.HASTING);
-					CommandUtils.sendCommand("teleport to beacon"); // TODO home system
+					CommandUtils.debugHome(mc.player.getBlockPos().getX() + " " + mc.player.getBlockPos().getY() + " "
+							+ mc.player.getBlockPos().getZ());
+					CommandUtils.tpTo(Configs.Generic.HASTE_HOME.getStringValue());
 
 				}
 			}
@@ -185,13 +186,12 @@ public abstract class MixinClientPlayNetworkHandler {
 		assert mc.player != null;
 
 		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.HASTING
-				&& Configs.Generic.AUTO_DROP.getBooleanValue()) {
+				&& Configs.Generic.AUTO_HASTE.getBooleanValue()) {
 			if (packet.getEntityId() == mc.player.getId()) {
 
-				StatusEffectInstance oldEffect = mc.player.getStatusEffect(packet.getEffectId());
-				if (oldEffect == null && packet.getEffectId().matches(StatusEffects.HASTE::matchesKey)) {
+				if (packet.getEffectId().matches(StatusEffects.HASTE::matchesKey)) {
 					BTScreen.LOGGER.info("HASTE given");
-					CommandUtils.sendCommand("teleport to beacon"); // TODO home system
+					CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue()); // TODO home system
 					DataManager.setBotStatus(BotStatus.MINING);
 					CommandUtils.execute("resume");
 				}

@@ -10,6 +10,7 @@ import java.util.List;
 
 import baritone.api.BaritoneAPI;
 import drvlabs.de.BTScreen;
+import drvlabs.de.config.Configs;
 import drvlabs.de.data.DataManager;
 import drvlabs.de.utils.BotStatus;
 import drvlabs.de.utils.CommandUtils;
@@ -51,7 +52,9 @@ public class AutoDrop {
 			BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("pause");
 			BTScreen.LOGGER.info("Inventory full, pausing bot");
 			BTScreen.LOGGER.info("Teleport to drop off location");
-			CommandUtils.sendCommand("gamemode creative");
+			CommandUtils.debugHome(mc.player.getBlockPos().getX() + " " + mc.player.getBlockPos().getY() + " "
+					+ mc.player.getBlockPos().getZ());
+			CommandUtils.tpTo(Configs.Generic.DROP_HOME.getStringValue());
 
 			currentDropIndex = 0; // start from the first slot
 			Waiter.wait("drop_wait", 200, () -> {
@@ -73,7 +76,6 @@ public class AutoDrop {
 
 		BTScreen.LOGGER.info("Free Slots: " + emptySlots.size());
 		BTScreen.LOGGER.info("Empty Slots: " + emptySlots.toString());
-		DataManager.setBotStatus(BotStatus.MINING);
 
 		AutoDrop.workingSlots = emptySlots;
 	}
@@ -87,9 +89,12 @@ public class AutoDrop {
 			workingSlots.clear();
 
 			// Resume mining
-			CommandUtils.sendCommand("tp back to mine");
+			CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
+			DataManager.setBotStatus(BotStatus.IDLE);
+			// Waiter.wait("resume_drop_wait", 100, () -> {
 			DataManager.setBotStatus(BotStatus.MINING);
 			BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("resume");
+			// });
 
 			return;
 		}

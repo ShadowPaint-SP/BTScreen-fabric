@@ -2,6 +2,7 @@ package drvlabs.de.gui;
 
 import drvlabs.de.BTScreen;
 import drvlabs.de.Reference;
+import drvlabs.de.config.Configs;
 import drvlabs.de.data.DataManager;
 import drvlabs.de.utils.BotStatus;
 import drvlabs.de.utils.CommandUtils;
@@ -14,9 +15,11 @@ import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.effect.StatusEffects;
 
 public class GuiMainMenu extends GuiBase {
 	private final int textColor = 0xFEFEFEFE;
+	private static MinecraftClient mc = MinecraftClient.getInstance();
 
 	public GuiMainMenu() {
 		String version = String.format("v%s", Reference.MOD_VERSION);
@@ -143,6 +146,17 @@ public class GuiMainMenu extends GuiBase {
 					CommandUtils.execute("sel cleararea");
 					DataManager.getInstance().setActive(true);
 					AutoDrop.updateMaxSlots();
+					// check for haste
+					DataManager.setBotStatus(BotStatus.MINING);
+					if (Configs.Generic.AUTO_HASTE.getBooleanValue()) {
+						if (!mc.player.hasStatusEffect(StatusEffects.HASTE)) {
+							CommandUtils.execute("pause");
+							DataManager.setBotStatus(BotStatus.HASTING);
+							CommandUtils.debugHome(mc.player.getBlockPos().getX() + " " + mc.player.getBlockPos().getY() + " "
+									+ mc.player.getBlockPos().getZ());
+							CommandUtils.tpTo(Configs.Generic.HASTE_HOME.getStringValue());
+						}
+					}
 					this.gui.addMessage(MessageType.ERROR, 1000, "btscreen.info.main_menu.startBot");
 					return;
 				case Type.STOP:

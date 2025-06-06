@@ -29,6 +29,13 @@ public class Configs implements IConfigHandler {
 		public static final ConfigBoolean AUTO_EAT = new ConfigBoolean("autoEat", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_HASTE = new ConfigBoolean("autoHaste", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_DROP = new ConfigBoolean("autoDrop", false).apply(GENERIC_KEY);
+		public static final ConfigString HOME_COMMAND = new ConfigString("homeCommand", "home").apply(GENERIC_KEY);
+		public static final ConfigString SETHOME_COMMAND = new ConfigString("setHomeCommand", "sethome").apply(GENERIC_KEY);
+		public static final ConfigString SLEEP_HOME = new ConfigString("sleepHome", "sleep").apply(GENERIC_KEY);
+		public static final ConfigString DROP_HOME = new ConfigString("dropHome", "drop").apply(GENERIC_KEY);
+		public static final ConfigString HASTE_HOME = new ConfigString("hasteHome", "haste").apply(GENERIC_KEY);
+		public static final ConfigString REPAIR_HOME = new ConfigString("repairHome", "repair").apply(GENERIC_KEY);
+		public static final ConfigString MINE_HOME = new ConfigString("mineHome", "mine").apply(GENERIC_KEY);
 		public static final ConfigInteger PERIODIC_ATTACK_INTERVAL = new ConfigInteger("periodicAttackInterval", 200, 0,
 				Integer.MAX_VALUE).apply(GENERIC_KEY);
 		public static final ConfigInteger ITEM_DURABILITY_THRESHOLD = new ConfigInteger("itemDurabilityThreshold", 40, 10,
@@ -42,7 +49,14 @@ public class Configs implements IConfigHandler {
 				AUTO_HASTE,
 				AUTO_DROP,
 				PERIODIC_ATTACK_INTERVAL,
-				ITEM_DURABILITY_THRESHOLD);
+				ITEM_DURABILITY_THRESHOLD,
+				HOME_COMMAND,
+				SETHOME_COMMAND,
+				MINE_HOME,
+				SLEEP_HOME,
+				DROP_HOME,
+				HASTE_HOME,
+				REPAIR_HOME);
 	}
 
 	public static class Lists {
