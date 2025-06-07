@@ -1,28 +1,3 @@
-//package drvlabs.de.mixin.client;
-
-//import net.minecraft.client.MinecraftClient;
-//import net.minecraft.client.network.ClientCommonNetworkHandler;
-//import net.minecraft.client.network.ClientConnectionState;
-//import net.minecraft.client.network.ClientPlayNetworkHandler;
-//import net.minecraft.client.network.PlayerListEntry;
-//import net.minecraft.client.world.ClientWorld;
-//import net.minecraft.entity.Entity;
-//import net.minecraft.entity.ItemEntity;
-//import net.minecraft.entity.LivingEntity;
-//import net.minecraft.network.ClientConnection;
-//import net.minecraft.network.packet.s2c.play.*;
-//import org.spongepowered.asm.mixin.Final;
-//import org.spongepowered.asm.mixin.Mixin;
-//import org.spongepowered.asm.mixin.Shadow;
-//import org.spongepowered.asm.mixin.Unique;
-//import org.spongepowered.asm.mixin.injection.At;
-//import org.spongepowered.asm.mixin.injection.Inject;
-//import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-//import drvlabs.de.BTScreen;
-//import drvlabs.de.utils.behavior.AutoDrop;
-
-//import java.util.*;
 
 //@Mixin(ClientPlayNetworkHandler.class)
 //public abstract class MixinClientPlayNetworkHandler extends ClientCommonNetworkHandler {
@@ -47,11 +22,6 @@
 //	// } else {
 //	// return et.message.getRaw();
 //	// }
-//	// }
-
-//	// @Inject(at = @At("TAIL"), method = "onGameJoin")
-//	// public void onGameJoin(GameJoinS2CPacket packet, CallbackInfo info) {
-//	// // TODO anti lock system
 //	// }
 
 //	// @Inject(method = "onScreenHandlerSlotUpdate", at = @At(value = "INVOKE",
@@ -123,6 +93,7 @@ import drvlabs.de.utils.CommandUtils;
 import drvlabs.de.utils.behavior.AutoDrop;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.entity.effect.StatusEffects;
 
 @Mixin(ClientPlayNetworkHandler.class)
@@ -146,16 +117,35 @@ public abstract class MixinClientPlayNetworkHandler {
 		// DataStorage.getInstance().onChatMessage(packet.content());
 	}
 
-	@Inject(method = "onWorldTimeUpdate", at = @At("RETURN"))
-	private void btscreen_onTimeUpdate(net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket packetIn,
-			CallbackInfo ci) {
-		// DataStorage.getInstance().onServerTimeUpdate(packetIn.time());
-	}
+	// Executes every second this could be interesting for better waiter function
+	// (TEST THIS)
+	// @Inject(method = "onWorldTimeUpdate", at = @At("RETURN"))
+	// private void
+	// btscreen_onTimeUpdate(net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket
+	// packetIn,
+	// CallbackInfo ci) {
+	// // DataStorage.getInstance().onServerTimeUpdate(packetIn.time());
+	// BTScreen.LOGGER.info("Time updated");
+	// }
 
+	/*
+	 * Initialize the selected preset so if u use this for the first time or the
+	 * settings were changed previously they are fixed again.
+	 */
 	@Inject(method = "onGameJoin", at = @At("RETURN"))
 	private void btscreen_onPostGameJoin(net.minecraft.network.packet.s2c.play.GameJoinS2CPacket packet,
 			CallbackInfo ci) {
-		// DataStorage.getInstance().setSimulationDistance(packet.simulationDistance());
+		ServerInfo server = mc.getCurrentServerEntry();
+		if (server == null) {
+			BTScreen.LOGGER.info("Singleplayer");
+			return;
+		}
+		BTScreen.LOGGER.info("Connected to: " + server.address);
+		if (server.address.contains("rsdclan.de") && Configs.Generic.RSD_SETTINGS.getBooleanValue()) {
+			CommandUtils.sendCommand("cnolock");
+			CommandUtils.sendCommand("adblock");
+			// TODO evtl make this a list u can configure
+		}
 	}
 
 	@Inject(method = "onRemoveEntityStatusEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/util/thread/ThreadExecutor;)V", shift = At.Shift.AFTER))
@@ -191,7 +181,7 @@ public abstract class MixinClientPlayNetworkHandler {
 
 				if (packet.getEffectId().matches(StatusEffects.HASTE::matchesKey)) {
 					BTScreen.LOGGER.info("HASTE given");
-					CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue()); // TODO home system
+					CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
 					DataManager.setBotStatus(BotStatus.MINING);
 					CommandUtils.execute("resume");
 				}

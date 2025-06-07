@@ -25,10 +25,17 @@ public class WorldLoadListener implements IWorldLoadListener {
 	@Override
 	public void onWorldLoadPost(@Nullable ClientWorld worldBefore, @Nullable ClientWorld worldAfter, MinecraftClient mc) {
 
-		if (worldAfter != null) {
+		if (worldBefore == null) {
 			DataManager.load();
-			BTScreen.LOGGER.info("Loaded settings");
-			// TODO Server join settings application
+			BTScreen.LOGGER.error("Loaded settings");
 		}
+
+		// TODO: Seems like this isnt needed leaving it here for now if something doesnt
+		// work
+		// becasue of dimension chenges.
+		// if (worldAfter != null) {
+		// DataManager.load();
+		// BTScreen.LOGGER.info("Loaded settings");
+		// }
 	}
 }

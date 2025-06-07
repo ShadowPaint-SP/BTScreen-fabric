@@ -17,7 +17,20 @@ public class CommandUtils {
 	public static void tpTo(String homeName) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		if (client.player != null) {
+			if (homeName.equals(Configs.Generic.DROP_HOME.getStringValue())) { // TODO DEBUG MODE
+				client.player.networkHandler.sendChatCommand(
+						Configs.Generic.HOME_COMMAND.getStringValue() + " " + client.player.getNameForScoreboard() + " " + homeName
+								+ " 180 0");
+				return;
+			}
 			client.player.networkHandler.sendChatCommand(Configs.Generic.HOME_COMMAND.getStringValue() + " " + homeName);
+		}
+	}
+
+	public static void sendCommand(String command) {
+		MinecraftClient client = MinecraftClient.getInstance();
+		if (client.player != null) {
+			client.player.networkHandler.sendChatCommand(command);
 		}
 	}
 
@@ -28,7 +41,7 @@ public class CommandUtils {
 		}
 	}
 
-	public static void debugHome(String homeName) {
+	public static void debugHome(String homeName) { // TODO DEBUG MODE
 		MinecraftClient client = MinecraftClient.getInstance();
 		if (client.player != null) {
 			Configs.Generic.MINE_HOME.setValueFromString(homeName);

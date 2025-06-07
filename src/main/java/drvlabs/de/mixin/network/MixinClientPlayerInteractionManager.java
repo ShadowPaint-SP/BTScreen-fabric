@@ -24,6 +24,9 @@ public abstract class MixinClientPlayerInteractionManager {
 	@Shadow
 	private int blockBreakingCooldown;
 
+	/*
+	 * Handles checking the health of the tool when starting to break a block.
+	 */
 	@Inject(method = "attackBlock", at = @At("HEAD"), cancellable = true)
 	private void handleBreakingRestriction1(BlockPos pos, Direction side, CallbackInfoReturnable<Boolean> cir) {
 		if (this.client.player != null && this.client.world != null) {

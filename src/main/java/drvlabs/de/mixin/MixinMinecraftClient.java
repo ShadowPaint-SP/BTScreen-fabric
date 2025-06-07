@@ -62,7 +62,8 @@ public abstract class MixinMinecraftClient extends ReentrantThreadExecutor<Runna
 
 	@Inject(method = "tick()V", at = @At("HEAD"))
 	private void onRunTickStart(CallbackInfo ci) {
-		DataManager.onClientTickStart();
+		DataManager.onClientTickStart(); // TODO Check if needed
+
 	}
 
 	@Inject(method = "handleInputEvents", at = @At("HEAD"))

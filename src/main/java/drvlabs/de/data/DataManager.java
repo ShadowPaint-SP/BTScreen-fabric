@@ -205,7 +205,6 @@ public class DataManager implements IDirectoryCache {
 	}
 
 	private void fromJson(JsonObject obj) {
-
 		if (JsonUtils.hasString(obj, "operation_mode")) {
 			try {
 				operationMode = PresetMode.valueOf(obj.get("operation_mode").getAsString());
@@ -215,6 +214,7 @@ public class DataManager implements IDirectoryCache {
 			if (operationMode == null) {
 				operationMode = PresetMode.DEFAULT;
 			}
+			operationMode.setSettings();
 		}
 	}
 

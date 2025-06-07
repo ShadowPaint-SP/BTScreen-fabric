@@ -96,13 +96,16 @@ public class AutoRepair {
 				BTScreen.LOGGER.info("STARTING REPAIR");
 				CommandUtils.execute("pause");
 				DataManager.setBotStatus(BotStatus.REPAIRING);
+				CommandUtils.debugHome(player.getBlockPos().getX() + " " + player.getBlockPos().getY() + " "
+						+ player.getBlockPos().getZ());
 				CommandUtils.tpTo(Configs.Generic.REPAIR_HOME.getStringValue());
 			}
 		}
 	}
 
 	private static boolean isItemAtLowDurability(ItemStack stack, int minDurability) {
-		BTScreen.LOGGER.info("MDURABILITY: " + ((stack.getMaxDamage() - stack.getDamage()) <= minDurability));
+		// BTScreen.LOGGER.info("DURABILITY: " + ((stack.getMaxDamage() -
+		// stack.getDamage()) <= minDurability));
 		return stack.isDamageable() && (stack.getMaxDamage() - stack.getDamage()) <= minDurability;
 	}
 

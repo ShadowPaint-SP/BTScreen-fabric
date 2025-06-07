@@ -24,6 +24,7 @@ public class Configs implements IConfigHandler {
 
 	public static class Generic {
 		public static final ConfigBoolean DEBUG_LOGGING = new ConfigBoolean("debugLogging", true).apply(GENERIC_KEY);
+		public static final ConfigBoolean RSD_SETTINGS = new ConfigBoolean("rsdSettings", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_SLEEP = new ConfigBoolean("autoSleep", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_REPAIR = new ConfigBoolean("autoRepair", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_EAT = new ConfigBoolean("autoEat", false).apply(GENERIC_KEY);
