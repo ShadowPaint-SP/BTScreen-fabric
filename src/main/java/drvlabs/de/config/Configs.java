@@ -39,7 +39,7 @@ public class Configs implements IConfigHandler {
 		public static final ConfigString MINE_HOME = new ConfigString("mineHome", "mine").apply(GENERIC_KEY);
 		public static final ConfigInteger PERIODIC_ATTACK_INTERVAL = new ConfigInteger("periodicAttackInterval", 200, 0,
 				Integer.MAX_VALUE).apply(GENERIC_KEY);
-		public static final ConfigInteger ITEM_DURABILITY_THRESHOLD = new ConfigInteger("itemDurabilityThreshold", 40, 10,
+		public static final ConfigInteger ITEM_DURABILITY_THRESHOLD = new ConfigInteger("itemDurabilityThreshold", 40, 20,
 				Integer.MAX_VALUE).apply(GENERIC_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
@@ -57,7 +57,8 @@ public class Configs implements IConfigHandler {
 				SLEEP_HOME,
 				DROP_HOME,
 				HASTE_HOME,
-				REPAIR_HOME);
+				REPAIR_HOME,
+				RSD_SETTINGS);
 	}
 
 	public static class Lists {

@@ -36,7 +36,7 @@ public class AutoRepair {
 
 		public void handlePeriodicClick(int interval, MinecraftClient mc) {
 			if (++this.intervalCounter >= interval) {
-				BTScreen.LOGGER.info("HANDELING");
+				BTScreen.LOGGER.info("Attacking");
 				this.clickFunc.accept(mc);
 				this.intervalCounter = 0;
 			}
@@ -61,7 +61,6 @@ public class AutoRepair {
 
 	private static void doPeriodicClicks(MinecraftClient mc) {
 		if (GuiUtils.getCurrentScreen() == null) {
-			BTScreen.LOGGER.info("SHOULD HANDLE CLICK");
 			handlePeriodicClicks(
 					KEY_STATE_ATTACK,
 					DataManager.getBotStatus(),
@@ -76,7 +75,6 @@ public class AutoRepair {
 			BotStatus status,
 			IConfigInteger cfgClickInterval,
 			MinecraftClient mc) {
-		BTScreen.LOGGER.info("CLICK HANDELING");
 		if (status == BotStatus.REPAIRING) {
 			int interval = cfgClickInterval.getIntegerValue();
 			keyState.handlePeriodicClick(interval, mc);
@@ -90,7 +88,7 @@ public class AutoRepair {
 		PlayerEntity player = MinecraftClient.getInstance().player;
 		ItemStack stack = player.getStackInHand(Hand.MAIN_HAND);
 		if (stack.isEmpty() == false) {
-			int minDurability = getMinDurability(stack);
+			int minDurability = Configs.Generic.ITEM_DURABILITY_THRESHOLD.getIntegerValue();
 
 			if (isItemAtLowDurability(stack, minDurability)) {
 				BTScreen.LOGGER.info("STARTING REPAIR");
@@ -104,25 +102,9 @@ public class AutoRepair {
 	}
 
 	private static boolean isItemAtLowDurability(ItemStack stack, int minDurability) {
-		// BTScreen.LOGGER.info("DURABILITY: " + ((stack.getMaxDamage() -
-		// stack.getDamage()) <= minDurability));
+		BTScreen.LOGGER.info("Item has to be repaired: " + ((stack.getMaxDamage() -
+				stack.getDamage()) <= minDurability));
 		return stack.isDamageable() && (stack.getMaxDamage() - stack.getDamage()) <= minDurability;
-	}
-
-	private static int getMinDurability(ItemStack stack) {
-		if (Configs.Generic.AUTO_REPAIR.getBooleanValue() == false) {
-			return 0;
-		}
-
-		int minDurability = Configs.Generic.ITEM_DURABILITY_THRESHOLD.getIntegerValue();
-
-		// For items with low maximum durability, use 8% as the threshold,
-		// if the configured durability threshold is over that.
-		if (stack.getMaxDamage() <= 100 && minDurability <= 20 &&
-				(double) minDurability / (double) stack.getMaxDamage() > 0.08) {
-			minDurability = (int) Math.ceil(stack.getMaxDamage() * 0.08);
-		}
-		return minDurability;
 	}
 
 }

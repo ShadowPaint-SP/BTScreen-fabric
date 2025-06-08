@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import drvlabs.de.BTScreen;
+import drvlabs.de.config.Configs;
+import drvlabs.de.data.DataManager;
+import drvlabs.de.utils.BotStatus;
+import drvlabs.de.utils.CommandUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -15,6 +19,8 @@ public class AutoSleep {
 	private static MinecraftClient mc = MinecraftClient.getInstance();
 	private static int sleepTimer = 0;
 	private static boolean sucess = false;
+	private static boolean hasExecutedFirstBlock = false;
+	private static boolean hasExecutedSecondBlock = true;
 
 	public static boolean isNight() {
 		return mc.world.isNight();
@@ -24,7 +30,34 @@ public class AutoSleep {
 		return mc.world.isDay();
 	}
 
-	public static void trySleeping() {
+	public static void tryToSleep() {
+		if (DataManager.getBotStatus() == BotStatus.MINING
+				&& AutoSleep.isNight()) {
+			if (!hasExecutedFirstBlock) {
+				DataManager.setBotStatus(BotStatus.SLEEPING);
+				CommandUtils.execute("pause");
+				CommandUtils.tpTo(Configs.Generic.SLEEP_HOME.getStringValue());
+				hasExecutedFirstBlock = true;
+				hasExecutedSecondBlock = false;
+			}
+		}
+		if (DataManager.getBotStatus() == BotStatus.SLEEPING && AutoSleep.isNight()) {
+			AutoSleep.trySleeping();
+			BTScreen.LOGGER.info("Trying to sleep");
+		}
+		if (DataManager.getBotStatus() == BotStatus.SLEEPING && AutoSleep.isDay()) {
+			if (!hasExecutedSecondBlock) {
+				BTScreen.LOGGER.info("Teleporting back to Mining location");
+				CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
+				DataManager.setBotStatus(BotStatus.MINING);
+				CommandUtils.execute("resume");
+				hasExecutedSecondBlock = true;
+				hasExecutedFirstBlock = false;
+			}
+		}
+	}
+
+	private static void trySleeping() {
 
 		if (mc.player.isSleeping()) {
 			++sleepTimer;

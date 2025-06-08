@@ -146,8 +146,8 @@ public class GuiMainMenu extends GuiBase {
 					CommandUtils.execute("sel cleararea");
 					DataManager.getInstance().setActive(true);
 					AutoDrop.updateMaxSlots();
-					// check for haste
 					DataManager.setBotStatus(BotStatus.MINING);
+					// check for haste
 					if (Configs.Generic.AUTO_HASTE.getBooleanValue()) {
 						if (!mc.player.hasStatusEffect(StatusEffects.HASTE)) {
 							CommandUtils.execute("pause");
