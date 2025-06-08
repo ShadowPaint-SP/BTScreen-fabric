@@ -11,6 +11,7 @@ import fi.dy.masa.malilib.event.*;
 import fi.dy.masa.malilib.interfaces.IInitializationHandler;
 import fi.dy.masa.malilib.registry.Registry;
 import fi.dy.masa.malilib.util.data.ModInfo;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 
 public class InitHandler implements IInitializationHandler {
@@ -29,7 +30,7 @@ public class InitHandler implements IInitializationHandler {
 
 		KeyCallbacks.init(MinecraftClient.getInstance());
 
-		TickHandler.getInstance().registerClientTickHandler(new ClientTickHandler());
+		ClientTickEvents.END_WORLD_TICK.register(ClientTickHandler::onEndTick);
 	}
 
 }

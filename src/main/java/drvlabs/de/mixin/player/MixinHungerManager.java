@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import drvlabs.de.BTScreen;
 import drvlabs.de.config.Configs;
 import drvlabs.de.data.DataManager;
 import drvlabs.de.utils.BotStatus;
@@ -22,6 +23,7 @@ public class MixinHungerManager {
 	private void onSetFoodLevel(int foodLevel, CallbackInfo ci) {
 		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING
 				&& Configs.Generic.AUTO_EAT.getBooleanValue()) {
+			BTScreen.LOGGER.info("FOOD LEVEL: " + foodLevel);
 			if (foodLevel != this.foodLevel && this.foodLevel < 21) {
 				DataManager.setNeedsToEat(true);
 			} else {

@@ -51,9 +51,7 @@ public class AutoDrop {
 			BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("pause");
 			BTScreen.LOGGER.info("Inventory full, pausing bot");
 			BTScreen.LOGGER.info("Teleport to drop off location");
-			CommandUtils.debugHome(mc.player.getBlockPos().getX() + " " + mc.player.getBlockPos().getY() + " "
-					+ mc.player.getBlockPos().getZ());
-
+			CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
 			CommandUtils.tpTo(Configs.Generic.DROP_HOME.getStringValue());
 			Waiter.wait("drop_wait", 200, () -> {
 				Waiter.cancel("drop_wait");

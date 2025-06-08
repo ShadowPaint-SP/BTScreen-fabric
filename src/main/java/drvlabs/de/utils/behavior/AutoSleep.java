@@ -36,6 +36,7 @@ public class AutoSleep {
 			if (!hasExecutedFirstBlock) {
 				DataManager.setBotStatus(BotStatus.SLEEPING);
 				CommandUtils.execute("pause");
+				CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
 				CommandUtils.tpTo(Configs.Generic.SLEEP_HOME.getStringValue());
 				hasExecutedFirstBlock = true;
 				hasExecutedSecondBlock = false;
@@ -47,7 +48,6 @@ public class AutoSleep {
 		}
 		if (DataManager.getBotStatus() == BotStatus.SLEEPING && AutoSleep.isDay()) {
 			if (!hasExecutedSecondBlock) {
-				BTScreen.LOGGER.info("Teleporting back to Mining location");
 				CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
 				DataManager.setBotStatus(BotStatus.MINING);
 				CommandUtils.execute("resume");

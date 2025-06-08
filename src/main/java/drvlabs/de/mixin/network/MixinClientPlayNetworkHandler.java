@@ -31,11 +31,13 @@ public abstract class MixinClientPlayNetworkHandler {
 		}
 	}
 
-	@Inject(method = "onGameMessage", at = @At("RETURN"))
-	private void btscreen_onGameMessage(net.minecraft.network.packet.s2c.play.GameMessageS2CPacket packet,
-			CallbackInfo ci) {
-		// DataStorage.getInstance().onChatMessage(packet.content());
-	}
+	// @Inject(method = "onGameMessage", at = @At("RETURN"))
+	// private void
+	// btscreen_onGameMessage(net.minecraft.network.packet.s2c.play.GameMessageS2CPacket
+	// packet,
+	// CallbackInfo ci) {
+	// // DataStorage.getInstance().onChatMessage(packet.content());
+	// }
 
 	// Executes every second this could be interesting for better waiter function
 	// (TEST THIS)
@@ -84,8 +86,7 @@ public abstract class MixinClientPlayNetworkHandler {
 				if (packet.effect().matches(StatusEffects.HASTE::matchesKey)) {
 					CommandUtils.execute("pause");
 					DataManager.setBotStatus(BotStatus.HASTING);
-					CommandUtils.debugHome(mc.player.getBlockPos().getX() + " " + mc.player.getBlockPos().getY() + " "
-							+ mc.player.getBlockPos().getZ());
+					CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
 					CommandUtils.tpTo(Configs.Generic.HASTE_HOME.getStringValue());
 
 				}

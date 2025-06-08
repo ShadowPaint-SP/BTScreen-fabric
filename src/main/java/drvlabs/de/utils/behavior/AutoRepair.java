@@ -40,6 +40,7 @@ public class AutoRepair {
 				this.clickFunc.accept(mc);
 				this.intervalCounter = 0;
 			}
+			BTScreen.LOGGER.info("Interval Counter: " + this.intervalCounter);
 		}
 	}
 
@@ -50,11 +51,13 @@ public class AutoRepair {
 		}
 
 		if (!player.getStackInHand(Hand.MAIN_HAND).isDamaged()) {
+			BTScreen.LOGGER.info("FINISHED REPAIR");
 			CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
 			DataManager.setBotStatus(BotStatus.MINING);
 			CommandUtils.execute("resume");
 			return;
 		}
+		BTScreen.LOGGER.info("REPAIRING TICK");
 		doPeriodicClicks(mc);
 
 	}
@@ -94,8 +97,7 @@ public class AutoRepair {
 				BTScreen.LOGGER.info("STARTING REPAIR");
 				CommandUtils.execute("pause");
 				DataManager.setBotStatus(BotStatus.REPAIRING);
-				CommandUtils.debugHome(player.getBlockPos().getX() + " " + player.getBlockPos().getY() + " "
-						+ player.getBlockPos().getZ());
+				CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
 				CommandUtils.tpTo(Configs.Generic.REPAIR_HOME.getStringValue());
 			}
 		}

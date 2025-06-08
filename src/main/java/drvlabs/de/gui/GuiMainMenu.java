@@ -152,8 +152,7 @@ public class GuiMainMenu extends GuiBase {
 						if (!mc.player.hasStatusEffect(StatusEffects.HASTE)) {
 							CommandUtils.execute("pause");
 							DataManager.setBotStatus(BotStatus.HASTING);
-							CommandUtils.debugHome(mc.player.getBlockPos().getX() + " " + mc.player.getBlockPos().getY() + " "
-									+ mc.player.getBlockPos().getZ());
+							CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
 							CommandUtils.tpTo(Configs.Generic.HASTE_HOME.getStringValue());
 						}
 					}

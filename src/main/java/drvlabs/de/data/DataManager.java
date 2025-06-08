@@ -182,6 +182,7 @@ public class DataManager implements IDirectoryCache {
 	}
 
 	public static void clear() {
+		BTScreen.LOGGER.info("Clearing data");
 		botStatus = BotStatus.IDLE;
 		getInstance().setActive(false);
 		needsToEat = false;

@@ -8,18 +8,14 @@ import drvlabs.de.utils.BotStatus;
 import drvlabs.de.utils.Waiter;
 import drvlabs.de.utils.behavior.AutoRepair;
 import drvlabs.de.utils.behavior.AutoSleep;
-import fi.dy.masa.malilib.interfaces.IClientTickHandler;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.world.ClientWorld;
 
-public class ClientTickHandler implements IClientTickHandler {
+public final class ClientTickHandler {
+	private static MinecraftClient mc = MinecraftClient.getInstance();
 
-	/*
-	 * This is only here so that if u manually or beacause of whatever reason achive
-	 * to start or stop the bot in another way the bot will be in the correct mode
-	 */
-	@Override
-	public void onClientTick(MinecraftClient mc) {
-		if (mc.world != null && mc.player != null) {
+	public static void onEndTick(ClientWorld world) {
+		if (world != null && mc.player != null) {
 			Waiter.tickAll();
 			if (DataManager.getActive() && BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager()
 					.mostRecentInControl().isPresent()) {
