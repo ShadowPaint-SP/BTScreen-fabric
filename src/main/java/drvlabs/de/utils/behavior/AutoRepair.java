@@ -15,7 +15,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
 import fi.dy.masa.malilib.config.IConfigInteger;
 import fi.dy.masa.malilib.util.GuiUtils;
@@ -66,6 +65,7 @@ public class AutoRepair {
 			CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
 			DataManager.setBotStatus(BotStatus.MINING);
 			CommandUtils.execute("resume");
+			AutoDrop.checkInventory();
 			return;
 		}
 		doPeriodicClicks(mc);

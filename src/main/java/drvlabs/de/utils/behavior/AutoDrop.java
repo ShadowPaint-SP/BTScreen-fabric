@@ -81,8 +81,19 @@ public class AutoDrop {
 			// mc.player.dropSelectedItem(true);
 			// continue;
 			// }
+			if (isNotAllowedToDrop(slot)) {
+				continue;
+			}
 			BTScreen.debugLog("Dropping slot: " + slot);
 			mc.interactionManager.clickSlot(0, slot, 1, SlotActionType.THROW, mc.player);
 		}
+	}
+
+	public static boolean isNotAllowedToDrop(int slot) {
+		for (String item : Configs.Lists.INV_PRESERVE_ITEM_BLACKLIST.getStrings()) {
+			if (mc.player.getInventory().getStack(slot).getItem().toString().equals(item))
+				return true;
+		}
+		return false;
 	}
 }

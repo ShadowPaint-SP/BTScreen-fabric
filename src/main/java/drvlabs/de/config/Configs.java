@@ -15,7 +15,6 @@ import fi.dy.masa.malilib.config.IConfigHandler;
 import fi.dy.masa.malilib.config.options.*;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
-import fi.dy.masa.malilib.util.restrictions.UsageRestriction.ListType;
 
 public class Configs implements IConfigHandler {
 	private static final String CONFIG_FILE_NAME = Reference.MOD_ID + ".json";
@@ -62,18 +61,11 @@ public class Configs implements IConfigHandler {
 	}
 
 	public static class Lists {
-		public static final ConfigOptionList BLOCK_TYPE_BREAK_RESTRICTION_LIST_TYPE = new ConfigOptionList(
-				"blockTypeBreakRestrictionListType", ListType.BLACKLIST).apply(LISTS_KEY);
-		public static final ConfigStringList BLOCK_TYPE_BREAK_RESTRICTION_BLACKLIST = new ConfigStringList(
-				"blockTypeBreakRestrictionBlackList", ImmutableList.of("minecraft:budding_amethyst")).apply(LISTS_KEY);
-		public static final ConfigStringList BLOCK_TYPE_BREAK_RESTRICTION_WHITELIST = new ConfigStringList(
-				"blockTypeBreakRestrictionWhiteList", ImmutableList.of()).apply(LISTS_KEY);
-		// TODO: Think about adding black list for Default farm and custom mode
+		public static final ConfigStringList INV_PRESERVE_ITEM_BLACKLIST = new ConfigStringList(
+				"invPreserveItemBlackList", ImmutableList.of()).apply(LISTS_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
-				BLOCK_TYPE_BREAK_RESTRICTION_LIST_TYPE,
-				BLOCK_TYPE_BREAK_RESTRICTION_BLACKLIST,
-				BLOCK_TYPE_BREAK_RESTRICTION_WHITELIST);
+				INV_PRESERVE_ITEM_BLACKLIST);
 	}
 
 	public static void loadFromFile() {
