@@ -12,7 +12,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
 import fi.dy.masa.malilib.config.IConfigInteger;
 import fi.dy.masa.malilib.util.GuiUtils;
@@ -20,6 +23,8 @@ import fi.dy.masa.malilib.util.GuiUtils;
 public class AutoRepair {
 	private static final KeybindState KEY_STATE_ATTACK = new KeybindState(MinecraftClient.getInstance().options.attackKey,
 			(mc) -> ((IMinecraftClientInvoker) mc).btscreen_invokeDoAttack());
+
+	private static int swordSlot = -1;
 
 	private static class KeybindState {
 		private final Consumer<MinecraftClient> clickFunc;
@@ -37,7 +42,14 @@ public class AutoRepair {
 		public void handlePeriodicClick(int interval, MinecraftClient mc) {
 			if (++this.intervalCounter >= interval) {
 				BTScreen.debugLog("Attacking");
-				this.clickFunc.accept(mc);
+				if (swordSlot != -1) {
+					int tmpSlot = mc.player.getInventory().getSelectedSlot();
+					mc.player.getInventory().setSelectedSlot(swordSlot);
+					this.clickFunc.accept(mc);
+					mc.player.getInventory().setSelectedSlot(tmpSlot);
+				} else {
+					this.clickFunc.accept(mc);
+				}
 				this.intervalCounter = 0;
 			}
 		}
@@ -95,6 +107,7 @@ public class AutoRepair {
 				BTScreen.debugLog("STARTING REPAIR");
 				CommandUtils.execute("pause");
 				DataManager.setBotStatus(BotStatus.REPAIRING);
+				swordSlot = getSwordSlotInHotbar();
 				CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
 				CommandUtils.tpTo(Configs.Generic.REPAIR_HOME.getStringValue());
 			}
@@ -105,4 +118,26 @@ public class AutoRepair {
 		return stack.isDamageable() && (stack.getMaxDamage() - stack.getDamage()) <= minDurability;
 	}
 
+	public static int getSwordSlotInHotbar() {
+		MinecraftClient mc = MinecraftClient.getInstance();
+		PlayerInventory inventory = mc.player.getInventory();
+
+		for (int i = 0; i < 9; i++) {
+			ItemStack stack = inventory.getStack(i);
+			if (isSword(stack)) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	public static boolean isSword(ItemStack stack) {
+		return stack.isOf(Items.WOODEN_SWORD) ||
+				stack.isOf(Items.STONE_SWORD) ||
+				stack.isOf(Items.IRON_SWORD) ||
+				stack.isOf(Items.GOLDEN_SWORD) ||
+				stack.isOf(Items.DIAMOND_SWORD) ||
+				stack.isOf(Items.NETHERITE_SWORD);
+	}
 }

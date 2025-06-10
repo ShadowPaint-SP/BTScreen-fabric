@@ -102,8 +102,6 @@ public class Configs implements IConfigHandler {
 
 		if (!Files.exists(dir)) {
 			FileUtils.createDirectoriesIfMissing(dir);
-			// BTScreen.debugLog("saveToFile(): Creating directory '{}'.",
-			// dir.toAbsolutePath());
 		}
 
 		if (Files.isDirectory(dir)) {

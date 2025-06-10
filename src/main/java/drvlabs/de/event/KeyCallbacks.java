@@ -41,17 +41,6 @@ public class KeyCallbacks {
 				GuiBase.openGui(new GuiConfigs());
 				return true;
 			}
-
-			// else if (key == Hotkeys.LAYER_NEXT.getKeybind())
-			// {
-			// DataManager.getRenderLayerRange().moveLayer(1);
-			// return true;
-			// }
-			// else if (key == Hotkeys.LAYER_PREVIOUS.getKeybind())
-			// {
-			// DataManager.getRenderLayerRange().moveLayer(-1);
-			// return true;
-			// }
 			return false;
 		}
 	}

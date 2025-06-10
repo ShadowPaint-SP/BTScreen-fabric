@@ -2,26 +2,6 @@ package drvlabs.de.utils;
 
 import java.util.function.Consumer;
 
-//public class IntervalStepper<T> {
-//	private final Consumer<T> action;
-//	private int intervalCounter;
-
-//	public IntervalStepper(Consumer<T> action) {
-//		this.action = action;
-//		this.intervalCounter = 0;
-//	}
-
-//	public void reset() {
-//		this.intervalCounter = 0;
-//	}
-
-//	public void tick(int interval, T context) {
-//		if (++this.intervalCounter >= interval) {
-//			this.action.accept(context);
-//			this.intervalCounter = 0;
-//		}
-//	}
-//}
 public class IntervalStepper<T> {
 	private final Consumer<T> callback;
 	private int counter = 0;
