@@ -91,7 +91,6 @@ public enum PresetMode implements StringIdentifiable {
 			BaritoneAPI.getSettings().randomLooking113.value = (double) 0;
 			BTScreen.debugLog("Updated settings do farm");
 			// TODO: Update Blacklist
-			Configs.Lists.BLOCK_TYPE_BREAK_RESTRICTION_BLACKLIST.setStrings(ImmutableList.of("minecraft:farmland"));
 
 		}
 	}
