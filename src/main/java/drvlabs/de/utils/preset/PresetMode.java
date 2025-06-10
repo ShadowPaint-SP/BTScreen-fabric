@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 
 import baritone.api.BaritoneAPI;
 import drvlabs.de.BTScreen;
-import drvlabs.de.config.Configs;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.StringIdentifiable;
