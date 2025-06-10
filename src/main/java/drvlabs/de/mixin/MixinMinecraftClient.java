@@ -8,6 +8,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
+import net.minecraft.util.Hand;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 
 import org.jetbrains.annotations.Nullable;
@@ -60,20 +61,17 @@ public abstract class MixinMinecraftClient extends ReentrantThreadExecutor<Runna
 		super(string_1);
 	}
 
-	@Inject(method = "tick()V", at = @At("HEAD"))
-	private void onRunTickStart(CallbackInfo ci) {
-		DataManager.onClientTickStart(); // TODO Check if needed
-
-	}
-
 	@Inject(method = "handleInputEvents", at = @At("HEAD"))
 	private void onProcessKeybindsPre(CallbackInfo ci) {
 		if (this.currentScreen == null) {
-			if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING
-					&& Configs.Generic.AUTO_EAT.getBooleanValue() && DataManager.getNeedsToEat()) {
+			if (DataManager.getActive() && Configs.Generic.AUTO_EAT.getBooleanValue() && DataManager.getNeedsToEat()
+					&& DataManager.getBotStatus() != BotStatus.IDLE) {
 				FoodComponent food = MinecraftClient.getInstance().player.getOffHandStack().get(DataComponentTypes.FOOD);
 				if (food != null) {
-					KeyBinding.setKeyPressed(InputUtil.fromTranslationKey(this.options.useKey.getBoundKeyTranslationKey()), true);
+					KeyBinding.setKeyPressed(InputUtil.fromTranslationKey(this.options.useKey.getBoundKeyTranslationKey()),
+							true);
+					MinecraftClient.getInstance().interactionManager.interactItem(MinecraftClient.getInstance().player,
+							Hand.OFF_HAND);
 				}
 			}
 		}

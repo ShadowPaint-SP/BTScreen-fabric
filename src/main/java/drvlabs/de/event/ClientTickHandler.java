@@ -20,7 +20,7 @@ public final class ClientTickHandler {
 			if (DataManager.getActive() && BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager()
 					.mostRecentInControl().isPresent()) {
 				if (DataManager.getBotStatus() == BotStatus.IDLE) {
-					BTScreen.LOGGER.info("BOT SHOULD BE IN MINING");
+					BTScreen.debugLog("BOT SHOULD BE IN MINING");
 					DataManager.setBotStatus(BotStatus.MINING);
 				}
 				if (DataManager.getBotStatus() == BotStatus.REPAIRING) {
@@ -31,7 +31,7 @@ public final class ClientTickHandler {
 				}
 			} else {
 				if (DataManager.getBotStatus() != BotStatus.IDLE) {
-					BTScreen.LOGGER.info("BOT SHOULD BE IN IDLE");
+					BTScreen.debugLog("BOT SHOULD BE IN IDLE");
 					DataManager.getInstance().setActive(false);
 					DataManager.setBotStatus(BotStatus.IDLE);
 				}

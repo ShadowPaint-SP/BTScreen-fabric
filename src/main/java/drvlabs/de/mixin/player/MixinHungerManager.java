@@ -12,6 +12,7 @@ import drvlabs.de.utils.BotStatus;
 
 import org.spongepowered.asm.mixin.injection.At;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.HungerManager;
 
 @Mixin(HungerManager.class)
@@ -21,13 +22,16 @@ public class MixinHungerManager {
 
 	@Inject(method = "setFoodLevel", at = @At("HEAD"))
 	private void onSetFoodLevel(int foodLevel, CallbackInfo ci) {
-		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING
-				&& Configs.Generic.AUTO_EAT.getBooleanValue()) {
-			BTScreen.LOGGER.info("FOOD LEVEL: " + foodLevel);
-			if (foodLevel != this.foodLevel && this.foodLevel < 21) {
+		if (DataManager.getActive() && Configs.Generic.AUTO_EAT.getBooleanValue()
+				&& DataManager.getBotStatus() != BotStatus.IDLE) {
+			BTScreen.debugLog("FOOD LEVEL: " + foodLevel);
+			if (foodLevel < 19) {
 				DataManager.setNeedsToEat(true);
+				BTScreen.debugLog("FOOD:" + DataManager.getNeedsToEat());
 			} else {
 				DataManager.setNeedsToEat(false);
+				BTScreen.debugLog("FOOD:" + DataManager.getNeedsToEat());
+				MinecraftClient.getInstance().options.useKey.setPressed(false);
 			}
 		}
 	}

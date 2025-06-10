@@ -47,7 +47,7 @@ public abstract class MixinClientPlayNetworkHandler {
 	// packetIn,
 	// CallbackInfo ci) {
 	// // DataStorage.getInstance().onServerTimeUpdate(packetIn.time());
-	// BTScreen.LOGGER.info("Time updated");
+	// BTScreen.debugLog("Time updated");
 	// }
 
 	/*
@@ -59,10 +59,10 @@ public abstract class MixinClientPlayNetworkHandler {
 			CallbackInfo ci) {
 		ServerInfo server = mc.getCurrentServerEntry();
 		if (server == null) {
-			BTScreen.LOGGER.info("Singleplayer");
+			BTScreen.debugLog("Singleplayer");
 			return;
 		}
-		BTScreen.LOGGER.info("Connected to: " + server.address);
+		BTScreen.debugLog("Connected to: " + server.address);
 		if (server.address.contains("rsdclan.de") && Configs.Generic.RSD_SETTINGS.getBooleanValue()) {
 			Waiter.wait("rsd", 100, () -> {
 				CommandUtils.sendCommand("cnolock");
@@ -82,7 +82,7 @@ public abstract class MixinClientPlayNetworkHandler {
 				&& Configs.Generic.AUTO_HASTE.getBooleanValue()) {
 			if (packet.getEntity(mc.world) == mc.player) {
 
-				BTScreen.LOGGER.info("Removing status effect: " + mc.player.getStatusEffect(packet.effect()));
+				BTScreen.debugLog("Removing status effect: " + mc.player.getStatusEffect(packet.effect()));
 				if (packet.effect().matches(StatusEffects.HASTE::matchesKey)) {
 					CommandUtils.execute("pause");
 					DataManager.setBotStatus(BotStatus.HASTING);
@@ -104,7 +104,7 @@ public abstract class MixinClientPlayNetworkHandler {
 			if (packet.getEntityId() == mc.player.getId()) {
 
 				if (packet.getEffectId().matches(StatusEffects.HASTE::matchesKey)) {
-					BTScreen.LOGGER.info("HASTE given");
+					BTScreen.debugLog("HASTE given");
 					CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
 					DataManager.setBotStatus(BotStatus.MINING);
 					CommandUtils.execute("resume");

@@ -255,7 +255,7 @@ public class GuiMainMenu extends GuiBase {
 			DataManager.setPresetMode(mode);
 			mode.setSettings();
 			this.gui.initGui();
-			BTScreen.LOGGER.info("Preset Mode: " + mode);
+			BTScreen.debugLog("Preset Mode: " + mode);
 		}
 	}
 

@@ -36,11 +36,10 @@ public class AutoRepair {
 
 		public void handlePeriodicClick(int interval, MinecraftClient mc) {
 			if (++this.intervalCounter >= interval) {
-				BTScreen.LOGGER.info("Attacking");
+				BTScreen.debugLog("Attacking");
 				this.clickFunc.accept(mc);
 				this.intervalCounter = 0;
 			}
-			BTScreen.LOGGER.info("Interval Counter: " + this.intervalCounter);
 		}
 	}
 
@@ -51,13 +50,12 @@ public class AutoRepair {
 		}
 
 		if (!player.getStackInHand(Hand.MAIN_HAND).isDamaged()) {
-			BTScreen.LOGGER.info("FINISHED REPAIR");
+			BTScreen.debugLog("FINISHED REPAIR");
 			CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
 			DataManager.setBotStatus(BotStatus.MINING);
 			CommandUtils.execute("resume");
 			return;
 		}
-		BTScreen.LOGGER.info("REPAIRING TICK");
 		doPeriodicClicks(mc);
 
 	}
@@ -94,7 +92,7 @@ public class AutoRepair {
 			int minDurability = Configs.Generic.ITEM_DURABILITY_THRESHOLD.getIntegerValue();
 
 			if (isItemAtLowDurability(stack, minDurability)) {
-				BTScreen.LOGGER.info("STARTING REPAIR");
+				BTScreen.debugLog("STARTING REPAIR");
 				CommandUtils.execute("pause");
 				DataManager.setBotStatus(BotStatus.REPAIRING);
 				CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
@@ -104,8 +102,6 @@ public class AutoRepair {
 	}
 
 	private static boolean isItemAtLowDurability(ItemStack stack, int minDurability) {
-		BTScreen.LOGGER.info("Item has to be repaired: " + ((stack.getMaxDamage() -
-				stack.getDamage()) <= minDurability));
 		return stack.isDamageable() && (stack.getMaxDamage() - stack.getDamage()) <= minDurability;
 	}
 

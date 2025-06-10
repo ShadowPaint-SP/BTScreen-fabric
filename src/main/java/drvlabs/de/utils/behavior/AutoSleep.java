@@ -44,7 +44,7 @@ public class AutoSleep {
 		}
 		if (DataManager.getBotStatus() == BotStatus.SLEEPING && AutoSleep.isNight()) {
 			AutoSleep.trySleeping();
-			BTScreen.LOGGER.info("Trying to sleep");
+			BTScreen.debugLog("Trying to sleep");
 		}
 		if (DataManager.getBotStatus() == BotStatus.SLEEPING && AutoSleep.isDay()) {
 			if (!hasExecutedSecondBlock) {
@@ -61,14 +61,14 @@ public class AutoSleep {
 
 		if (mc.player.isSleeping()) {
 			++sleepTimer;
-			BTScreen.LOGGER.info("timer: " + sleepTimer);
+			BTScreen.debugLog("timer: " + sleepTimer);
 			if (sleepTimer > 100) {
 				sleepTimer = 100;
 			}
 		} else if (sleepTimer > 0) {
 
 			++sleepTimer;
-			BTScreen.LOGGER.info("timer NOT:" + sleepTimer);
+			BTScreen.debugLog("timer NOT:" + sleepTimer);
 			if (sleepTimer >= 130) {
 				sleepTimer = 0;
 				sucess = false;

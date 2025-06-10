@@ -80,7 +80,7 @@ public enum PresetMode implements StringIdentifiable {
 			BaritoneAPI.getSettings().randomLooking.value = (double) 0;
 			BaritoneAPI.getSettings().randomLooking113.value = (double) 0;
 
-			BTScreen.LOGGER.info("Updated settings do default");
+			BTScreen.debugLog("Updated settings do default");
 			// TODO: Update Blacklist
 		}
 		if (this.asString().equals(FARM.asString())) {
@@ -89,7 +89,7 @@ public enum PresetMode implements StringIdentifiable {
 			BaritoneAPI.getSettings().buildInLayers.value = false;
 			BaritoneAPI.getSettings().randomLooking.value = (double) 0;
 			BaritoneAPI.getSettings().randomLooking113.value = (double) 0;
-			BTScreen.LOGGER.info("Updated settings do farm");
+			BTScreen.debugLog("Updated settings do farm");
 			// TODO: Update Blacklist
 			Configs.Lists.BLOCK_TYPE_BREAK_RESTRICTION_BLACKLIST.setStrings(ImmutableList.of("minecraft:farmland"));
 

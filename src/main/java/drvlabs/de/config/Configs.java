@@ -43,7 +43,6 @@ public class Configs implements IConfigHandler {
 				Integer.MAX_VALUE).apply(GENERIC_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
-				DEBUG_LOGGING,
 				AUTO_SLEEP,
 				AUTO_REPAIR,
 				AUTO_EAT,
@@ -58,7 +57,8 @@ public class Configs implements IConfigHandler {
 				DROP_HOME,
 				HASTE_HOME,
 				REPAIR_HOME,
-				RSD_SETTINGS);
+				RSD_SETTINGS,
+				DEBUG_LOGGING);
 	}
 
 	public static class Lists {

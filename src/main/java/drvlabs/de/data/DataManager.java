@@ -26,7 +26,6 @@ public class DataManager implements IDirectoryCache {
 	private static final Map<String, Path> LAST_DIRECTORIES = new HashMap<>();
 	private static ConfigGuiTab configGuiTab = ConfigGuiTab.GENERIC;
 	private static boolean canSave;
-	private static long clientTickStart;
 	private static PresetMode operationMode = PresetMode.DEFAULT;
 	private static BotStatus botStatus = BotStatus.IDLE;
 	private static boolean isActive = false;
@@ -60,7 +59,7 @@ public class DataManager implements IDirectoryCache {
 	}
 
 	public static void setBotStatus(BotStatus status) {
-		BTScreen.LOGGER.info("Bot Status: " + status);
+		BTScreen.debugLog("Bot Status: " + status);
 		botStatus = status;
 	}
 
@@ -182,7 +181,7 @@ public class DataManager implements IDirectoryCache {
 	}
 
 	public static void clear() {
-		BTScreen.LOGGER.info("Clearing data");
+		BTScreen.debugLog("Clearing data");
 		botStatus = BotStatus.IDLE;
 		getInstance().setActive(false);
 		needsToEat = false;
@@ -225,14 +224,6 @@ public class DataManager implements IDirectoryCache {
 		obj.add("operation_mode", new JsonPrimitive(operationMode.name()));
 
 		return obj;
-	}
-
-	public static void onClientTickStart() {
-		clientTickStart = System.nanoTime();
-	}
-
-	public static long getClientTickStartTime() {
-		return clientTickStart;
 	}
 
 }

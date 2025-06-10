@@ -16,12 +16,12 @@ public class WorldLoadListener implements IWorldLoadListener {
 		// Save the settings before the integrated server gets shut down
 		if (worldBefore != null) {
 			DataManager.save();
-			BTScreen.LOGGER.info("Saved settings");
+			BTScreen.debugLog("Saved settings");
 		}
 		if (worldAfter == null) {
 			DataManager.save();
 			DataManager.clear();
-			BTScreen.LOGGER.info("Saved settings");
+			BTScreen.debugLog("Saved settings");
 
 		}
 	}
@@ -36,7 +36,7 @@ public class WorldLoadListener implements IWorldLoadListener {
 		}
 		// if (worldAfter != null) {
 		// DataManager.load();
-		// BTScreen.LOGGER.info("Loaded settings");
+		// BTScreen.debugLog("Loaded settings");
 		// }
 	}
 }
