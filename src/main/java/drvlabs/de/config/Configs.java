@@ -62,7 +62,7 @@ public class Configs implements IConfigHandler {
 
 	public static class Lists {
 		public static final ConfigStringList INV_PRESERVE_ITEM_BLACKLIST = new ConfigStringList(
-				"invPreserveItemBlackList", ImmutableList.of()).apply(LISTS_KEY);
+				"invPreserveItemBlackList", ImmutableList.of("minecraft:resin_clump")).apply(LISTS_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
 				INV_PRESERVE_ITEM_BLACKLIST);
