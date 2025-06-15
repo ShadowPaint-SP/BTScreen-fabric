@@ -24,12 +24,12 @@ public class AutoSleep {
 
 	public static boolean isNight() {
 		long curTime = mc.world.getTimeOfDay() % 24000;
-		return (curTime >= 13000);
+		return (curTime >= 13000 || curTime < 23000);
 	}
 
 	public static boolean isDay() {
 		long curTime = mc.world.getTimeOfDay() % 24000;
-		return (curTime < 13000);
+		return (curTime < 13000 || curTime >= 23000);
 	}
 
 	public static void tryToSleep() {
@@ -65,8 +65,7 @@ public class AutoSleep {
 	}
 
 	private static void trySleeping() {
-		// night = 13000
-		// day = 0
+
 		if (mc.player.isSleeping()) {
 			++sleepTimer;
 			BTScreen.debugLog("timer: " + sleepTimer);
