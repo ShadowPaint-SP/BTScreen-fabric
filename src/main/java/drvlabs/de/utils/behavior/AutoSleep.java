@@ -23,16 +23,23 @@ public class AutoSleep {
 	private static boolean hasExecutedSecondBlock = true;
 
 	public static boolean isNight() {
-		return mc.world.isNight();
+		long curTime = mc.world.getTimeOfDay() % 24000;
+		return (curTime >= 13000);
 	}
 
 	public static boolean isDay() {
-		return mc.world.isDay();
+		long curTime = mc.world.getTimeOfDay() % 24000;
+		return (curTime < 13000);
 	}
 
 	public static void tryToSleep() {
 		if (DataManager.getBotStatus() == BotStatus.MINING
 				&& AutoSleep.isNight()) {
+			if (mc.world.getDimension().hasCeiling()) {
+				Configs.Generic.AUTO_SLEEP.setBooleanValue(false);
+				BTScreen.debugLog("Cannot sleep in the nether... Disabling auto sleep");
+				return;
+			}
 			if (!hasExecutedFirstBlock) {
 				DataManager.setBotStatus(BotStatus.SLEEPING);
 				CommandUtils.execute("pause");
@@ -58,7 +65,8 @@ public class AutoSleep {
 	}
 
 	private static void trySleeping() {
-
+		// night = 13000
+		// day = 0
 		if (mc.player.isSleeping()) {
 			++sleepTimer;
 			BTScreen.debugLog("timer: " + sleepTimer);
