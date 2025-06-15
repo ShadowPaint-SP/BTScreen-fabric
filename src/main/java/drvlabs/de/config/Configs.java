@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 
 import drvlabs.de.BTScreen;
 import drvlabs.de.Reference;
+import drvlabs.de.utils.preset.PresetMode;
 import fi.dy.masa.malilib.config.ConfigUtils;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigHandler;
@@ -63,9 +64,21 @@ public class Configs implements IConfigHandler {
 	public static class Lists {
 		public static final ConfigStringList INV_PRESERVE_ITEM_BLACKLIST = new ConfigStringList(
 				"invPreserveItemBlackList", ImmutableList.of()).apply(LISTS_KEY);
+		public static final ConfigStringList DEFAULT_BLOCKS_TO_DISALLOW_BREAKING = new ConfigStringList(
+				"defaultBlocksToDisallowBreaking", PresetMode.getGlobalDisallowBreakingList()).apply(LISTS_KEY);
+		public static final ConfigStringList DEFAULT_BLOCKS_TO_IGNORE = new ConfigStringList(
+				"defaultBlocksToIgnore", PresetMode.getDefaultIgnoreList()).apply(LISTS_KEY);
+		public static final ConfigStringList FARM_BLOCKS_TO_DISALLOW_BREAKING = new ConfigStringList(
+				"farmBlocksToDisallowBreaking", PresetMode.getGlobalDisallowBreakingList()).apply(LISTS_KEY);
+		public static final ConfigStringList FARM_BLOCKS_TO_IGNORE = new ConfigStringList(
+				"farmBlocksToIgnore", PresetMode.getFarmIgnoreList()).apply(LISTS_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
-				INV_PRESERVE_ITEM_BLACKLIST);
+				INV_PRESERVE_ITEM_BLACKLIST,
+				DEFAULT_BLOCKS_TO_DISALLOW_BREAKING,
+				DEFAULT_BLOCKS_TO_IGNORE,
+				FARM_BLOCKS_TO_DISALLOW_BREAKING,
+				FARM_BLOCKS_TO_IGNORE);
 	}
 
 	public static void loadFromFile() {
@@ -81,8 +94,7 @@ public class Configs implements IConfigHandler {
 				ConfigUtils.readConfigBase(root, "Lists", Lists.OPTIONS);
 				ConfigUtils.readConfigBase(root, "Hotkeys", Hotkeys.HOTKEY_LIST);
 
-				// BTScreen.debugLog("loadFromFile(): Successfully loaded config file '{}'.",
-				// configFile.toAbsolutePath());
+				BTScreen.debugLog("loadFromFile(): Successfully loaded config file '{}'.", configFile.toAbsolutePath());
 			} else {
 				BTScreen.LOGGER.error("loadFromFile(): Failed to load config file '{}'.", configFile.toAbsolutePath());
 			}
