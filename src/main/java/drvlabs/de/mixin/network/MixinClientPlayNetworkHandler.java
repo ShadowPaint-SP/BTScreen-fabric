@@ -1,5 +1,7 @@
 package drvlabs.de.mixin.network;
 
+import java.util.List;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -65,11 +67,12 @@ public abstract class MixinClientPlayNetworkHandler {
 		BTScreen.debugLog("Connected to: " + server.address);
 		if (server.address.contains("rsdclan.de") && Configs.Generic.RSD_SETTINGS.getBooleanValue()) {
 			Waiter.wait("rsd", 100, () -> {
-				CommandUtils.sendCommand("cnolock");
-				CommandUtils.sendCommand("adblock");
+				List<String> commands = Configs.Lists.JOIN_COMMANDS.getStrings();
+				for (String string : commands) {
+					CommandUtils.sendCommand(string);
+				}
 				Waiter.cancel("rsd");
 			});
-			// TODO evtl make this a list u can configure
 		}
 	}
 

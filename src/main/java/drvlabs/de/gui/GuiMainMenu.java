@@ -1,5 +1,7 @@
 package drvlabs.de.gui;
 
+import org.jetbrains.annotations.Nullable;
+
 import drvlabs.de.BTScreen;
 import drvlabs.de.Reference;
 import drvlabs.de.config.Configs;
@@ -15,6 +17,7 @@ import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.effect.StatusEffects;
 
 public class GuiMainMenu extends GuiBase {
@@ -85,7 +88,22 @@ public class GuiMainMenu extends GuiBase {
 		label = StringUtils.translate("btscreen.gui.button.preset_mode", DataManager.getPresetMode().getName());
 		int width2 = this.getStringWidth(label) + 10;
 		ButtonGeneric button = new ButtonGeneric(x, y, width2, 20, label);
-		this.addButton(button, new ButtonListenerCyclePresetMode(this));
+		x += this.addButton(button, new ButtonListenerCyclePresetMode(this)).getWidth();
+		this.createChangeMenuButton(x, y, -1, ButtonListenerChangeMenu.ButtonType.COMMAND_LIST_MANAGER);
+	}
+
+	private void createChangeMenuButton(int x, int y, int width, ButtonListenerChangeMenu.ButtonType type) {
+		ButtonIcons icon = type.getIcon();
+		if (width == -1) {
+			width = this.getStringWidth(type.getDisplayName()) + 10;
+		}
+		if (icon != null) {
+			width += icon.getWidth() + 5;
+		}
+
+		ButtonGeneric button = new ButtonGeneric(x, y, width, 20, type.getDisplayName(), type.getIcon());
+
+		this.addButton(button, new ButtonListenerChangeMenu(type, this));
 	}
 
 	private int createButton(int x, int y, int width, ButtonListener.Type type) {
@@ -117,7 +135,7 @@ public class GuiMainMenu extends GuiBase {
 		return width;
 	}
 
-	private static class ButtonListener implements IButtonActionListener {
+	public static class ButtonListener implements IButtonActionListener {
 		private final Type type;
 		private final GuiMainMenu gui;
 
@@ -234,6 +252,73 @@ public class GuiMainMenu extends GuiBase {
 
 			public String getTranslationKey() {
 				return this.translationKey;
+			}
+
+			public ButtonIcons getIcon() {
+				return this.icon;
+			}
+		}
+	}
+
+	public static class ButtonListenerChangeMenu implements IButtonActionListener {
+		private final ButtonType type;
+		@Nullable
+		private final Screen parent;
+
+		public ButtonListenerChangeMenu(ButtonType type, @Nullable Screen parent) {
+			this.type = type;
+			this.parent = parent;
+		}
+
+		@Override
+		public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
+			GuiBase gui = null;
+
+			switch (this.type) {
+				case CONFIGURATION:
+					GuiBase.openGui(new GuiConfigs());
+					return;
+				case MAIN_MENU:
+					gui = new GuiMainMenu();
+					break;
+				case CREATE_COMMAND:
+					gui = new GuiConfigureCommand(null);
+					break;
+				case COMMAND_LIST_MANAGER:
+					gui = new GuiCommandList();
+					break;
+			}
+
+			if (gui != null) {
+				gui.setParent(this.parent);
+				GuiBase.openGui(gui);
+			}
+		}
+
+		public enum ButtonType {
+			// Command List Interaction GUI
+			COMMAND_LIST_MANAGER("btscreen.gui.button.change_menu.command_list_manager", ButtonIcons.BROWSER),
+			// Create a new command
+			CREATE_COMMAND("btscreen.gui.button.change_menu.createCommand", null),
+			// In-game Configuration GUI
+			CONFIGURATION("btscreen.gui.button.change_menu.configuration_menu", ButtonIcons.CONFIGURATION),
+			// Switch to the BTScreen main menu
+			MAIN_MENU("btscreen.gui.button.change_menu.to_main_menu", null);
+
+			private final String labelKey;
+			private final ButtonIcons icon;
+
+			ButtonType(String labelKey, ButtonIcons icon) {
+				this.labelKey = labelKey;
+				this.icon = icon;
+			}
+
+			public String getLabelKey() {
+				return this.labelKey;
+			}
+
+			public String getDisplayName() {
+				return StringUtils.translate(this.getLabelKey());
 			}
 
 			public ButtonIcons getIcon() {
