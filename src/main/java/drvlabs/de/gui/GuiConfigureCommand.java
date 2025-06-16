@@ -98,7 +98,7 @@ public class GuiConfigureCommand extends GuiBase {
 					this.command.setCommand(this.parent.textFieldCommand.getTextWrapper());
 					if (newCommand) {
 						DataManager.getCommandsManager().addCommand(this.command);
-						DataManager.save();
+						DataManager.save(true);
 					}
 					break;
 			}

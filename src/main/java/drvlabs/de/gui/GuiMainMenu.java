@@ -9,6 +9,8 @@ import drvlabs.de.data.DataManager;
 import drvlabs.de.utils.BotStatus;
 import drvlabs.de.utils.CommandUtils;
 import drvlabs.de.utils.behavior.AutoDrop;
+import drvlabs.de.utils.customcommands.Commands;
+import drvlabs.de.utils.customcommands.CommandsManager;
 import drvlabs.de.utils.preset.PresetMode;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
@@ -82,6 +84,17 @@ public class GuiMainMenu extends GuiBase {
 		this.createCoordinateInput(x, y, width, CoordinateType.SHIFTZ);
 
 		//////////////////////////////////////////////////
+		y = 30;
+		x = this.getScreenWidth() - 200;
+		for (Commands command : CommandsManager.getAllCommands()) {
+			y += this.createCommandButton(x, y, 100, ButtonListener.Type.COMMAND, command);
+			if (y >= this.getScreenHeight() - 26) {
+				y = 30;
+				x += 100;
+			}
+		}
+
+		/// //////////////////////////////////////////////
 		x = 12;
 		y = this.getScreenHeight() - 26;
 		x += this.createButton(x, y, -1, ButtonListener.Type.CONFIGURATION);
@@ -104,6 +117,14 @@ public class GuiMainMenu extends GuiBase {
 		ButtonGeneric button = new ButtonGeneric(x, y, width, 20, type.getDisplayName(), type.getIcon());
 
 		this.addButton(button, new ButtonListenerChangeMenu(type, this));
+	}
+
+	private int createCommandButton(int x, int y, int width, ButtonListener.Type type, Commands command) {
+		String label = command.getName();
+		ButtonListener listener = new ButtonListener(type, this, command);
+		ButtonGeneric button = new ButtonGeneric(x, y, width, 20, label);
+		this.addButton(button, listener);
+		return 20;
 	}
 
 	private int createButton(int x, int y, int width, ButtonListener.Type type) {
@@ -138,10 +159,16 @@ public class GuiMainMenu extends GuiBase {
 	public static class ButtonListener implements IButtonActionListener {
 		private final Type type;
 		private final GuiMainMenu gui;
+		private Commands command;
 
 		public ButtonListener(Type type, GuiMainMenu gui) {
+			this(type, gui, null);
+		}
+
+		public ButtonListener(Type type, GuiMainMenu gui, @Nullable Commands command) {
 			this.type = type;
 			this.gui = gui;
+			this.command = command;
 		}
 
 		@Override
@@ -219,6 +246,11 @@ public class GuiMainMenu extends GuiBase {
 				case Type.WEST:
 					CommandUtils.execute("sel expand all west " + amount);
 					return;
+				case Type.COMMAND:
+					if (this.command != null) {
+						CommandUtils.sendCommand(this.command.getCommand());
+					}
+					return;
 				default:
 					break;
 			}
@@ -240,7 +272,8 @@ public class GuiMainMenu extends GuiBase {
 			NORTH("btscreen.gui.button.north", null),
 			EAST("btscreen.gui.button.east", null),
 			SOUTH("btscreen.gui.button.south", null),
-			WEST("btscreen.gui.button.west", null);
+			WEST("btscreen.gui.button.west", null),
+			COMMAND("btscreen.gui.button.command", null);
 
 			private final String translationKey;
 			private final ButtonIcons icon;
