@@ -11,18 +11,18 @@ import drvlabs.de.utils.CommandUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
 
 public class CommandsManager {
-	protected final List<Commands> commands = new ArrayList<>();
+	protected final static List<Commands> commands = new ArrayList<>();
 
-	public List<Commands> getAllCommands() {
-		return this.commands;
+	public static List<Commands> getAllCommands() {
+		return commands;
 	}
 
 	public void addCommand(Commands command) {
-		this.commands.add(command);
+		commands.add(command);
 	}
 
 	public void removeCommand(Commands command) {
-		this.commands.remove(command);
+		commands.remove(command);
 	}
 
 	public boolean executeCommand(Commands command) {
@@ -34,16 +34,16 @@ public class CommandsManager {
 	}
 
 	public void clear() {
-		this.commands.clear();
+		commands.clear();
 	}
 
 	public JsonObject toJson() {
 		JsonObject obj = new JsonObject();
 
-		if (this.commands.size() > 0) {
+		if (commands.size() > 0) {
 			JsonArray arr = new JsonArray();
 
-			for (Commands command : this.commands) {
+			for (Commands command : commands) {
 				JsonObject objCommand = command.toJson();
 				if (objCommand != null) {
 					arr.add(objCommand);

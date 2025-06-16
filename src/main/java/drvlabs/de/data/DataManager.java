@@ -156,6 +156,9 @@ public class DataManager implements IDirectoryCache {
 					configGuiTab = ConfigGuiTab.GENERIC;
 				}
 			}
+			if (JsonUtils.hasObject(root, "commands")) {
+				commandsManager.loadFromJson(root.get("commands").getAsJsonObject());
+			}
 		}
 
 		canSave = true;
@@ -169,6 +172,7 @@ public class DataManager implements IDirectoryCache {
 		if (canSave == false && forceSave == false) {
 			return;
 		}
+		BTScreen.debugLog("Saving data");
 		getInstance().savePerDimensionData();
 
 		JsonObject root = new JsonObject();
@@ -179,7 +183,7 @@ public class DataManager implements IDirectoryCache {
 		}
 
 		root.add("last_directories", objDirs);
-
+		root.add("commands", commandsManager.toJson());
 		root.add("config_gui_tab", new JsonPrimitive(configGuiTab.name()));
 
 		Path file = getCurrentStorageFile(true);
@@ -189,6 +193,7 @@ public class DataManager implements IDirectoryCache {
 	}
 
 	public static void clear() {
+		save(true);
 		BTScreen.debugLog("Clearing data");
 		botStatus = BotStatus.IDLE;
 		getInstance().setActive(false);
@@ -223,16 +228,12 @@ public class DataManager implements IDirectoryCache {
 			}
 			operationMode.setSettings();
 		}
-		if (JsonUtils.hasObject(obj, "commands")) {
-			commandsManager.loadFromJson(obj.get("commands").getAsJsonObject());
-		}
 	}
 
 	private JsonObject toJson() {
 		JsonObject obj = new JsonObject();
 
 		obj.add("operation_mode", new JsonPrimitive(operationMode.name()));
-		obj.add("commands", commandsManager.toJson());
 
 		return obj;
 	}
