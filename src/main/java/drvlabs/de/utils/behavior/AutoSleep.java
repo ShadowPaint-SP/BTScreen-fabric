@@ -24,7 +24,7 @@ public class AutoSleep {
 
 	public static boolean isNight() {
 		long curTime = mc.world.getTimeOfDay() % 24000;
-		return (curTime >= 13000 || curTime < 23000);
+		return (curTime >= 13000 && curTime < 23000);
 	}
 
 	public static boolean isDay() {

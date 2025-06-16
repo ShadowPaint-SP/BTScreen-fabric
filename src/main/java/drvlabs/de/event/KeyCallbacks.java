@@ -1,6 +1,7 @@
 package drvlabs.de.event;
 
 import drvlabs.de.config.Hotkeys;
+import drvlabs.de.gui.GuiCommandList;
 import drvlabs.de.gui.GuiConfigs;
 import drvlabs.de.gui.GuiMainMenu;
 import fi.dy.masa.malilib.config.IConfigBoolean;
@@ -39,6 +40,9 @@ public class KeyCallbacks {
 				return true;
 			} else if (key == Hotkeys.OPEN_GUI_SETTINGS.getKeybind()) {
 				GuiBase.openGui(new GuiConfigs());
+				return true;
+			} else if (key == Hotkeys.OPEN_GUI_CUSTOM_COMMANDS.getKeybind()) {
+				GuiBase.openGui(new GuiCommandList());
 				return true;
 			}
 			return false;

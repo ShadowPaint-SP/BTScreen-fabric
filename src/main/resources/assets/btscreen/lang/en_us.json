@@ -1,6 +1,8 @@
 {
 	"btscreen.gui.title.btscreen_main_menu": "BT Screen GUI %s",
 	"btscreen.gui.title.configs": "BTScreen Configs",
+	"btscreen.gui.title.manage_command_list": "Manage Custom Commands",
+	"btscreen.gui.title.configure_schematic_placement": "Configure Command",
 
 	"btscreen.gui.button.config_gui.generic": "Generic",
 	"btscreen.gui.button.config_gui.lists": "Lists",
@@ -28,6 +30,13 @@
   "btscreen.gui.button.hover.plus_minus_tip_ctrl_alt_shift": "Left click to increase\nRight click to decrease\nShift/Alt/Ctrl to increase the step size (multiplicative)",
 	"btscreen.preset_mode.name.farm": "Farm",
 	"btscreen.preset_mode.name.default": "Default",
+	"btscreen.gui.button.change_menu.command_list_manager": "Custom Commands",
+	"btscreen.gui.button.customCommand.execute": "Execute",
+	"btscreen.gui.button.customCommand.configure": "Configure",
+	"btscreen.gui.button.customCommand.remove": "§4Delete",
+	"btscreen.gui.button.change_menu.to_main_menu": "BTScreen Main Menu",
+	"btscreen.gui.button.change_menu.createCommand": "Create Command",
+	"btscreen.gui.button.save": "Save",
 
 	"btscreen.info.main_menu.startBot": "Bot is running now.\nMake sure no one sees u using this ;)",
 	"btscreen.info.main_menu.stopBot": "U ARE SAFE NOW",

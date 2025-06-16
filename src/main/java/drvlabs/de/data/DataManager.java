@@ -16,15 +16,19 @@ import drvlabs.de.BTScreen;
 import drvlabs.de.Reference;
 import drvlabs.de.gui.GuiConfigs.ConfigGuiTab;
 import drvlabs.de.utils.BotStatus;
+import drvlabs.de.utils.customcommands.CommandsManager;
 import drvlabs.de.utils.preset.PresetMode;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryCache;
-import fi.dy.masa.malilib.util.*;
+import fi.dy.masa.malilib.util.FileUtils;
+import fi.dy.masa.malilib.util.JsonUtils;
+import fi.dy.masa.malilib.util.StringUtils;
 
 public class DataManager implements IDirectoryCache {
 
 	private static final DataManager INSTANCE = new DataManager();
 
 	private static final Map<String, File> LAST_DIRECTORIES = new HashMap<>();
+	private static CommandsManager commandsManager = new CommandsManager();
 	private static ConfigGuiTab configGuiTab = ConfigGuiTab.GENERIC;
 	private static boolean canSave;
 	private static PresetMode operationMode = PresetMode.DEFAULT;
@@ -78,6 +82,10 @@ public class DataManager implements IDirectoryCache {
 
 	public static void setNeedsToEat(boolean bool) {
 		needsToEat = bool;
+	}
+
+	public static CommandsManager getCommandsManager() {
+		return commandsManager;
 	}
 
 	public static Path getCurrentConfigDirectory() {
@@ -190,7 +198,6 @@ public class DataManager implements IDirectoryCache {
 
 	private void savePerDimensionData() {
 		JsonObject root = this.toJson();
-
 		Path file = getCurrentStorageFile(false);
 		JsonUtils.writeJsonToFileAsPath(root, file);
 	}
@@ -217,12 +224,16 @@ public class DataManager implements IDirectoryCache {
 			}
 			operationMode.setSettings();
 		}
+		if (JsonUtils.hasObject(obj, "commands")) {
+			commandsManager.loadFromJson(obj.get("commands").getAsJsonObject());
+		}
 	}
 
 	private JsonObject toJson() {
 		JsonObject obj = new JsonObject();
 
 		obj.add("operation_mode", new JsonPrimitive(operationMode.name()));
+		obj.add("commands", commandsManager.toJson());
 
 		return obj;
 	}
