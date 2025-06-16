@@ -1,5 +1,6 @@
 package drvlabs.de.data;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -23,7 +24,7 @@ public class DataManager implements IDirectoryCache {
 
 	private static final DataManager INSTANCE = new DataManager();
 
-	private static final Map<String, Path> LAST_DIRECTORIES = new HashMap<>();
+	private static final Map<String, File> LAST_DIRECTORIES = new HashMap<>();
 	private static ConfigGuiTab configGuiTab = ConfigGuiTab.GENERIC;
 	private static boolean canSave;
 	private static PresetMode operationMode = PresetMode.DEFAULT;
@@ -101,12 +102,12 @@ public class DataManager implements IDirectoryCache {
 
 	@Override
 	@Nullable
-	public Path getCurrentDirectoryForContext(String context) {
+	public File getCurrentDirectoryForContext(String context) {
 		return LAST_DIRECTORIES.get(context);
 	}
 
 	@Override
-	public void setCurrentDirectoryForContext(String context, Path dir) {
+	public void setCurrentDirectoryForContext(String context, File dir) {
 		LAST_DIRECTORIES.put(context, dir);
 	}
 
@@ -131,7 +132,7 @@ public class DataManager implements IDirectoryCache {
 						Path dir = Path.of(el.getAsString());
 
 						if (Files.exists(dir) && Files.isDirectory(dir)) {
-							LAST_DIRECTORIES.put(name, dir);
+							LAST_DIRECTORIES.put(name, dir.toFile());
 						}
 					}
 				}
@@ -166,8 +167,8 @@ public class DataManager implements IDirectoryCache {
 		JsonObject root = new JsonObject();
 		JsonObject objDirs = new JsonObject();
 
-		for (Map.Entry<String, Path> entry : LAST_DIRECTORIES.entrySet()) {
-			objDirs.add(entry.getKey(), new JsonPrimitive(entry.getValue().toAbsolutePath().toString()));
+		for (Map.Entry<String, File> entry : LAST_DIRECTORIES.entrySet()) {
+			objDirs.add(entry.getKey(), new JsonPrimitive(entry.getValue().getAbsolutePath().toString()));
 		}
 
 		root.add("last_directories", objDirs);
@@ -225,5 +226,4 @@ public class DataManager implements IDirectoryCache {
 
 		return obj;
 	}
-
 }

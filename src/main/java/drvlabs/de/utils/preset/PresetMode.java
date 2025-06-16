@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Codec;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
@@ -26,8 +25,6 @@ public enum PresetMode implements StringIdentifiable {
 			"farm",
 			"btscreen.preset_mode.name.farm");
 
-	public static final StringIdentifiable.EnumCodec<PresetMode> CODEC = StringIdentifiable
-			.createCodec(PresetMode::values);
 	public static final ImmutableList<PresetMode> VALUES = ImmutableList.copyOf(values());
 	private static final Settings bt = BaritoneAPI.getSettings();
 
@@ -37,10 +34,6 @@ public enum PresetMode implements StringIdentifiable {
 	private PresetMode(String configString, String translationKey) {
 		this.configString = configString;
 		this.translationKey = translationKey;
-	}
-
-	public Codec<PresetMode> codec() {
-		return CODEC;
 	}
 
 	@Override

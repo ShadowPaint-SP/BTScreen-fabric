@@ -42,7 +42,7 @@ public class AutoRepair {
 			if (++this.intervalCounter >= interval) {
 				BTScreen.debugLog("Attacking");
 				if (swordSlot != -1) {
-					int tmpSlot = mc.player.getInventory().getSelectedSlot();
+					int tmpSlot = mc.player.getInventory().selectedSlot;
 					mc.player.getInventory().setSelectedSlot(swordSlot);
 					this.clickFunc.accept(mc);
 					mc.player.getInventory().setSelectedSlot(tmpSlot);
