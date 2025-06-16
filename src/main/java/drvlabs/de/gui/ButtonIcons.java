@@ -1,6 +1,6 @@
 package drvlabs.de.gui;
 
-import java.nio.file.Path;
+import java.io.File;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -108,8 +108,7 @@ public enum ButtonIcons implements IGuiIcon, IFileBrowserIconProvider {
 
 	@Override
 	@Nullable
-	public IGuiIcon getIconForFile(Path file) {
+	public IGuiIcon getIconForFile(File file) {
 		return null;
 	}
-
 }
