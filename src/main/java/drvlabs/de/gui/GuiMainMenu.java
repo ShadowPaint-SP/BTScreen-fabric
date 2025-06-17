@@ -58,15 +58,15 @@ public class GuiMainMenu extends GuiBase {
 		y += 22;
 		x += 5;
 		x += this.createButton(x, y, -1, ButtonListener.Type.START);
-		this.createButton(x, y, -1, ButtonListener.Type.STOP);
-		y += 20;
+		x += this.createButton(x, y, -1, ButtonListener.Type.STOP);
+		y += 22;
+		x = 17;
 		if (baritoneBuildProcess.isPaused()) {
 			label = StringUtils.translate("btscreen.gui.button.resume");
 		} else {
 			label = StringUtils.translate("btscreen.gui.button.pause");
 		}
 		width = this.getStringWidth(label) + 10;
-		x = 17;
 		ButtonGeneric button = new ButtonGeneric(x, y, width, 20, label);
 		this.addButton(button, new ButtonListener(ButtonListener.Type.PAUSE_RESUME, this));
 
@@ -100,7 +100,7 @@ public class GuiMainMenu extends GuiBase {
 
 		////////////////////////////////////////////////// Custom Commands
 		y = 30;
-		x = this.getScreenWidth() - 200;
+		x = this.getScreenWidth() - 217;
 		if (x >= maxX) {
 			for (Commands command : CommandsManager.getAllCommands()) {
 				y += this.createCommandButton(x, y, 100, ButtonListener.Type.COMMAND, command);

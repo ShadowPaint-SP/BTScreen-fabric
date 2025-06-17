@@ -19,7 +19,12 @@ repositories {
 
 	maven { url = 'https://jitpack.io' }
 	maven { url = 'https://maven.terraformersmc.com/releases/' }
-	flatDir { dirs 'libs'}
+	//flatDir { dirs 'libs'}
+	maven {
+    	name = "meteorRepositorySnapshots"
+    	url = "https://maven.meteordev.org/snapshots/"
+		// https://maven.meteordev.org/#/snapshots/meteordevelopment
+	}
 	maven {
     		name = 'babbaj-repo'
     		url = 'https://babbaj.github.io/maven/'
@@ -39,9 +44,10 @@ dependencies {
 	modImplementation "com.github.sakura-ryoko:malilib:${project.malilib_version}" // malilib
 	modCompileOnly "com.terraformersmc:modmenu:${project.mod_menu_version}" // modmenu
 	//Baritone
-	modImplementation("local:baritone-unoptimized-fabric:1.14.0")
-	implementation "dev.babbaj:nether-pathfinder:1.4.1"
-	//implementation fileTree(dir: 'libs', include: '*.jar')
+	modImplementation "meteordevelopment:baritone:${project.minecraft_version}-SNAPSHOT"
+	modRuntimeOnly "dev.babbaj:nether-pathfinder:${project.nether_pathfinder_version}"
+	//modImplementation("local:baritone-unoptimized-fabric:1.14.0")
+	//implementation "dev.babbaj:nether-pathfinder:1.4.1"
 }
 
 // For a mod named 'mymod.jar' in the 'libs' folder     
