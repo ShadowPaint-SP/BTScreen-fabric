@@ -123,6 +123,7 @@ public enum PresetMode implements StringIdentifiable {
 	public static ImmutableList<String> getDefaultIgnoreList() {
 		return ImmutableList.of(
 				"torch",
+				"wall_torch",
 				"vine",
 				"fern",
 				"large_fern",

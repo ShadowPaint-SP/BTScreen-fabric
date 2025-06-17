@@ -30,6 +30,8 @@
   "btscreen.gui.button.hover.plus_minus_tip_ctrl_alt_shift": "Left click to increase\nRight click to decrease\nShift/Alt/Ctrl to increase the step size (multiplicative)",
 	"btscreen.preset_mode.name.farm": "Farm",
 	"btscreen.preset_mode.name.default": "Default",
+	"btscreen.gui.button.resume": "Resume Mining",
+	"btscreen.gui.button.pause": "Pause Mining",
 	"btscreen.gui.button.change_menu.command_list_manager": "Custom Commands",
 	"btscreen.gui.button.customCommand.execute": "Execute",
 	"btscreen.gui.button.customCommand.configure": "Configure",
@@ -93,10 +95,14 @@
 	"btscreen.config.lists.comment.farmBlocksToDisallowBreaking": "Blocks that cant be broken",
 	"btscreen.config.lists.name.farmBlocksToIgnore": "Farm: Blocks to ignore breaking",
 	"btscreen.config.lists.comment.farmBlocksToIgnore": "Blocks that should be ignored\nwhen in the way of pathfinding they can be broken",
+	"btscreen.config.lists.name.joinCommands": "Join Commands",
+	"btscreen.config.lists.comment.joinCommands": "Commands that will be executed when joining RSD",
 
 	"btscreen.config.hotkeys.name.openGuiMainMenu": "BT Screen Main Menu",
 	"btscreen.config.hotkeys.comment.openGuiMainMenu": "BT Screen Main Menu",
 	"btscreen.config.hotkeys.name.openGuiSettings": "BT Screen Config",
-	"btscreen.config.hotkeys.comment.openGuiSettings": "BT Screen Config"
+	"btscreen.config.hotkeys.comment.openGuiSettings": "BT Screen Config",
+	"btscreen.config.hotkeys.name.openGuiCustomCommands": "Custom Commands GUI",
+	"btscreen.config.hotkeys.comment.openGuiCustomCommands": "Custom Commands management"
 
 }

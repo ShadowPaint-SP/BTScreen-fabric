@@ -19,9 +19,8 @@ public final class ClientTickHandler {
 			Waiter.tickAll();
 			if (DataManager.getActive() && BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager()
 					.mostRecentInControl().isPresent()) {
-				if (DataManager.getBotStatus() == BotStatus.IDLE) { // TODO change if i add a pause button
-					BTScreen.debugLog("BOT SHOULD BE IN MINING");
-					DataManager.setBotStatus(BotStatus.MINING);
+				if (DataManager.getBotStatus() == BotStatus.IDLE) {
+					return;
 				}
 				if (DataManager.getBotStatus() == BotStatus.REPAIRING) {
 					AutoRepair.onTick(mc);
