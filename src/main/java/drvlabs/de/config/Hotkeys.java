@@ -14,11 +14,14 @@ public class Hotkeys {
 	public static final ConfigHotkey OPEN_GUI_MAIN_MENU = new ConfigHotkey("openGuiMainMenu", "P",
 			KeybindSettings.RELEASE_EXCLUSIVE).apply(HOTKEYS_KEY);
 	public static final ConfigHotkey OPEN_GUI_SETTINGS = new ConfigHotkey("openGuiSettings", "P,C").apply(HOTKEYS_KEY);
-	public static final ConfigHotkey OPEN_GUI_CUSTOM_COMMANDS = new ConfigHotkey("openGuiCustomCommands", "P,Y")
+	public static final ConfigHotkey OPEN_GUI_CUSTOM_COMMANDS = new ConfigHotkey("openGuiCustomCommands", "")
+			.apply(HOTKEYS_KEY);
+	public static final ConfigHotkey PAUSE_RESUME = new ConfigHotkey("pauseResume", "", KeybindSettings.RELEASE_EXCLUSIVE)
 			.apply(HOTKEYS_KEY);
 
 	public static final List<ConfigHotkey> HOTKEY_LIST = ImmutableList.of(
 			OPEN_GUI_MAIN_MENU,
 			OPEN_GUI_SETTINGS,
-			OPEN_GUI_CUSTOM_COMMANDS);
+			OPEN_GUI_CUSTOM_COMMANDS,
+			PAUSE_RESUME);
 }

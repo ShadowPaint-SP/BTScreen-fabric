@@ -2,7 +2,7 @@
 	"btscreen.gui.title.btscreen_main_menu": "BT Screen GUI %s",
 	"btscreen.gui.title.configs": "BTScreen Configs",
 	"btscreen.gui.title.manage_command_list": "Manage Custom Commands",
-	"btscreen.gui.title.configure_schematic_placement": "Configure Command",
+	"btscreen.gui.title.configure_command": "Configure Command",
 
 	"btscreen.gui.button.config_gui.generic": "Generic",
 	"btscreen.gui.button.config_gui.lists": "Lists",
@@ -40,7 +40,7 @@
 	"btscreen.gui.button.change_menu.createCommand": "Create Command",
 	"btscreen.gui.button.save": "Save",
 
-	"btscreen.info.main_menu.startBot": "Bot is running now.\nMake sure no one sees u using this ;)",
+	"btscreen.info.main_menu.startBot": "Bot is running now.\n§8Make sure no one sees u using this ;)",
 	"btscreen.info.main_menu.stopBot": "U ARE SAFE NOW",
 	"btscreen.info.main_menu.shiftX": "Shifted by %s",
 	"btscreen.info.main_menu.shiftY": "Shifted by %s",
@@ -57,9 +57,11 @@
 	"btscreen.config.generic.name.autoSleep": "Auto Sleep",
 	"btscreen.config.generic.comment.autoSleep": "Auto Sleep",
 	"btscreen.config.generic.name.autoEat": "Auto Eat",
-	"btscreen.config.generic.comment.autoEat": "Auto Eat\nRequires food in offhand!!",
+	"btscreen.config.generic.comment.autoEat": "Auto Eat\n§6NOTE: Requires food in offhand!!",
+	"btscreen.config.generic.name.foodLevel": "Minimum food level",
+	"btscreen.config.generic.comment.foodLevel": "the lowest food level where to start eating",
 	"btscreen.config.generic.name.autoRepair": "Auto Repair",
-	"btscreen.config.generic.comment.autoRepair": "Auto Repair",
+	"btscreen.config.generic.comment.autoRepair": "Auto Repair\n§6NOTE: Will use the Sword if it is in your hotbar",
 	"btscreen.config.generic.name.autoHaste": "Auto Haste",
 	"btscreen.config.generic.comment.autoHaste": "Auto Haste",
 	"btscreen.config.generic.name.autoDrop": "Auto Drop",
@@ -68,10 +70,12 @@
 	"btscreen.config.generic.comment.periodicAttackInterval": "The time between periodic attacks",
 	"btscreen.config.generic.name.itemDurabilityThreshold": "Item Durability Threshold",
 	"btscreen.config.generic.comment.itemDurabilityThreshold": "The lowest durability amaount where to start repairing items",
+	"btscreen.config.generic.name.autoTorch": "Auto Torch",
+	"btscreen.config.generic.comment.autoTorch": "Places a torch when needed\n§6NOTE: Only works if you have a torch in your hotbar",
 	"btscreen.config.generic.name.homeCommand": "home Command",
-	"btscreen.config.generic.comment.homeCommand": "The Command u use to teleport to homes\nWithout the / in front",
+	"btscreen.config.generic.comment.homeCommand": "The Command u use to teleport to homes\n§6NOTE: Without the / in front",
 	"btscreen.config.generic.name.setHomeCommand": "sethome Command",
-	"btscreen.config.generic.comment.setHomeCommand": "The COmmand u use to set homes\nWithout the / in front",
+	"btscreen.config.generic.comment.setHomeCommand": "The COmmand u use to set homes\n§6NOTE: Without the / in front",
 	"btscreen.config.generic.name.mineHome": "Mine Home",
 	"btscreen.config.generic.comment.mineHome": "This is the Home that will be placed by the bot",
 	"btscreen.config.generic.name.sleepHome": "Sleep Home",
@@ -99,6 +103,8 @@
 	"btscreen.config.hotkeys.name.openGuiSettings": "BT Screen Config",
 	"btscreen.config.hotkeys.comment.openGuiSettings": "BT Screen Config",
 	"btscreen.config.hotkeys.name.openGuiCustomCommands": "Custom Commands GUI",
-	"btscreen.config.hotkeys.comment.openGuiCustomCommands": "Custom Commands management"
+	"btscreen.config.hotkeys.comment.openGuiCustomCommands": "Custom Commands management",
+	"btscreen.config.hotkeys.name.pauseResume": "Pause/Resume",
+	"btscreen.config.hotkeys.comment.pauseResume": "Quickly pause and resume the bot"
 
 }

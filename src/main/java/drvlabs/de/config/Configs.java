@@ -29,6 +29,7 @@ public class Configs implements IConfigHandler {
 		public static final ConfigBoolean AUTO_EAT = new ConfigBoolean("autoEat", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_HASTE = new ConfigBoolean("autoHaste", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_DROP = new ConfigBoolean("autoDrop", false).apply(GENERIC_KEY);
+		public static final ConfigBoolean AUTO_TORCH = new ConfigBoolean("autoTorch", false).apply(GENERIC_KEY);
 		public static final ConfigString HOME_COMMAND = new ConfigString("homeCommand", "home").apply(GENERIC_KEY);
 		public static final ConfigString SETHOME_COMMAND = new ConfigString("setHomeCommand", "sethome").apply(GENERIC_KEY);
 		public static final ConfigString SLEEP_HOME = new ConfigString("sleepHome", "sleep").apply(GENERIC_KEY);
@@ -36,10 +37,10 @@ public class Configs implements IConfigHandler {
 		public static final ConfigString HASTE_HOME = new ConfigString("hasteHome", "haste").apply(GENERIC_KEY);
 		public static final ConfigString REPAIR_HOME = new ConfigString("repairHome", "repair").apply(GENERIC_KEY);
 		public static final ConfigString MINE_HOME = new ConfigString("mineHome", "mine").apply(GENERIC_KEY);
-		public static final ConfigInteger PERIODIC_ATTACK_INTERVAL = new ConfigInteger("periodicAttackInterval", 200, 0,
-				Integer.MAX_VALUE).apply(GENERIC_KEY);
+		public static final ConfigInteger PERIODIC_ATTACK_INTERVAL = new ConfigInteger("periodicAttackInterval", 25, 1, 400)
+				.apply(GENERIC_KEY);
 		public static final ConfigInteger ITEM_DURABILITY_THRESHOLD = new ConfigInteger("itemDurabilityThreshold", 40, 20,
-				Integer.MAX_VALUE).apply(GENERIC_KEY);
+				100).apply(GENERIC_KEY);
 		public static final ConfigInteger FOOD_LEVEL = new ConfigInteger("foodLevel", 18, 4, 18).apply(GENERIC_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
@@ -48,6 +49,7 @@ public class Configs implements IConfigHandler {
 				AUTO_EAT,
 				AUTO_HASTE,
 				AUTO_DROP,
+				AUTO_TORCH,
 				PERIODIC_ATTACK_INTERVAL,
 				ITEM_DURABILITY_THRESHOLD,
 				HOME_COMMAND,

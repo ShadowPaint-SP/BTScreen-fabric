@@ -49,13 +49,12 @@ public abstract class MixinClientPlayNetworkHandler {
 				&& Configs.Generic.AUTO_HASTE.getBooleanValue()) {
 			if (packet.getEntity(mc.world) == mc.player) {
 
-				BTScreen.debugLog("Lost Haste");
 				if (packet.effect().matches(StatusEffects.HASTE::matchesKey)) {
+					BTScreen.debugLog("Lost Haste");
 					CommandUtils.execute("pause");
 					DataManager.setBotStatus(BotStatus.HASTING);
 					CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
 					CommandUtils.tpTo(Configs.Generic.HASTE_HOME.getStringValue());
-
 				}
 			}
 		}

@@ -56,7 +56,7 @@ public class AutoSleep {
 			if (!hasExecutedSecondBlock) {
 				CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
 				DataManager.setBotStatus(BotStatus.MINING);
-				CommandUtils.execute("Sleeping Completed");
+				CommandUtils.execute("resume");
 				hasExecutedSecondBlock = true;
 				hasExecutedFirstBlock = false;
 			}

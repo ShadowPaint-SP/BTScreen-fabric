@@ -9,7 +9,6 @@ import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import java.util.ArrayList;
 import java.util.List;
 
-import baritone.api.BaritoneAPI;
 import drvlabs.de.BTScreen;
 import drvlabs.de.config.Configs;
 import drvlabs.de.data.DataManager;
@@ -39,21 +38,19 @@ public class AutoDrop {
 
 		if (!hasFreeSlot) {
 			DataManager.setBotStatus(BotStatus.DROPPING);
-			BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("pause");
+			CommandUtils.execute("pause");
 			BTScreen.debugLog("Inventory full");
 			CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
 			CommandUtils.tpTo(Configs.Generic.DROP_HOME.getStringValue());
-			Waiter.wait(200, () -> {
+			Waiter.wait(60, () -> {
 				mc.setScreen(new InventoryScreen(mc.player));
 				dropInventory();
 				// dropWaitFinished = true;
 				mc.currentScreen.close();
 				CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
-				Waiter.wait(100, () -> {
-					DataManager.setBotStatus(BotStatus.MINING);
-					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("resume");
-					checkInventory(); // To make sure the inventory has space now
-				});
+				DataManager.setBotStatus(BotStatus.MINING);
+				CommandUtils.execute("resume");
+				checkInventory(); // To make sure the inventory has space now
 			});
 		}
 	}
