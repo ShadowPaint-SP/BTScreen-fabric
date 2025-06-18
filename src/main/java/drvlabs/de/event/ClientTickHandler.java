@@ -28,8 +28,13 @@ public final class ClientTickHandler {
 				if (Configs.Generic.AUTO_SLEEP.getBooleanValue()) {
 					AutoSleep.tryToSleep();
 				}
-				if (Configs.Generic.AUTO_TORCH.getBooleanValue() && DataManager.getBotStatus() == BotStatus.MINING) {
-					AutoTorch.onTick(mc);
+				if (Configs.Generic.AUTO_TORCH.getBooleanValue()) {
+					if (DataManager.getBotStatus() == BotStatus.MINING && AutoTorch.blockNeedsTorch(mc)) {
+						AutoTorch.prepare(mc);
+					}
+					if (DataManager.getBotStatus() == BotStatus.LIGHTING) {
+						AutoTorch.onTick(mc);
+					}
 				}
 			} else {
 				if (DataManager.getBotStatus() != BotStatus.IDLE) {

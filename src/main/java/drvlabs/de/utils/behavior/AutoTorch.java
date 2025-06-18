@@ -2,6 +2,8 @@ package drvlabs.de.utils.behavior;
 
 import baritone.api.BaritoneAPI;
 import drvlabs.de.BTScreen;
+import drvlabs.de.data.DataManager;
+import drvlabs.de.utils.BotStatus;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -13,7 +15,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class AutoTorch {
 
-	private static boolean blockNeedsTorch(MinecraftClient mc) {
+	public static boolean blockNeedsTorch(MinecraftClient mc) {
 		return mc.world.getLightLevel(mc.player.getBlockPos()) <= 1;
 	}
 
@@ -28,22 +30,32 @@ public class AutoTorch {
 		return -1;
 	}
 
+	public static void prepare(MinecraftClient mc) {
+		BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().pause();
+		DataManager.setBotStatus(BotStatus.LIGHTING);
+		mc.player.setPitch(90);
+	}
+
 	private static void tryPlacingTorch(MinecraftClient mc, int torchSlot) {
 		mc.player.getInventory().setSelectedSlot(torchSlot);
-		BlockHitResult hit = new BlockHitResult(Vec3d.ofCenter(mc.player.getBlockPos()), Direction.DOWN,
-				mc.player.getBlockPos(), false);
-		BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().pause();
-		mc.interactionManager.interactBlock(mc.player, Hand.MAIN_HAND, hit);
-		BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().resume();
+		BlockHitResult hit = new BlockHitResult(Vec3d.ofCenter(mc.player.getBlockPos().down()), Direction.UP,
+				mc.player.getBlockPos().down(), false);
+		mc.player.setPitch(90);
+		if (mc.interactionManager.interactBlock(mc.player, Hand.MAIN_HAND, hit).isAccepted()) {
+			BTScreen.debugLog("Placed Torch");
+			mc.player.swingHand(Hand.MAIN_HAND);
+		}
 	}
 
 	public static void onTick(MinecraftClient mc) {
 		if (blockNeedsTorch(mc)) {
 			int torchSlot = getTorchSlotInHotbar(mc);
 			if (torchSlot != -1) {
-				BTScreen.debugLog("Placing Torch");
 				tryPlacingTorch(mc, torchSlot);
 			}
+		} else {
+			BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().resume();
+			DataManager.setBotStatus(BotStatus.MINING);
 		}
 	}
 }
