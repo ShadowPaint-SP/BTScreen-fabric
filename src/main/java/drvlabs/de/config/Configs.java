@@ -24,7 +24,6 @@ public class Configs implements IConfigHandler {
 
 	public static class Generic {
 		public static final ConfigBoolean DEBUG_LOGGING = new ConfigBoolean("debugLogging", true).apply(GENERIC_KEY);
-		public static final ConfigBoolean RSD_SETTINGS = new ConfigBoolean("rsdSettings", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_SLEEP = new ConfigBoolean("autoSleep", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_REPAIR = new ConfigBoolean("autoRepair", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_EAT = new ConfigBoolean("autoEat", false).apply(GENERIC_KEY);
@@ -41,6 +40,7 @@ public class Configs implements IConfigHandler {
 				Integer.MAX_VALUE).apply(GENERIC_KEY);
 		public static final ConfigInteger ITEM_DURABILITY_THRESHOLD = new ConfigInteger("itemDurabilityThreshold", 40, 20,
 				Integer.MAX_VALUE).apply(GENERIC_KEY);
+		public static final ConfigInteger FOOD_LEVEL = new ConfigInteger("foodLevel", 18, 4, 18).apply(GENERIC_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
 				AUTO_SLEEP,
@@ -57,31 +57,28 @@ public class Configs implements IConfigHandler {
 				DROP_HOME,
 				HASTE_HOME,
 				REPAIR_HOME,
-				RSD_SETTINGS,
+				FOOD_LEVEL,
 				DEBUG_LOGGING);
 	}
 
 	public static class Lists {
-		public static final ConfigStringList INV_PRESERVE_ITEM_BLACKLIST = new ConfigStringList(
-				"invPreserveItemBlackList", ImmutableList.of()).apply(LISTS_KEY);
+		public static final ConfigStringList INV_PRESERVE_ITEM_BLACKLIST = new ConfigStringList("invPreserveItemBlackList",
+				ImmutableList.of()).apply(LISTS_KEY);
 		public static final ConfigStringList DEFAULT_BLOCKS_TO_DISALLOW_BREAKING = new ConfigStringList(
 				"defaultBlocksToDisallowBreaking", PresetMode.getGlobalDisallowBreakingList()).apply(LISTS_KEY);
-		public static final ConfigStringList DEFAULT_BLOCKS_TO_IGNORE = new ConfigStringList(
-				"defaultBlocksToIgnore", PresetMode.getDefaultIgnoreList()).apply(LISTS_KEY);
+		public static final ConfigStringList DEFAULT_BLOCKS_TO_IGNORE = new ConfigStringList("defaultBlocksToIgnore",
+				PresetMode.getDefaultIgnoreList()).apply(LISTS_KEY);
 		public static final ConfigStringList FARM_BLOCKS_TO_DISALLOW_BREAKING = new ConfigStringList(
 				"farmBlocksToDisallowBreaking", PresetMode.getGlobalDisallowBreakingList()).apply(LISTS_KEY);
-		public static final ConfigStringList FARM_BLOCKS_TO_IGNORE = new ConfigStringList(
-				"farmBlocksToIgnore", PresetMode.getFarmIgnoreList()).apply(LISTS_KEY);
-		public static final ConfigStringList JOIN_COMMANDS = new ConfigStringList(
-				"joinCommands", ImmutableList.of("cnolock", "adblock")).apply(LISTS_KEY);
+		public static final ConfigStringList FARM_BLOCKS_TO_IGNORE = new ConfigStringList("farmBlocksToIgnore",
+				PresetMode.getFarmIgnoreList()).apply(LISTS_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
 				INV_PRESERVE_ITEM_BLACKLIST,
 				DEFAULT_BLOCKS_TO_DISALLOW_BREAKING,
 				DEFAULT_BLOCKS_TO_IGNORE,
 				FARM_BLOCKS_TO_DISALLOW_BREAKING,
-				FARM_BLOCKS_TO_IGNORE,
-				JOIN_COMMANDS);
+				FARM_BLOCKS_TO_IGNORE);
 	}
 
 	public static void loadFromFile() {
@@ -97,9 +94,11 @@ public class Configs implements IConfigHandler {
 				ConfigUtils.readConfigBase(root, "Lists", Lists.OPTIONS);
 				ConfigUtils.readConfigBase(root, "Hotkeys", Hotkeys.HOTKEY_LIST);
 
-				BTScreen.debugLog("loadFromFile(): Successfully loaded config file '{}'.", configFile.toAbsolutePath());
+				BTScreen.debugLog("loadFromFile(): Successfully loaded config file '{}'.",
+						configFile.toAbsolutePath());
 			} else {
-				BTScreen.LOGGER.error("loadFromFile(): Failed to load config file '{}'.", configFile.toAbsolutePath());
+				BTScreen.LOGGER.error("loadFromFile(): Failed to load config file '{}'.",
+						configFile.toAbsolutePath());
 			}
 		}
 	}
@@ -120,7 +119,8 @@ public class Configs implements IConfigHandler {
 
 			JsonUtils.writeJsonToFileAsPath(root, dir.resolve(CONFIG_FILE_NAME));
 		} else {
-			BTScreen.LOGGER.error("saveToFile(): Config Folder '{}' does not exist!", dir.toAbsolutePath());
+			BTScreen.LOGGER.error("saveToFile(): Config Folder '{}' does not exist!",
+					dir.toAbsolutePath());
 		}
 	}
 

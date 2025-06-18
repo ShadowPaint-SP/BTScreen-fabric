@@ -51,13 +51,12 @@ public class AutoSleep {
 		}
 		if (DataManager.getBotStatus() == BotStatus.SLEEPING && AutoSleep.isNight()) {
 			AutoSleep.trySleeping();
-			BTScreen.debugLog("Trying to sleep");
 		}
 		if (DataManager.getBotStatus() == BotStatus.SLEEPING && AutoSleep.isDay()) {
 			if (!hasExecutedSecondBlock) {
 				CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
 				DataManager.setBotStatus(BotStatus.MINING);
-				CommandUtils.execute("resume");
+				CommandUtils.execute("Sleeping Completed");
 				hasExecutedSecondBlock = true;
 				hasExecutedFirstBlock = false;
 			}
@@ -68,14 +67,14 @@ public class AutoSleep {
 
 		if (mc.player.isSleeping()) {
 			++sleepTimer;
-			BTScreen.debugLog("timer: " + sleepTimer);
+			BTScreen.debugLog("sleeping: " + sleepTimer);
 			if (sleepTimer > 100) {
 				sleepTimer = 100;
 			}
 		} else if (sleepTimer > 0) {
 
 			++sleepTimer;
-			BTScreen.debugLog("timer NOT:" + sleepTimer);
+			BTScreen.debugLog("not sleeping:" + sleepTimer);
 			if (sleepTimer >= 130) {
 				sleepTimer = 0;
 				sucess = false;
@@ -93,9 +92,12 @@ public class AutoSleep {
 			for (BlockPos position : positions) {
 				BlockHitResult hit = new BlockHitResult(Vec3d.ofCenter(position), Direction.DOWN, position,
 						false);
+				BTScreen.debugLog("Hitting Bed at: " + position);
 				if (mc.interactionManager.interactBlock(mc.player, Hand.MAIN_HAND, hit).isAccepted()) {
 					mc.player.swingHand(Hand.MAIN_HAND);
+					BTScreen.debugLog("Bed Success at: " + position);
 					sucess = true;
+					break;
 				}
 			}
 			return;

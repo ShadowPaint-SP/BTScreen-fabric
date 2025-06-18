@@ -13,15 +13,12 @@ public class WorldLoadListener implements IWorldLoadListener {
 	@SuppressWarnings("null")
 	@Override
 	public void onWorldLoadPre(@Nullable ClientWorld worldBefore, @Nullable ClientWorld worldAfter, MinecraftClient mc) {
-		// Save the settings before the integrated server gets shut down
 		if (worldBefore != null) {
 			DataManager.save();
-			BTScreen.debugLog("Saved settings");
 		}
 		if (worldAfter == null) {
 			DataManager.save();
 			DataManager.clear();
-			BTScreen.debugLog("Saved settings");
 
 		}
 	}
@@ -29,14 +26,9 @@ public class WorldLoadListener implements IWorldLoadListener {
 	@SuppressWarnings("null")
 	@Override
 	public void onWorldLoadPost(@Nullable ClientWorld worldBefore, @Nullable ClientWorld worldAfter, MinecraftClient mc) {
-
 		if (worldBefore == null) {
 			DataManager.load();
 			BTScreen.LOGGER.error("Loaded settings");
 		}
-		// if (worldAfter != null) {
-		// DataManager.load();
-		// BTScreen.debugLog("Loaded settings");
-		// }
 	}
 }

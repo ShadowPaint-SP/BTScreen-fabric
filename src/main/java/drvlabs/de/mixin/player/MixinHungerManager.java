@@ -24,13 +24,12 @@ public class MixinHungerManager {
 	private void onSetFoodLevel(int foodLevel, CallbackInfo ci) {
 		if (DataManager.getActive() && Configs.Generic.AUTO_EAT.getBooleanValue()
 				&& DataManager.getBotStatus() != BotStatus.IDLE) {
-			BTScreen.debugLog("FOOD LEVEL: " + foodLevel);
-			if (foodLevel < 19) {
+			if (foodLevel < Configs.Generic.FOOD_LEVEL.getIntegerValue()) {
 				DataManager.setNeedsToEat(true);
-				BTScreen.debugLog("FOOD:" + DataManager.getNeedsToEat());
+				BTScreen.debugLog("Eating");
 			} else {
 				DataManager.setNeedsToEat(false);
-				BTScreen.debugLog("FOOD:" + DataManager.getNeedsToEat());
+				BTScreen.debugLog("Stopped Eating");
 				MinecraftClient.getInstance().options.useKey.setPressed(false);
 			}
 		}

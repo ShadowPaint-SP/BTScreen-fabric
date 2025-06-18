@@ -16,16 +16,14 @@ public class CommandUtils {
 	public static void tpTo(String homeName) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		if (client.player != null) {
-			if (Configs.Generic.HOME_COMMAND.getStringValue().equals("tp")) {
-				if (homeName.equals(Configs.Generic.DROP_HOME.getStringValue())) {
-					client.player.networkHandler.sendChatCommand(
-							Configs.Generic.HOME_COMMAND.getStringValue() + " " + client.player.getNameForScoreboard() + " "
-									+ homeName
-									+ " 180 0");
-					return;
-				}
+			if (Configs.Generic.HOME_COMMAND.getStringValue().equals("tp")
+					&& homeName.equals(Configs.Generic.DROP_HOME.getStringValue())) {
+				client.player.networkHandler.sendChatCommand(Configs.Generic.HOME_COMMAND.getStringValue()
+						+ " " + client.player.getNameForScoreboard() + " " + homeName + " 180 0");
+				return;
 			}
-			client.player.networkHandler.sendChatCommand(Configs.Generic.HOME_COMMAND.getStringValue() + " " + homeName);
+			client.player.networkHandler
+					.sendChatCommand(Configs.Generic.HOME_COMMAND.getStringValue() + " " + homeName);
 		}
 	}
 
@@ -44,7 +42,8 @@ public class CommandUtils {
 						+ client.player.getBlockPos().getY() + " " + client.player.getBlockPos().getZ());
 				return;
 			}
-			client.player.networkHandler.sendChatCommand(Configs.Generic.SETHOME_COMMAND.getStringValue() + " " + homeName);
+			client.player.networkHandler
+					.sendChatCommand(Configs.Generic.SETHOME_COMMAND.getStringValue() + " " + homeName);
 		}
 	}
 }

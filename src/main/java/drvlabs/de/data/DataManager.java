@@ -63,7 +63,7 @@ public class DataManager implements IDirectoryCache {
 	}
 
 	public static void setBotStatus(BotStatus status) {
-		BTScreen.debugLog("Bot Status: " + status);
+		BTScreen.debugLog("New Bot Status: " + status);
 		botStatus = status;
 	}
 
@@ -99,12 +99,10 @@ public class DataManager implements IDirectoryCache {
 		}
 
 		if (!Files.isDirectory(dir)) {
-			BTScreen.LOGGER.warn("Failed to create the config directory '{}'",
-					dir.toAbsolutePath());
+			BTScreen.LOGGER.warn("Failed to create the config directory '{}'", dir.toAbsolutePath());
 		}
 
-		return dir.resolve(StringUtils.getStorageFileName(globalData,
-				Reference.MOD_ID + "_", ".json", "default"));
+		return dir.resolve(StringUtils.getStorageFileName(globalData, Reference.MOD_ID + "_", ".json", "default"));
 	}
 
 	@Override

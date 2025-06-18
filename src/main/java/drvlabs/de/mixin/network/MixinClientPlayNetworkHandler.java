@@ -1,7 +1,5 @@
 package drvlabs.de.mixin.network;
 
-import java.util.List;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -12,11 +10,9 @@ import drvlabs.de.config.Configs;
 import drvlabs.de.data.DataManager;
 import drvlabs.de.utils.BotStatus;
 import drvlabs.de.utils.CommandUtils;
-import drvlabs.de.utils.Waiter;
 import drvlabs.de.utils.behavior.AutoDrop;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.ServerInfo;
 import net.minecraft.entity.effect.StatusEffects;
 
 @Mixin(ClientPlayNetworkHandler.class)
@@ -33,14 +29,6 @@ public abstract class MixinClientPlayNetworkHandler {
 		}
 	}
 
-	// @Inject(method = "onGameMessage", at = @At("RETURN"))
-	// private void
-	// btscreen_onGameMessage(net.minecraft.network.packet.s2c.play.GameMessageS2CPacket
-	// packet,
-	// CallbackInfo ci) {
-	// // DataStorage.getInstance().onChatMessage(packet.content());
-	// }
-
 	// Executes every second this could be interesting for better waiter function
 	// (TEST THIS)
 	// @Inject(method = "onWorldTimeUpdate", at = @At("RETURN"))
@@ -52,30 +40,6 @@ public abstract class MixinClientPlayNetworkHandler {
 	// BTScreen.debugLog("Time updated");
 	// }
 
-	/*
-	 * Initialize the selected preset so if u use this for the first time or the
-	 * settings were changed previously they are fixed again.
-	 */
-	@Inject(method = "onGameJoin", at = @At("TAIL"))
-	private void btscreen_onPostGameJoin(net.minecraft.network.packet.s2c.play.GameJoinS2CPacket packet,
-			CallbackInfo ci) {
-		ServerInfo server = mc.getCurrentServerEntry();
-		if (server == null) {
-			BTScreen.debugLog("Singleplayer");
-			return;
-		}
-		BTScreen.debugLog("Connected to: " + server.address);
-		if (server.address.contains("rsdclan.de") && Configs.Generic.RSD_SETTINGS.getBooleanValue()) {
-			Waiter.wait("rsd", 100, () -> {
-				List<String> commands = Configs.Lists.JOIN_COMMANDS.getStrings();
-				for (String string : commands) {
-					CommandUtils.sendCommand(string);
-				}
-				Waiter.cancel("rsd");
-			});
-		}
-	}
-
 	@Inject(method = "onRemoveEntityStatusEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/util/thread/ThreadExecutor;)V", shift = At.Shift.AFTER))
 	public void onEntityStatusEffect(net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket packet,
 			CallbackInfo info) {
@@ -85,7 +49,7 @@ public abstract class MixinClientPlayNetworkHandler {
 				&& Configs.Generic.AUTO_HASTE.getBooleanValue()) {
 			if (packet.getEntity(mc.world) == mc.player) {
 
-				BTScreen.debugLog("Removing status effect: " + mc.player.getStatusEffect(packet.effect()));
+				BTScreen.debugLog("Lost Haste");
 				if (packet.effect().matches(StatusEffects.HASTE::matchesKey)) {
 					CommandUtils.execute("pause");
 					DataManager.setBotStatus(BotStatus.HASTING);
@@ -107,7 +71,7 @@ public abstract class MixinClientPlayNetworkHandler {
 			if (packet.getEntityId() == mc.player.getId()) {
 
 				if (packet.getEffectId().matches(StatusEffects.HASTE::matchesKey)) {
-					BTScreen.debugLog("HASTE given");
+					BTScreen.debugLog("gained Haste");
 					CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
 					DataManager.setBotStatus(BotStatus.MINING);
 					CommandUtils.execute("resume");
@@ -115,15 +79,4 @@ public abstract class MixinClientPlayNetworkHandler {
 			}
 		}
 	}
-	// @ModifyArg(method = "onTitle", at = @At(value = "INVOKE", target =
-	// "Lnet/minecraft/client/gui/hud/InGameHud;setTitle(Lnet/minecraft/text/Text;)V"))
-	// public Text onTitle(Text title) {
-	// EventTitle et = new EventTitle("TITLE", title);
-	// et.trigger();
-	// if (et.message == null || et.isCanceled()) {
-	// return null;
-	// } else {
-	// return et.message.getRaw();
-	// }
-	// }
 }

@@ -82,8 +82,6 @@
 	"btscreen.config.generic.comment.hasteHome": "Should be a place in range of a beacon that gives u haste",
 	"btscreen.config.generic.name.repairHome": "Repair Home",
 	"btscreen.config.generic.comment.repairHome": "Place at a XP farm and look in the right direction to hit the mobs",
-	"btscreen.config.generic.name.rsdSettings": "RSD Join Settings",
-	"btscreen.config.generic.comment.rsdSettings": "writes certain commands in chat when joining RSD\nAt the moment /addblock /cnolock",
 
 	"btscreen.config.lists.name.invPreserveItemBlackList": "Disallow Dropping",
 	"btscreen.config.lists.comment.invPreserveItemBlackList": "Items that should not be dropped",
@@ -95,8 +93,6 @@
 	"btscreen.config.lists.comment.farmBlocksToDisallowBreaking": "Blocks that cant be broken",
 	"btscreen.config.lists.name.farmBlocksToIgnore": "Farm: Blocks to ignore breaking",
 	"btscreen.config.lists.comment.farmBlocksToIgnore": "Blocks that should be ignored\nwhen in the way of pathfinding they can be broken",
-	"btscreen.config.lists.name.joinCommands": "Join Commands",
-	"btscreen.config.lists.comment.joinCommands": "Commands that will be executed when joining RSD",
 
 	"btscreen.config.hotkeys.name.openGuiMainMenu": "BT Screen Main Menu",
 	"btscreen.config.hotkeys.comment.openGuiMainMenu": "BT Screen Main Menu",

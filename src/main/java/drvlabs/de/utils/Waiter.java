@@ -1,45 +1,79 @@
 package drvlabs.de.utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class Waiter {
 	private static class WaitTask {
-		final IntervalStepper<String> stepper;
+		final Runnable callback;
 		final int interval;
-		final String context;
+		final String taskId;
+		int counter = 0;
+		boolean completed = false;
 
-		WaitTask(int interval, String context, Runnable callback) {
+		WaitTask(int interval, Runnable callback) {
 			this.interval = interval;
-			this.context = context;
-			this.stepper = new IntervalStepper<>(state -> {
-				if (state.equals(context)) {
-					callback.run();
-					waiters.remove(context); // cleanup
-				}
-			});
+			this.callback = callback;
+			this.taskId = UUID.randomUUID().toString();
+		}
+
+		public void tick() {
+			if (completed) {
+				return;
+			}
+
+			counter++;
+			if (counter >= interval) {
+				callback.run();
+				completed = true;
+			}
+		}
+
+		public boolean isCompleted() {
+			return completed;
 		}
 	}
 
 	private static final Map<String, WaitTask> waiters = new HashMap<>();
+	private static final List<WaitTask> newTasksPendingAddition = new ArrayList<>();
 
-	public static void wait(String key, int ticks, Runnable callback) {
-		waiters.put(key, new WaitTask(ticks, "done", callback));
+	/**
+	 * Schedules a one-shot task to run after a specified number of ticks.
+	 * This method adds the task to a temporary list if called during a tickAll
+	 * cycle,
+	 * ensuring it's added to the main map safely afterwards.
+	 *
+	 * @param ticks    The number of ticks to wait before executing the callback.
+	 * @param callback The Runnable to execute once the ticks have elapsed.
+	 */
+	public static void wait(int ticks, Runnable callback) {
+		WaitTask newTask = new WaitTask(ticks, callback);
+		newTasksPendingAddition.add(newTask);
 	}
 
+	/**
+	 * Ticks all active waiter tasks. Tasks that complete are automatically removed.
+	 * This method is designed to be called once per game tick.
+	 */
 	public static void tickAll() {
+		List<String> tasksToRemove = new ArrayList<>();
 		for (WaitTask task : waiters.values()) {
-			task.stepper.tick(task.interval, task.context);
+			task.tick();
+			if (task.isCompleted()) {
+				tasksToRemove.add(task.taskId);
+			}
 		}
-	}
 
-	public static void cancel(String key) {
-		waiters.remove(key);
-	}
+		for (String taskId : tasksToRemove) {
+			waiters.remove(taskId);
+		}
 
-	public static void reset(String key) {
-		WaitTask task = waiters.get(key);
-		if (task != null)
-			task.stepper.reset();
+		for (WaitTask newTask : newTasksPendingAddition) {
+			waiters.put(newTask.taskId, newTask);
+		}
+		newTasksPendingAddition.clear();
 	}
 }

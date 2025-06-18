@@ -1,7 +1,6 @@
 package drvlabs.de.event;
 
 import baritone.api.BaritoneAPI;
-import drvlabs.de.BTScreen;
 import drvlabs.de.config.Configs;
 import drvlabs.de.data.DataManager;
 import drvlabs.de.utils.BotStatus;
@@ -30,7 +29,6 @@ public final class ClientTickHandler {
 				}
 			} else {
 				if (DataManager.getBotStatus() != BotStatus.IDLE) {
-					BTScreen.debugLog("BOT SHOULD BE IN IDLE");
 					DataManager.getInstance().setActive(false);
 					DataManager.setBotStatus(BotStatus.IDLE);
 				}

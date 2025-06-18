@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Nullable;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.process.IBuilderProcess;
-import drvlabs.de.BTScreen;
 import drvlabs.de.Reference;
 import drvlabs.de.config.Configs;
 import drvlabs.de.data.DataManager;
@@ -87,7 +86,7 @@ public class GuiMainMenu extends GuiBase {
 		maxX = Math.max(maxX, x + this.createCoordinateInput(x, y, width, CoordinateType.EAST));
 		y += 20;
 		maxX = Math.max(maxX, x + this.createCoordinateInput(x, y, width, CoordinateType.DOWN));
-		BTScreen.debugLog("maxX: " + maxX);
+
 		////////////////////////////////////////////////// Box Moving
 		x = this.getScreenWidth() / 2;
 		y += 30;
@@ -405,7 +404,6 @@ public class GuiMainMenu extends GuiBase {
 			DataManager.setPresetMode(mode);
 			mode.setSettings();
 			this.gui.initGui();
-			BTScreen.debugLog("Preset Mode: " + mode);
 		}
 	}
 

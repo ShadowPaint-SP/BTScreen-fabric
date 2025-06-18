@@ -61,7 +61,7 @@ public class AutoRepair {
 		}
 
 		if (!player.getStackInHand(Hand.MAIN_HAND).isDamaged()) {
-			BTScreen.debugLog("FINISHED REPAIR");
+			BTScreen.debugLog("Finished Repairing");
 			CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
 			DataManager.setBotStatus(BotStatus.MINING);
 			CommandUtils.execute("resume");
@@ -104,7 +104,7 @@ public class AutoRepair {
 			int minDurability = Configs.Generic.ITEM_DURABILITY_THRESHOLD.getIntegerValue();
 
 			if (isItemAtLowDurability(stack, minDurability)) {
-				BTScreen.debugLog("STARTING REPAIR");
+				BTScreen.debugLog("Start Repairing");
 				CommandUtils.execute("pause");
 				DataManager.setBotStatus(BotStatus.REPAIRING);
 				swordSlot = getSwordSlotInHotbar();
