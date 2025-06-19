@@ -74,6 +74,7 @@ public class DataManager {
 	}
 
 	public static void setNeedsToEat(boolean bool) {
+		BTScreen.debugLog("Eating: " + bool);
 		needsToEat = bool;
 	}
 
