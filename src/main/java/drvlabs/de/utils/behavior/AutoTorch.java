@@ -1,9 +1,9 @@
 package drvlabs.de.utils.behavior;
 
-import baritone.api.BaritoneAPI;
 import drvlabs.de.BTScreen;
-import drvlabs.de.data.DataManager;
+import drvlabs.de.config.Configs;
 import drvlabs.de.utils.BotStatus;
+import drvlabs.de.utils.CommandUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -31,8 +31,7 @@ public class AutoTorch {
 	}
 
 	public static void prepare(MinecraftClient mc) {
-		BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().pause();
-		DataManager.setBotStatus(BotStatus.LIGHTING);
+		CommandUtils.pause(BotStatus.LIGHTING);
 		mc.player.setPitch(90);
 	}
 
@@ -52,10 +51,13 @@ public class AutoTorch {
 			int torchSlot = getTorchSlotInHotbar(mc);
 			if (torchSlot != -1) {
 				tryPlacingTorch(mc, torchSlot);
+			} else {
+				BTScreen.debugLog("No Torch in Hotbar Disabeling");
+				Configs.Generic.AUTO_TORCH.setBooleanValue(false);
+				CommandUtils.resume();
 			}
 		} else {
-			BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().resume();
-			DataManager.setBotStatus(BotStatus.MINING);
+			CommandUtils.resume();
 		}
 	}
 }

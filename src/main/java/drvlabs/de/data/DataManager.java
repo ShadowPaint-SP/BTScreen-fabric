@@ -2,10 +2,6 @@ package drvlabs.de.data;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -17,16 +13,14 @@ import drvlabs.de.gui.GuiConfigs.ConfigGuiTab;
 import drvlabs.de.utils.BotStatus;
 import drvlabs.de.utils.customcommands.CommandsManager;
 import drvlabs.de.utils.preset.PresetMode;
-import fi.dy.masa.malilib.gui.interfaces.IDirectoryCache;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
-public class DataManager implements IDirectoryCache {
+public class DataManager {
 
 	private static final DataManager INSTANCE = new DataManager();
 
-	private static final Map<String, Path> LAST_DIRECTORIES = new HashMap<>();
 	private static CommandsManager commandsManager = new CommandsManager();
 	private static ConfigGuiTab configGuiTab = ConfigGuiTab.GENERIC;
 	private static boolean canSave;
@@ -105,43 +99,14 @@ public class DataManager implements IDirectoryCache {
 		return dir.resolve(StringUtils.getStorageFileName(globalData, Reference.MOD_ID + "_", ".json", "default"));
 	}
 
-	@Override
-	@Nullable
-	public Path getCurrentDirectoryForContext(String context) {
-		return LAST_DIRECTORIES.get(context);
-	}
-
-	@Override
-	public void setCurrentDirectoryForContext(String context, Path dir) {
-		LAST_DIRECTORIES.put(context, dir);
-	}
-
 	public static void load() {
 		getInstance().loadPerDimensionData();
 		Path file = getCurrentStorageFile(true);
 		JsonElement element = JsonUtils.parseJsonFileAsPath(file);
 
 		if (element != null && element.isJsonObject()) {
-			LAST_DIRECTORIES.clear();
 
 			JsonObject root = element.getAsJsonObject();
-
-			if (JsonUtils.hasObject(root, "last_directories")) {
-				JsonObject obj = root.get("last_directories").getAsJsonObject();
-
-				for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
-					String name = entry.getKey();
-					JsonElement el = entry.getValue();
-
-					if (el.isJsonPrimitive()) {
-						Path dir = Path.of(el.getAsString());
-
-						if (Files.exists(dir) && Files.isDirectory(dir)) {
-							LAST_DIRECTORIES.put(name, dir);
-						}
-					}
-				}
-			}
 
 			if (JsonUtils.hasString(root, "config_gui_tab")) {
 				try {
@@ -174,13 +139,7 @@ public class DataManager implements IDirectoryCache {
 		getInstance().savePerDimensionData();
 
 		JsonObject root = new JsonObject();
-		JsonObject objDirs = new JsonObject();
 
-		for (Map.Entry<String, Path> entry : LAST_DIRECTORIES.entrySet()) {
-			objDirs.add(entry.getKey(), new JsonPrimitive(entry.getValue().toAbsolutePath().toString()));
-		}
-
-		root.add("last_directories", objDirs);
 		root.add("commands", commandsManager.toJson());
 		root.add("config_gui_tab", new JsonPrimitive(configGuiTab.name()));
 
@@ -191,12 +150,13 @@ public class DataManager implements IDirectoryCache {
 	}
 
 	public static void clear() {
-		save(true);
 		BTScreen.debugLog("Clearing data");
 		botStatus = BotStatus.IDLE;
 		getInstance().setActive(false);
 		needsToEat = false;
 	}
+
+	// dimension specific storage
 
 	private void savePerDimensionData() {
 		JsonObject root = this.toJson();

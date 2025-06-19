@@ -3,6 +3,7 @@ package drvlabs.de.utils;
 import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
 import drvlabs.de.config.Configs;
+import drvlabs.de.data.DataManager;
 import net.minecraft.client.MinecraftClient;
 
 public class CommandUtils {
@@ -11,6 +12,17 @@ public class CommandUtils {
 
 	public static void execute(String command) {
 		baritone.getCommandManager().execute(command);
+	}
+
+	public static void pause(BotStatus newSatus) {
+		execute("pause");
+		DataManager.setBotStatus(newSatus);
+
+	}
+
+	public static void resume() {
+		execute("resume");
+		DataManager.setBotStatus(BotStatus.MINING);
 	}
 
 	public static void tpTo(String homeName) {

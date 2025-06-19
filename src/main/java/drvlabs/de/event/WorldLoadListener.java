@@ -13,22 +13,21 @@ public class WorldLoadListener implements IWorldLoadListener {
 	@SuppressWarnings("null")
 	@Override
 	public void onWorldLoadPre(@Nullable ClientWorld worldBefore, @Nullable ClientWorld worldAfter, MinecraftClient mc) {
+
 		if (worldBefore != null) {
 			DataManager.save();
-		}
-		if (worldAfter == null) {
-			DataManager.save();
-			DataManager.clear();
-
 		}
 	}
 
 	@SuppressWarnings("null")
 	@Override
 	public void onWorldLoadPost(@Nullable ClientWorld worldBefore, @Nullable ClientWorld worldAfter, MinecraftClient mc) {
-		if (worldBefore == null) {
+
+		if (worldAfter != null) {
 			DataManager.load();
 			BTScreen.LOGGER.error("Loaded settings");
+		} else {
+			DataManager.clear();
 		}
 	}
 }
