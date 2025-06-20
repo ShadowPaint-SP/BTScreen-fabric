@@ -98,6 +98,7 @@ public enum PresetMode implements StringIdentifiable {
 					.toList();
 			bt.blocksToDisallowBreaking.value = blocksToDisallowBreaking; // Blocks that cant be mined
 			bt.buildIgnoreBlocks.value = blocksToIgnore; // Blocks that should be ignored in the selection
+			setAcceptableThrowawayItems();
 			BTScreen.debugLog("Updated settings do default");
 		}
 		if (this.asString().equals(FARM.asString())) {
@@ -116,6 +117,7 @@ public enum PresetMode implements StringIdentifiable {
 					.toList();
 			bt.blocksToDisallowBreaking.value = blocksToDisallowBreaking; // Blocks that cant be mined
 			bt.buildIgnoreBlocks.value = blocksToIgnore; // Blocks that should be ignored in the selection
+			setAcceptableThrowawayItems();
 			BTScreen.debugLog("Updated settings do farm");
 		}
 	}
@@ -147,6 +149,25 @@ public enum PresetMode implements StringIdentifiable {
 				"large_amethyst_bud",
 				"amethyst_cluster",
 				"dragon_egg");
+	}
+
+	private static void setAcceptableThrowawayItems() {
+		bt.acceptableThrowawayItems.value = Configs.Lists.ACCEPTABLE_THROWAWAY_ITEMS
+				.getStrings().stream().map(string -> Registries.ITEM.get(Identifier.tryParse(string)))
+				.filter(Objects::nonNull).toList();
+	}
+
+	public static ImmutableList<String> getAcceptableThrowawayItems() {
+		return ImmutableList.of("grass_block",
+				"dirt",
+				"cobblestone",
+				"stone",
+				"deepslate",
+				"cobbled_deepslate",
+				"netherrack",
+				"soul_sand",
+				"soul_soil",
+				"basalt");
 	}
 
 	public static ImmutableList<String> getFarmIgnoreList() {

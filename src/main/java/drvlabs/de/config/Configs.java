@@ -76,13 +76,16 @@ public class Configs implements IConfigHandler {
 				"farmBlocksToDisallowBreaking", PresetMode.getGlobalDisallowBreakingList()).apply(LISTS_KEY);
 		public static final ConfigStringList FARM_BLOCKS_TO_IGNORE = new ConfigStringList("farmBlocksToIgnore",
 				PresetMode.getFarmIgnoreList()).apply(LISTS_KEY);
+		public static final ConfigStringList ACCEPTABLE_THROWAWAY_ITEMS = new ConfigStringList("acceptableThrowawayItems",
+				PresetMode.getAcceptableThrowawayItems()).apply(LISTS_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
 				INV_PRESERVE_ITEM_BLACKLIST,
 				DEFAULT_BLOCKS_TO_DISALLOW_BREAKING,
 				DEFAULT_BLOCKS_TO_IGNORE,
 				FARM_BLOCKS_TO_DISALLOW_BREAKING,
-				FARM_BLOCKS_TO_IGNORE);
+				FARM_BLOCKS_TO_IGNORE,
+				ACCEPTABLE_THROWAWAY_ITEMS);
 	}
 
 	public static void loadFromFile() {
