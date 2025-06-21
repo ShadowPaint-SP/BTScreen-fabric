@@ -14,6 +14,12 @@ public class CommandUtils {
 		baritone.getCommandManager().execute(command);
 	}
 
+	public static void btBlockAction(String command) {
+		String replace = String.join(" ", Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings());
+		String with = Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue();
+		baritone.getCommandManager().execute(command + " " + replace + " " + with);
+	}
+
 	public static void pause(BotStatus newSatus) {
 		execute("pause");
 		DataManager.setBotStatus(newSatus);

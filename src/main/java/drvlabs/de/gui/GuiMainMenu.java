@@ -46,9 +46,9 @@ public class GuiMainMenu extends GuiBase {
 		this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.selManagement");
 		y += 22;
 		x += 5;
-		x += this.createButton(x, y, -1, ButtonListener.Type.SELPOSONE);
-		x += this.createButton(x, y, -1, ButtonListener.Type.SELPOSTWO);
-		x += this.createButton(x, y, -1, ButtonListener.Type.SELDELETE);
+		x += this.createButton(x, y, -1, ButtonListener.Type.SELPOSONE, false);
+		x += this.createButton(x, y, -1, ButtonListener.Type.SELPOSTWO, false);
+		x += this.createButton(x, y, -1, ButtonListener.Type.SELDELETE, false);
 
 		////////////////////////////////////////////////// Bot Control
 		y += 30;
@@ -56,8 +56,8 @@ public class GuiMainMenu extends GuiBase {
 		this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.botControl");
 		y += 22;
 		x += 5;
-		x += this.createButton(x, y, -1, ButtonListener.Type.START);
-		x += this.createButton(x, y, -1, ButtonListener.Type.STOP);
+		x += this.createButton(x, y, -1, ButtonListener.Type.START, true);
+		x += this.createButton(x, y, x - 17, ButtonListener.Type.STOP, false);
 		y += 22;
 		x = 17;
 		if (baritoneBuildProcess.isPaused()) {
@@ -68,6 +68,22 @@ public class GuiMainMenu extends GuiBase {
 		width = this.getStringWidth(label) + 10;
 		ButtonGeneric button = new ButtonGeneric(x, y, width, 20, label);
 		this.addButton(button, new ButtonListener(ButtonListener.Type.PAUSE_RESUME, this));
+
+		////////////////////////////////////////////////// Additional Controls
+		y += 60;
+		x = 12;
+		this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.additionalControls");
+		y += 22;
+		x += 5;
+		width = 80;
+		x += this.createButton(x, y, width, ButtonListener.Type.SEL_COPY, false);
+		x += this.createButton(x, y, width, ButtonListener.Type.SEL_PASTE, false);
+		x += this.createButton(x, y, width, ButtonListener.Type.SEL_REPLACE, false);
+		y += 22;
+		x = 17;
+		x += this.createButton(x, y, width, ButtonListener.Type.SEL_SET, false);
+		x += this.createButton(x, y, width, ButtonListener.Type.SEL_SHELL, false);
+		x += this.createButton(x, y, width, ButtonListener.Type.SEL_WALLS, false);
 
 		////////////////////////////////////////////////// Box Resizing
 		x = this.getScreenWidth() / 2;
@@ -117,7 +133,7 @@ public class GuiMainMenu extends GuiBase {
 		/// ////////////////////////////////////////////// Bottom Menu
 		x = 12;
 		y = this.getScreenHeight() - 26;
-		x += this.createButton(x, y, -1, ButtonListener.Type.CONFIGURATION);
+		x += this.createButton(x, y, -1, ButtonListener.Type.CONFIGURATION, true);
 		label = StringUtils.translate("btscreen.gui.button.preset_mode", DataManager.getPresetMode().getName());
 		width = this.getStringWidth(label) + 10;
 		button = new ButtonGeneric(x, y, width, 20, label);
@@ -147,10 +163,11 @@ public class GuiMainMenu extends GuiBase {
 		return 20;
 	}
 
-	private int createButton(int x, int y, int width, ButtonListener.Type type) {
+	private int createButton(int x, int y, int width, ButtonListener.Type type, boolean withIcon) {
 		ButtonListener listener = new ButtonListener(type, this);
 		String label = StringUtils.translate(type.getTranslationKey());
 		ButtonIcons icon = type.getIcon();
+		ButtonGeneric button = null;
 
 		if (width == -1) {
 			width = this.getStringWidth(label) + 10;
@@ -158,8 +175,11 @@ public class GuiMainMenu extends GuiBase {
 		if (icon != null) {
 			width += icon.getWidth() + 5;
 		}
-
-		ButtonGeneric button = new ButtonGeneric(x, y, width, 20, label, icon);
+		if (withIcon) {
+			button = new ButtonGeneric(x, y, width, 20, label, icon);
+		} else {
+			button = new ButtonGeneric(x, y, width, 20, label);
+		}
 
 		if (type == ButtonListener.Type.START) {
 			button.setHoverStrings(StringUtils.translate("btscreen.gui.button.hover.startBotInfoText"));
@@ -211,6 +231,7 @@ public class GuiMainMenu extends GuiBase {
 					CommandUtils.execute("sel cleararea");
 					DataManager.getInstance().setActive(true);
 					AutoDrop.updateMaxSlots();
+					DataManager.getPresetMode().setSettings();
 					DataManager.setBotStatus(BotStatus.MINING);
 					// check for haste
 					if (Configs.Generic.AUTO_HASTE.getBooleanValue()) {
@@ -281,6 +302,29 @@ public class GuiMainMenu extends GuiBase {
 					}
 					this.gui.initGui();
 					return;
+				case Type.SEL_SET:
+					BaritoneAPI.getSettings().layerOrder.value = false;
+					CommandUtils.execute("sel set " + Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
+					return;
+				case Type.SEL_WALLS:
+					BaritoneAPI.getSettings().layerOrder.value = false;
+					CommandUtils.execute("sel walls " + Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
+					return;
+				case Type.SEL_SHELL:
+					BaritoneAPI.getSettings().layerOrder.value = false;
+					CommandUtils.execute("sel shell " + Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
+					return;
+				case Type.SEL_REPLACE:
+					BaritoneAPI.getSettings().layerOrder.value = false;
+					CommandUtils.btBlockAction("sel replace");
+					return;
+				case Type.SEL_COPY:
+					CommandUtils.execute("sel copy");
+					return;
+				case Type.SEL_PASTE:
+					BaritoneAPI.getSettings().layerOrder.value = false;
+					CommandUtils.execute("sel paste");
+					return;
 				default:
 					break;
 			}
@@ -304,7 +348,13 @@ public class GuiMainMenu extends GuiBase {
 			SOUTH("btscreen.gui.button.south", null),
 			WEST("btscreen.gui.button.west", null),
 			COMMAND("btscreen.gui.button.command", null),
-			PAUSE_RESUME("btscreen.gui.button.pause_resume", null);
+			PAUSE_RESUME("btscreen.gui.button.pause_resume", null),
+			SEL_SET("btscreen.gui.button.sel_set", null),
+			SEL_WALLS("btscreen.gui.button.sel_walls", null),
+			SEL_SHELL("btscreen.gui.button.sel_shell", null),
+			SEL_REPLACE("btscreen.gui.button.sel_replace", null),
+			SEL_COPY("btscreen.gui.button.sel_copy", null),
+			SEL_PASTE("btscreen.gui.button.sel_paste", null);
 
 			private final String translationKey;
 			private final ButtonIcons icon;

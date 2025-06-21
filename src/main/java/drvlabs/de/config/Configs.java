@@ -68,6 +68,11 @@ public class Configs implements IConfigHandler {
 	public static class Lists {
 		public static final ConfigStringList INV_PRESERVE_ITEM_BLACKLIST = new ConfigStringList("invPreserveItemBlackList",
 				ImmutableList.of()).apply(LISTS_KEY);
+		public static final ConfigStringList BLOCKS_TO_GET_REPLACED = new ConfigStringList("blocksToGetReplaced",
+				ImmutableList.of("small_amethyst_bud", " medium_amethyst_bud", "large_amethyst_bud", "amethyst_cluster"))
+				.apply(LISTS_KEY);
+		public static final ConfigString BLOCK_TO_REPLACE_WITH = new ConfigString("blockToReplaceWith",
+				"air").apply(LISTS_KEY);
 		public static final ConfigStringList DEFAULT_BLOCKS_TO_DISALLOW_BREAKING = new ConfigStringList(
 				"defaultBlocksToDisallowBreaking", PresetMode.getGlobalDisallowBreakingList()).apply(LISTS_KEY);
 		public static final ConfigStringList DEFAULT_BLOCKS_TO_IGNORE = new ConfigStringList("defaultBlocksToIgnore",
@@ -81,6 +86,8 @@ public class Configs implements IConfigHandler {
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
 				INV_PRESERVE_ITEM_BLACKLIST,
+				BLOCKS_TO_GET_REPLACED,
+				BLOCK_TO_REPLACE_WITH,
 				DEFAULT_BLOCKS_TO_DISALLOW_BREAKING,
 				DEFAULT_BLOCKS_TO_IGNORE,
 				FARM_BLOCKS_TO_DISALLOW_BREAKING,
