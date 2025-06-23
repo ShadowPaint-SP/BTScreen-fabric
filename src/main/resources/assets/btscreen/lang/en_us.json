@@ -27,7 +27,7 @@
 	"btscreen.gui.button.shift_sel_x": "X",
 	"btscreen.gui.button.shift_sel_y": "Y",
 	"btscreen.gui.button.shift_sel_z": "Z",
-  "btscreen.gui.button.hover.plus_minus_tip_ctrl_alt_shift": "Left click to increase\nRight click to decrease\nShift/Alt/Ctrl to increase the step size (multiplicative)",
+    "btscreen.gui.button.hover.plus_minus_tip_ctrl_alt_shift": "Left click to increase\nRight click to decrease\nShift/Alt/Ctrl to increase the step size (multiplicative)",
 	"btscreen.preset_mode.name.farm": "Farm",
 	"btscreen.preset_mode.name.default": "Default",
 	"btscreen.gui.button.resume": "Resume Mining",
@@ -86,6 +86,8 @@
 	"btscreen.config.generic.comment.hasteHome": "Should be a place in range of a beacon that gives u haste",
 	"btscreen.config.generic.name.repairHome": "Repair Home",
 	"btscreen.config.generic.comment.repairHome": "Place at a XP farm and look in the right direction to hit the mobs",
+	"btscreen.config.generic.name.blockBreakCooldown": "Block Break Cooldown",
+	"btscreen.config.generic.comment.blockBreakCooldown": "Lets you configure the cooldown between block breaks",
 
 	"btscreen.config.lists.name.invPreserveItemBlackList": "Disallow Dropping",
 	"btscreen.config.lists.comment.invPreserveItemBlackList": "Items that should not be dropped",
