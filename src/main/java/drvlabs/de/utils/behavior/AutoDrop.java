@@ -9,7 +9,6 @@ import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import java.util.ArrayList;
 import java.util.List;
 
-import baritone.api.BaritoneAPI;
 import drvlabs.de.BTScreen;
 import drvlabs.de.config.Configs;
 import drvlabs.de.data.DataManager;
@@ -39,23 +38,19 @@ public class AutoDrop {
 
 		if (!hasFreeSlot) {
 			DataManager.setBotStatus(BotStatus.DROPPING);
-			BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("pause");
-			BTScreen.debugLog("Inventory full, pausing bot");
+			CommandUtils.execute("pause");
+			BTScreen.debugLog("Inventory full");
 			CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
 			CommandUtils.tpTo(Configs.Generic.DROP_HOME.getStringValue());
-			Waiter.wait("drop_wait", 200, () -> {
-				Waiter.cancel("drop_wait");
+			Waiter.wait(60, () -> {
 				mc.setScreen(new InventoryScreen(mc.player));
 				dropInventory();
 				// dropWaitFinished = true;
 				mc.currentScreen.close();
 				CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
-				Waiter.wait("resume_drop_wait", 100, () -> {
-					Waiter.cancel("resume_drop_wait");
-					DataManager.setBotStatus(BotStatus.MINING);
-					BaritoneAPI.getProvider().getPrimaryBaritone().getCommandManager().execute("resume");
-					checkInventory(); // To make sure the inventory has space now
-				});
+				DataManager.setBotStatus(BotStatus.MINING);
+				CommandUtils.execute("resume");
+				checkInventory(); // To make sure the inventory has space now
 			});
 		}
 	}
@@ -84,7 +79,6 @@ public class AutoDrop {
 			if (isNotAllowedToDrop(slot)) {
 				continue;
 			}
-			BTScreen.debugLog("Dropping slot: " + slot);
 			mc.interactionManager.clickSlot(0, slot, 1, SlotActionType.THROW, mc.player);
 		}
 	}

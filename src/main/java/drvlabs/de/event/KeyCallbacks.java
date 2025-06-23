@@ -1,9 +1,12 @@
 package drvlabs.de.event;
 
+import baritone.api.BaritoneAPI;
 import drvlabs.de.config.Hotkeys;
+import drvlabs.de.data.DataManager;
 import drvlabs.de.gui.GuiCommandList;
 import drvlabs.de.gui.GuiConfigs;
 import drvlabs.de.gui.GuiMainMenu;
+import drvlabs.de.utils.BotStatus;
 import fi.dy.masa.malilib.config.IConfigBoolean;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.hotkeys.IHotkeyCallback;
@@ -20,6 +23,8 @@ public class KeyCallbacks {
 
 		Hotkeys.OPEN_GUI_MAIN_MENU.getKeybind().setCallback(callbackHotkeys);
 		Hotkeys.OPEN_GUI_SETTINGS.getKeybind().setCallback(callbackHotkeys);
+		Hotkeys.OPEN_GUI_CUSTOM_COMMANDS.getKeybind().setCallback(callbackHotkeys);
+		Hotkeys.PAUSE_RESUME.getKeybind().setCallback(callbackHotkeys);
 	}
 
 	private static class KeyCallbackHotkeys implements IHotkeyCallback {
@@ -43,6 +48,15 @@ public class KeyCallbacks {
 				return true;
 			} else if (key == Hotkeys.OPEN_GUI_CUSTOM_COMMANDS.getKeybind()) {
 				GuiBase.openGui(new GuiCommandList());
+				return true;
+			} else if (key == Hotkeys.PAUSE_RESUME.getKeybind()) {
+				if (BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().isPaused()) {
+					BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().resume();
+					DataManager.setBotStatus(BotStatus.MINING);
+				} else {
+					BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().pause();
+					DataManager.setBotStatus(BotStatus.IDLE);
+				}
 				return true;
 			}
 			return false;

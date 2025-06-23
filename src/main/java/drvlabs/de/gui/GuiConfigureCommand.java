@@ -21,7 +21,6 @@ public class GuiConfigureCommand extends GuiBase {
 	public static boolean newCommand;
 
 	public GuiConfigureCommand(Commands command) {
-		BTScreen.debugLog("Opening configure command gui" + command);
 		if (command == null) {
 			BTScreen.debugLog("Creating new command");
 			this.command = new Commands("", "", null);
@@ -31,7 +30,7 @@ public class GuiConfigureCommand extends GuiBase {
 			this.command = command;
 			newCommand = false;
 		}
-		this.title = StringUtils.translate("btscreen.gui.title.configure_schematic_placement");
+		this.title = StringUtils.translate("btscreen.gui.title.configure_command");
 	}
 
 	@Override

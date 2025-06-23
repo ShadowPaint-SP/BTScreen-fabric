@@ -2,7 +2,8 @@ package drvlabs.de.gui;
 
 import org.jetbrains.annotations.Nullable;
 
-import drvlabs.de.BTScreen;
+import baritone.api.BaritoneAPI;
+import baritone.api.process.IBuilderProcess;
 import drvlabs.de.Reference;
 import drvlabs.de.config.Configs;
 import drvlabs.de.data.DataManager;
@@ -25,6 +26,8 @@ import net.minecraft.entity.effect.StatusEffects;
 public class GuiMainMenu extends GuiBase {
 	private final int textColor = 0xFEFEFEFE;
 	private static MinecraftClient mc = MinecraftClient.getInstance();
+	private static IBuilderProcess baritoneBuildProcess = BaritoneAPI.getProvider().getPrimaryBaritone()
+			.getBuilderProcess();
 
 	public GuiMainMenu() {
 		String version = String.format("v%s", Reference.MOD_VERSION);
@@ -39,6 +42,7 @@ public class GuiMainMenu extends GuiBase {
 		int width = 68;
 		String label;
 
+		////////////////////////////////////////////////// Selection Management
 		this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.selManagement");
 		y += 22;
 		x += 5;
@@ -46,16 +50,26 @@ public class GuiMainMenu extends GuiBase {
 		x += this.createButton(x, y, -1, ButtonListener.Type.SELPOSTWO);
 		x += this.createButton(x, y, -1, ButtonListener.Type.SELDELETE);
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////// Bot Control
 		y += 30;
 		x = 12;
 		this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.botControl");
 		y += 22;
 		x += 5;
 		x += this.createButton(x, y, -1, ButtonListener.Type.START);
-		this.createButton(x, y, -1, ButtonListener.Type.STOP);
+		x += this.createButton(x, y, -1, ButtonListener.Type.STOP);
+		y += 22;
+		x = 17;
+		if (baritoneBuildProcess.isPaused()) {
+			label = StringUtils.translate("btscreen.gui.button.resume");
+		} else {
+			label = StringUtils.translate("btscreen.gui.button.pause");
+		}
+		width = this.getStringWidth(label) + 10;
+		ButtonGeneric button = new ButtonGeneric(x, y, width, 20, label);
+		this.addButton(button, new ButtonListener(ButtonListener.Type.PAUSE_RESUME, this));
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////// Box Resizing
 		x = this.getScreenWidth() / 2;
 		y = 30;
 		this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.boxResizing");
@@ -67,13 +81,13 @@ public class GuiMainMenu extends GuiBase {
 		y += 20;
 		x += this.createCoordinateInput(x, y, width, CoordinateType.SOUTH) + 10;
 		y -= 40;
-		this.createCoordinateInput(x, y, width, CoordinateType.UP);
+		int maxX = x + this.createCoordinateInput(x, y, width, CoordinateType.UP);
 		y += 20;
-		this.createCoordinateInput(x, y, width, CoordinateType.EAST);
+		maxX = Math.max(maxX, x + this.createCoordinateInput(x, y, width, CoordinateType.EAST));
 		y += 20;
-		this.createCoordinateInput(x, y, width, CoordinateType.DOWN);
+		maxX = Math.max(maxX, x + this.createCoordinateInput(x, y, width, CoordinateType.DOWN));
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////// Box Moving
 		x = this.getScreenWidth() / 2;
 		y += 30;
 		this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.boxMoving");
@@ -83,24 +97,30 @@ public class GuiMainMenu extends GuiBase {
 		x += this.createCoordinateInput(x, y, width, CoordinateType.SHIFTY) + 3;
 		this.createCoordinateInput(x, y, width, CoordinateType.SHIFTZ);
 
-		//////////////////////////////////////////////////
+		////////////////////////////////////////////////// Custom Commands
 		y = 30;
-		x = this.getScreenWidth() - 200;
-		for (Commands command : CommandsManager.getAllCommands()) {
-			y += this.createCommandButton(x, y, 100, ButtonListener.Type.COMMAND, command);
-			if (y >= this.getScreenHeight() - 26) {
-				y = 30;
-				x += 100;
+		x = this.getScreenWidth() - 217;
+		if (x >= maxX) {
+			for (Commands command : CommandsManager.getAllCommands()) {
+				y += this.createCommandButton(x, y, 100, ButtonListener.Type.COMMAND, command);
+				if (y >= this.getScreenHeight() - 26) {
+					y = 30;
+					x += 100;
+					if (x >= this.getScreenWidth()) {
+						break;
+					}
+				}
+
 			}
 		}
 
-		/// //////////////////////////////////////////////
+		/// ////////////////////////////////////////////// Bottom Menu
 		x = 12;
 		y = this.getScreenHeight() - 26;
 		x += this.createButton(x, y, -1, ButtonListener.Type.CONFIGURATION);
 		label = StringUtils.translate("btscreen.gui.button.preset_mode", DataManager.getPresetMode().getName());
-		int width2 = this.getStringWidth(label) + 10;
-		ButtonGeneric button = new ButtonGeneric(x, y, width2, 20, label);
+		width = this.getStringWidth(label) + 10;
+		button = new ButtonGeneric(x, y, width, 20, label);
 		x += this.addButton(button, new ButtonListenerCyclePresetMode(this)).getWidth();
 		this.createChangeMenuButton(x, y, -1, ButtonListenerChangeMenu.ButtonType.COMMAND_LIST_MANAGER);
 	}
@@ -251,6 +271,16 @@ public class GuiMainMenu extends GuiBase {
 						CommandUtils.sendCommand(this.command.getCommand());
 					}
 					return;
+				case Type.PAUSE_RESUME:
+					if (BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().isPaused()) {
+						BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().resume();
+						DataManager.setBotStatus(BotStatus.MINING);
+					} else {
+						BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().pause();
+						DataManager.setBotStatus(BotStatus.IDLE);
+					}
+					this.gui.initGui();
+					return;
 				default:
 					break;
 			}
@@ -273,7 +303,8 @@ public class GuiMainMenu extends GuiBase {
 			EAST("btscreen.gui.button.east", null),
 			SOUTH("btscreen.gui.button.south", null),
 			WEST("btscreen.gui.button.west", null),
-			COMMAND("btscreen.gui.button.command", null);
+			COMMAND("btscreen.gui.button.command", null),
+			PAUSE_RESUME("btscreen.gui.button.pause_resume", null);
 
 			private final String translationKey;
 			private final ButtonIcons icon;
@@ -373,7 +404,6 @@ public class GuiMainMenu extends GuiBase {
 			DataManager.setPresetMode(mode);
 			mode.setSettings();
 			this.gui.initGui();
-			BTScreen.debugLog("Preset Mode: " + mode);
 		}
 	}
 

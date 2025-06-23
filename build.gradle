@@ -43,7 +43,6 @@ dependencies {
 	modImplementation "com.github.sakura-ryoko:malilib:${project.malilib_version}" // malilib
 	modCompileOnly "com.terraformersmc:modmenu:${project.mod_menu_version}" // modmenu
 	//Baritone
-	// modImplementation "local:baritone-unoptimized-fabric:${project.baritone_version}"
 	modImplementation "meteordevelopment:baritone:${project.minecraft_version}-SNAPSHOT"
 	modRuntimeOnly "dev.babbaj:nether-pathfinder:${project.nether_pathfinder_version}" // https://github.com/babbaj/maven/tree/master/dev/babbaj/nether-pathfinder
 }

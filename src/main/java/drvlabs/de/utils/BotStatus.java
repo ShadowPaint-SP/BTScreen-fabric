@@ -8,7 +8,8 @@ public enum BotStatus implements StringIdentifiable {
 	DROPPING("dropping"),
 	SLEEPING("sleeping"),
 	HASTING("hasting"),
-	REPAIRING("repairing");
+	REPAIRING("repairing"),
+	LIGHTING("lighting");
 
 	private final String configString;
 

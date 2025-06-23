@@ -24,12 +24,12 @@ public class Configs implements IConfigHandler {
 
 	public static class Generic {
 		public static final ConfigBoolean DEBUG_LOGGING = new ConfigBoolean("debugLogging", true).apply(GENERIC_KEY);
-		public static final ConfigBoolean RSD_SETTINGS = new ConfigBoolean("rsdSettings", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_SLEEP = new ConfigBoolean("autoSleep", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_REPAIR = new ConfigBoolean("autoRepair", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_EAT = new ConfigBoolean("autoEat", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_HASTE = new ConfigBoolean("autoHaste", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_DROP = new ConfigBoolean("autoDrop", false).apply(GENERIC_KEY);
+		public static final ConfigBoolean AUTO_TORCH = new ConfigBoolean("autoTorch", false).apply(GENERIC_KEY);
 		public static final ConfigString HOME_COMMAND = new ConfigString("homeCommand", "home").apply(GENERIC_KEY);
 		public static final ConfigString SETHOME_COMMAND = new ConfigString("setHomeCommand", "sethome").apply(GENERIC_KEY);
 		public static final ConfigString SLEEP_HOME = new ConfigString("sleepHome", "sleep").apply(GENERIC_KEY);
@@ -37,10 +37,13 @@ public class Configs implements IConfigHandler {
 		public static final ConfigString HASTE_HOME = new ConfigString("hasteHome", "haste").apply(GENERIC_KEY);
 		public static final ConfigString REPAIR_HOME = new ConfigString("repairHome", "repair").apply(GENERIC_KEY);
 		public static final ConfigString MINE_HOME = new ConfigString("mineHome", "mine").apply(GENERIC_KEY);
-		public static final ConfigInteger PERIODIC_ATTACK_INTERVAL = new ConfigInteger("periodicAttackInterval", 200, 0,
-				Integer.MAX_VALUE).apply(GENERIC_KEY);
+		public static final ConfigInteger PERIODIC_ATTACK_INTERVAL = new ConfigInteger("periodicAttackInterval", 25, 1, 400)
+				.apply(GENERIC_KEY);
 		public static final ConfigInteger ITEM_DURABILITY_THRESHOLD = new ConfigInteger("itemDurabilityThreshold", 40, 20,
-				Integer.MAX_VALUE).apply(GENERIC_KEY);
+				100).apply(GENERIC_KEY);
+		public static final ConfigInteger FOOD_LEVEL = new ConfigInteger("foodLevel", 18, 4, 18).apply(GENERIC_KEY);
+		public static final ConfigInteger MIN_LIGHT_LEVEL = new ConfigInteger("minLightLevel", 1, 0, 14).apply(GENERIC_KEY);
+		public static final ConfigInteger BLOCK_BREAK_COOLDOWN = new ConfigInteger("blockBreakCooldown", 5, 0, 5).apply(GENERIC_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
 				AUTO_SLEEP,
@@ -48,6 +51,7 @@ public class Configs implements IConfigHandler {
 				AUTO_EAT,
 				AUTO_HASTE,
 				AUTO_DROP,
+				AUTO_TORCH,
 				PERIODIC_ATTACK_INTERVAL,
 				ITEM_DURABILITY_THRESHOLD,
 				HOME_COMMAND,
@@ -57,31 +61,30 @@ public class Configs implements IConfigHandler {
 				DROP_HOME,
 				HASTE_HOME,
 				REPAIR_HOME,
-				RSD_SETTINGS,
+				FOOD_LEVEL,
+				MIN_LIGHT_LEVEL,
+				BLOCK_BREAK_COOLDOWN,
 				DEBUG_LOGGING);
 	}
 
 	public static class Lists {
-		public static final ConfigStringList INV_PRESERVE_ITEM_BLACKLIST = new ConfigStringList(
-				"invPreserveItemBlackList", ImmutableList.of()).apply(LISTS_KEY);
+		public static final ConfigStringList INV_PRESERVE_ITEM_BLACKLIST = new ConfigStringList("invPreserveItemBlackList",
+				ImmutableList.of()).apply(LISTS_KEY);
 		public static final ConfigStringList DEFAULT_BLOCKS_TO_DISALLOW_BREAKING = new ConfigStringList(
 				"defaultBlocksToDisallowBreaking", PresetMode.getGlobalDisallowBreakingList()).apply(LISTS_KEY);
-		public static final ConfigStringList DEFAULT_BLOCKS_TO_IGNORE = new ConfigStringList(
-				"defaultBlocksToIgnore", PresetMode.getDefaultIgnoreList()).apply(LISTS_KEY);
+		public static final ConfigStringList DEFAULT_BLOCKS_TO_IGNORE = new ConfigStringList("defaultBlocksToIgnore",
+				PresetMode.getDefaultIgnoreList()).apply(LISTS_KEY);
 		public static final ConfigStringList FARM_BLOCKS_TO_DISALLOW_BREAKING = new ConfigStringList(
 				"farmBlocksToDisallowBreaking", PresetMode.getGlobalDisallowBreakingList()).apply(LISTS_KEY);
-		public static final ConfigStringList FARM_BLOCKS_TO_IGNORE = new ConfigStringList(
-				"farmBlocksToIgnore", PresetMode.getFarmIgnoreList()).apply(LISTS_KEY);
-		public static final ConfigStringList JOIN_COMMANDS = new ConfigStringList(
-				"joinCommands", ImmutableList.of("cnolock", "adblock")).apply(LISTS_KEY);
+		public static final ConfigStringList FARM_BLOCKS_TO_IGNORE = new ConfigStringList("farmBlocksToIgnore",
+				PresetMode.getFarmIgnoreList()).apply(LISTS_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
 				INV_PRESERVE_ITEM_BLACKLIST,
 				DEFAULT_BLOCKS_TO_DISALLOW_BREAKING,
 				DEFAULT_BLOCKS_TO_IGNORE,
 				FARM_BLOCKS_TO_DISALLOW_BREAKING,
-				FARM_BLOCKS_TO_IGNORE,
-				JOIN_COMMANDS);
+				FARM_BLOCKS_TO_IGNORE);
 	}
 
 	public static void loadFromFile() {
@@ -97,9 +100,11 @@ public class Configs implements IConfigHandler {
 				ConfigUtils.readConfigBase(root, "Lists", Lists.OPTIONS);
 				ConfigUtils.readConfigBase(root, "Hotkeys", Hotkeys.HOTKEY_LIST);
 
-				BTScreen.debugLog("loadFromFile(): Successfully loaded config file '{}'.", configFile.toAbsolutePath());
+				BTScreen.debugLog("loadFromFile(): Successfully loaded config file '{}'.",
+						configFile.toAbsolutePath());
 			} else {
-				BTScreen.LOGGER.error("loadFromFile(): Failed to load config file '{}'.", configFile.toAbsolutePath());
+				BTScreen.LOGGER.error("loadFromFile(): Failed to load config file '{}'.",
+						configFile.toAbsolutePath());
 			}
 		}
 	}
@@ -120,7 +125,8 @@ public class Configs implements IConfigHandler {
 
 			JsonUtils.writeJsonToFileAsPath(root, dir.resolve(CONFIG_FILE_NAME));
 		} else {
-			BTScreen.LOGGER.error("saveToFile(): Config Folder '{}' does not exist!", dir.toAbsolutePath());
+			BTScreen.LOGGER.error("saveToFile(): Config Folder '{}' does not exist!",
+					dir.toAbsolutePath());
 		}
 	}
 

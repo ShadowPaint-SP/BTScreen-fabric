@@ -8,6 +8,7 @@ import drvlabs.de.data.DataManager;
 import drvlabs.de.gui.ButtonIcons;
 import drvlabs.de.gui.GuiCommandList;
 import drvlabs.de.utils.customcommands.Commands;
+import drvlabs.de.utils.customcommands.CommandsManager;
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetSearchBar;
@@ -31,7 +32,8 @@ public class WidgetCommandList extends WidgetListBase<Commands, WidgetCommand> {
 
 	@Override
 	protected Collection<Commands> getAllEntries() {
-		return DataManager.getCommandsManager().getAllCommands();
+		DataManager.getCommandsManager();
+		return CommandsManager.getAllCommands();
 	}
 
 	@Override
