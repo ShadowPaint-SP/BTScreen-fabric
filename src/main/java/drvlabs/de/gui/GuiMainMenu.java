@@ -41,6 +41,7 @@ public class GuiMainMenu extends GuiBase {
 		int y = 30;
 		int width = 68;
 		String label;
+		ButtonGeneric button;
 
 		////////////////////////////////////////////////// Selection Management
 		this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.selManagement");
@@ -60,14 +61,16 @@ public class GuiMainMenu extends GuiBase {
 		x += this.createButton(x, y, x - 17, ButtonListener.Type.STOP, false);
 		y += 22;
 		x = 17;
-		if (baritoneBuildProcess.isPaused()) {
-			label = StringUtils.translate("btscreen.gui.button.resume");
-		} else {
-			label = StringUtils.translate("btscreen.gui.button.pause");
+		if (DataManager.getActive()) {
+			if (baritoneBuildProcess.isPaused()) {
+				label = StringUtils.translate("btscreen.gui.button.resume");
+			} else {
+				label = StringUtils.translate("btscreen.gui.button.pause");
+			}
+			width = this.getStringWidth(label) + 10;
+			button = new ButtonGeneric(x, y, width, 20, label);
+			this.addButton(button, new ButtonListener(ButtonListener.Type.PAUSE_RESUME, this));
 		}
-		width = this.getStringWidth(label) + 10;
-		ButtonGeneric button = new ButtonGeneric(x, y, width, 20, label);
-		this.addButton(button, new ButtonListener(ButtonListener.Type.PAUSE_RESUME, this));
 
 		////////////////////////////////////////////////// Additional Controls
 		y += 60;
@@ -126,7 +129,6 @@ public class GuiMainMenu extends GuiBase {
 						break;
 					}
 				}
-
 			}
 		}
 
