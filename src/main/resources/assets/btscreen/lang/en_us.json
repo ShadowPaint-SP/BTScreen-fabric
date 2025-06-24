@@ -95,6 +95,8 @@
 	"btscreen.config.generic.comment.repairHome": "Place at a XP farm and look in the right direction to hit the mobs",
 	"btscreen.config.generic.name.minLightLevel": "Minimum Light Level",
 	"btscreen.config.generic.comment.minLightLevel": "When the block you are standing on has this light level then places a torch",
+	"btscreen.config.generic.name.blockBreakCooldown": "Block Break Cooldown",
+	"btscreen.config.generic.comment.blockBreakCooldown": "Lets you configure the cooldown between block breaks",
 
 	"btscreen.config.lists.name.invPreserveItemBlackList": "Disallow Dropping",
 	"btscreen.config.lists.comment.invPreserveItemBlackList": "Items that should not be dropped",

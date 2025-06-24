@@ -1,11 +1,15 @@
 package drvlabs.de.mixin.network;
 
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
 import drvlabs.de.config.Configs;
 import drvlabs.de.data.DataManager;
@@ -36,4 +40,34 @@ public abstract class MixinClientPlayerInteractionManager {
 			}
 		}
 	}
+
+	@Redirect(method = "updateBlockBreakingProgress", at = @At(value = "FIELD", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;blockBreakingCooldown:I", opcode = Opcodes.PUTFIELD, ordinal = 1))
+    private void creativeBreakDelayChange(ClientPlayerInteractionManager interactionManager, int value) {
+		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING) {
+	        blockBreakingCooldown = Configs.Generic.BLOCK_BREAK_COOLDOWN.getIntegerValue();
+		}
+    }
+
+    @Redirect(method = "updateBlockBreakingProgress", at = @At(value = "FIELD", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;blockBreakingCooldown:I", opcode = Opcodes.PUTFIELD, ordinal = 2))
+    private void survivalBreakDelayChange(ClientPlayerInteractionManager interactionManager, int value) {
+		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING) {
+	        blockBreakingCooldown = Configs.Generic.BLOCK_BREAK_COOLDOWN.getIntegerValue();
+		}
+    }
+
+    @Redirect(method = "attackBlock", at = @At(value = "FIELD", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;blockBreakingCooldown:I", opcode = Opcodes.PUTFIELD))
+    private void creativeBreakDelayChange2(ClientPlayerInteractionManager interactionManager, int value) {
+		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING) {
+	        blockBreakingCooldown = Configs.Generic.BLOCK_BREAK_COOLDOWN.getIntegerValue();
+		}
+    }
+
+    @ModifyExpressionValue(method = "method_41930", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;calcBlockBreakingDelta(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;)F"))
+    private float modifyBlockBreakingDelta(float original) {
+		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING) {
+	        blockBreakingCooldown = Configs.Generic.BLOCK_BREAK_COOLDOWN.getIntegerValue();
+            return 0;
+		}
+        return original;
+    }
 }

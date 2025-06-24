@@ -43,6 +43,7 @@ public class Configs implements IConfigHandler {
 				100).apply(GENERIC_KEY);
 		public static final ConfigInteger FOOD_LEVEL = new ConfigInteger("foodLevel", 18, 4, 18).apply(GENERIC_KEY);
 		public static final ConfigInteger MIN_LIGHT_LEVEL = new ConfigInteger("minLightLevel", 1, 0, 14).apply(GENERIC_KEY);
+		public static final ConfigInteger BLOCK_BREAK_COOLDOWN = new ConfigInteger("blockBreakCooldown", 5, 0, 5).apply(GENERIC_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
 				AUTO_SLEEP,
@@ -62,6 +63,7 @@ public class Configs implements IConfigHandler {
 				REPAIR_HOME,
 				FOOD_LEVEL,
 				MIN_LIGHT_LEVEL,
+				BLOCK_BREAK_COOLDOWN,
 				DEBUG_LOGGING);
 	}
 
