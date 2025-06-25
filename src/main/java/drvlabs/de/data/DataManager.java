@@ -185,7 +185,6 @@ public class DataManager {
 			if (operationMode == null) {
 				operationMode = PresetMode.DEFAULT;
 			}
-			operationMode.setSettings();
 		}
 	}
 

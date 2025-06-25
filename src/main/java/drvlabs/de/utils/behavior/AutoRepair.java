@@ -40,7 +40,6 @@ public class AutoRepair {
 
 		public void handlePeriodicClick(int interval, MinecraftClient mc) {
 			if (++this.intervalCounter >= interval) {
-				BTScreen.debugLog("Attacking");
 				if (swordSlot != -1) {
 					int tmpSlot = mc.player.getInventory().selectedSlot;
 					mc.player.getInventory().setSelectedSlot(swordSlot);

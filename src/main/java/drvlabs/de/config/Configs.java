@@ -43,7 +43,9 @@ public class Configs implements IConfigHandler {
 				100).apply(GENERIC_KEY);
 		public static final ConfigInteger FOOD_LEVEL = new ConfigInteger("foodLevel", 18, 4, 18).apply(GENERIC_KEY);
 		public static final ConfigInteger MIN_LIGHT_LEVEL = new ConfigInteger("minLightLevel", 1, 0, 14).apply(GENERIC_KEY);
-		public static final ConfigInteger BLOCK_BREAK_COOLDOWN = new ConfigInteger("blockBreakCooldown", 5, 0, 5).apply(GENERIC_KEY);
+		public static final ConfigInteger BLOCK_BREAK_COOLDOWN = new ConfigInteger("blockBreakCooldown", 5, 0, 5)
+				.apply(GENERIC_KEY);
+		public static final ConfigBoolean NO_INSTA_BREAK = new ConfigBoolean("noInstaBreak", false).apply(GENERIC_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
 				AUTO_SLEEP,
@@ -64,12 +66,18 @@ public class Configs implements IConfigHandler {
 				FOOD_LEVEL,
 				MIN_LIGHT_LEVEL,
 				BLOCK_BREAK_COOLDOWN,
+				NO_INSTA_BREAK,
 				DEBUG_LOGGING);
 	}
 
 	public static class Lists {
 		public static final ConfigStringList INV_PRESERVE_ITEM_BLACKLIST = new ConfigStringList("invPreserveItemBlackList",
 				ImmutableList.of()).apply(LISTS_KEY);
+		public static final ConfigStringList BLOCKS_TO_GET_REPLACED = new ConfigStringList("blocksToGetReplaced",
+				ImmutableList.of("small_amethyst_bud", " medium_amethyst_bud", "large_amethyst_bud", "amethyst_cluster"))
+				.apply(LISTS_KEY);
+		public static final ConfigString BLOCK_TO_REPLACE_WITH = new ConfigString("blockToReplaceWith",
+				"air").apply(LISTS_KEY);
 		public static final ConfigStringList DEFAULT_BLOCKS_TO_DISALLOW_BREAKING = new ConfigStringList(
 				"defaultBlocksToDisallowBreaking", PresetMode.getGlobalDisallowBreakingList()).apply(LISTS_KEY);
 		public static final ConfigStringList DEFAULT_BLOCKS_TO_IGNORE = new ConfigStringList("defaultBlocksToIgnore",
@@ -78,13 +86,18 @@ public class Configs implements IConfigHandler {
 				"farmBlocksToDisallowBreaking", PresetMode.getGlobalDisallowBreakingList()).apply(LISTS_KEY);
 		public static final ConfigStringList FARM_BLOCKS_TO_IGNORE = new ConfigStringList("farmBlocksToIgnore",
 				PresetMode.getFarmIgnoreList()).apply(LISTS_KEY);
+		public static final ConfigStringList ACCEPTABLE_THROWAWAY_ITEMS = new ConfigStringList("acceptableThrowawayItems",
+				PresetMode.getAcceptableThrowawayItems()).apply(LISTS_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
 				INV_PRESERVE_ITEM_BLACKLIST,
+				BLOCKS_TO_GET_REPLACED,
+				BLOCK_TO_REPLACE_WITH,
 				DEFAULT_BLOCKS_TO_DISALLOW_BREAKING,
 				DEFAULT_BLOCKS_TO_IGNORE,
 				FARM_BLOCKS_TO_DISALLOW_BREAKING,
-				FARM_BLOCKS_TO_IGNORE);
+				FARM_BLOCKS_TO_IGNORE,
+				ACCEPTABLE_THROWAWAY_ITEMS);
 	}
 
 	public static void loadFromFile() {

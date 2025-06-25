@@ -41,33 +41,22 @@ public abstract class MixinClientPlayerInteractionManager {
 		}
 	}
 
-	@Redirect(method = "updateBlockBreakingProgress", at = @At(value = "FIELD", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;blockBreakingCooldown:I", opcode = Opcodes.PUTFIELD, ordinal = 1))
-    private void creativeBreakDelayChange(ClientPlayerInteractionManager interactionManager, int value) {
+	@Redirect(method = "updateBlockBreakingProgress", at = @At(value = "FIELD", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;blockBreakingCooldown:I", opcode = Opcodes.PUTFIELD, ordinal = 2))
+	private void survivalBreakDelayChange(ClientPlayerInteractionManager interactionManager, int value) {
 		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING) {
-	        blockBreakingCooldown = Configs.Generic.BLOCK_BREAK_COOLDOWN.getIntegerValue();
+			blockBreakingCooldown = Configs.Generic.BLOCK_BREAK_COOLDOWN.getIntegerValue();
+		} else {
+			blockBreakingCooldown = value;
 		}
-    }
+	}
 
-    @Redirect(method = "updateBlockBreakingProgress", at = @At(value = "FIELD", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;blockBreakingCooldown:I", opcode = Opcodes.PUTFIELD, ordinal = 2))
-    private void survivalBreakDelayChange(ClientPlayerInteractionManager interactionManager, int value) {
-		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING) {
-	        blockBreakingCooldown = Configs.Generic.BLOCK_BREAK_COOLDOWN.getIntegerValue();
+	@ModifyExpressionValue(method = "method_41930", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;calcBlockBreakingDelta(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;)F"))
+	private float modifyBlockBreakingDelta(float original) {
+		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING
+				&& Configs.Generic.NO_INSTA_BREAK.getBooleanValue() && original >= 1) {
+			blockBreakingCooldown = 5;
+			return 0;
 		}
-    }
-
-    @Redirect(method = "attackBlock", at = @At(value = "FIELD", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;blockBreakingCooldown:I", opcode = Opcodes.PUTFIELD))
-    private void creativeBreakDelayChange2(ClientPlayerInteractionManager interactionManager, int value) {
-		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING) {
-	        blockBreakingCooldown = Configs.Generic.BLOCK_BREAK_COOLDOWN.getIntegerValue();
-		}
-    }
-
-    @ModifyExpressionValue(method = "method_41930", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;calcBlockBreakingDelta(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;)F"))
-    private float modifyBlockBreakingDelta(float original) {
-		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING) {
-	        blockBreakingCooldown = Configs.Generic.BLOCK_BREAK_COOLDOWN.getIntegerValue();
-            return 0;
-		}
-        return original;
-    }
+		return original;
+	}
 }
