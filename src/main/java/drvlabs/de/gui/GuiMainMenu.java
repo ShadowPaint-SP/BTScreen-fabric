@@ -244,12 +244,14 @@ public class GuiMainMenu extends GuiBase {
 							CommandUtils.tpTo(Configs.Generic.HASTE_HOME.getStringValue());
 						}
 					}
+					this.gui.initGui();
 					this.gui.addMessage(MessageType.ERROR, 1000, "btscreen.info.main_menu.startBot");
 					return;
 				case Type.STOP:
 					CommandUtils.execute("stop");
 					DataManager.getInstance().setActive(false);
 					DataManager.setBotStatus(BotStatus.IDLE);
+					this.gui.initGui();
 					this.gui.addMessage(MessageType.SUCCESS, 1000, "btscreen.info.main_menu.stopBot");
 					return;
 				case Type.SELPOSONE:

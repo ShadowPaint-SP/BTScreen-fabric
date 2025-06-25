@@ -97,6 +97,8 @@
 	"btscreen.config.generic.comment.minLightLevel": "When the block you are standing on has this light level then places a torch",
 	"btscreen.config.generic.name.blockBreakCooldown": "Block Break Cooldown",
 	"btscreen.config.generic.comment.blockBreakCooldown": "Lets you configure the cooldown between block breaks",
+	"btscreen.config.generic.name.noInstaBreak": "No Instant Break",
+	"btscreen.config.generic.comment.noInstaBreak": "If the bot should be able to insta break\n§6NOTE: Some blocks will be insta broken that normally should not",
 
 	"btscreen.config.lists.name.invPreserveItemBlackList": "Disallow Dropping",
 	"btscreen.config.lists.comment.invPreserveItemBlackList": "Items that should not be dropped",
