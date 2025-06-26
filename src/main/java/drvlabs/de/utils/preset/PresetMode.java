@@ -99,7 +99,7 @@ public enum PresetMode implements StringIdentifiable {
 			bt.blocksToDisallowBreaking.value = blocksToDisallowBreaking; // Blocks that cant be mined
 			bt.buildIgnoreBlocks.value = blocksToIgnore; // Blocks that should be ignored in the selection
 			setAcceptableThrowawayItems();
-			BTScreen.debugLog("Updated settings do default");
+			BTScreen.debugLog("Updated settings to default");
 		}
 		if (this.asString().equals(FARM.asString())) {
 			bt.allowBreak.value = false;
@@ -118,8 +118,14 @@ public enum PresetMode implements StringIdentifiable {
 			bt.blocksToDisallowBreaking.value = blocksToDisallowBreaking; // Blocks that cant be mined
 			bt.buildIgnoreBlocks.value = blocksToIgnore; // Blocks that should be ignored in the selection
 			setAcceptableThrowawayItems();
-			BTScreen.debugLog("Updated settings do farm");
+			BTScreen.debugLog("Updated settings to farm");
 		}
+	}
+
+	public static void setBuildingAbility() {
+		bt.buildInLayers.value = true;
+		bt.layerOrder.value = false;
+		bt.layerHeight.value = 1;
 	}
 
 	public static ImmutableList<String> getDefaultIgnoreList() {

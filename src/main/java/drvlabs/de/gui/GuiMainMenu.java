@@ -1,5 +1,9 @@
 package drvlabs.de.gui;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.Nullable;
 
 import baritone.api.BaritoneAPI;
@@ -14,6 +18,7 @@ import drvlabs.de.utils.customcommands.Commands;
 import drvlabs.de.utils.customcommands.CommandsManager;
 import drvlabs.de.utils.preset.PresetMode;
 import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
@@ -22,12 +27,14 @@ import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.text.Text;
 
 public class GuiMainMenu extends GuiBase {
 	private final int textColor = 0xFEFEFEFE;
 	private static MinecraftClient mc = MinecraftClient.getInstance();
 	private static IBuilderProcess baritoneBuildProcess = BaritoneAPI.getProvider().getPrimaryBaritone()
 			.getBuilderProcess();
+	public static GuiTextFieldGeneric textFieldContent;
 
 	public GuiMainMenu() {
 		String version = String.format("v%s", Reference.MOD_VERSION);
@@ -50,6 +57,7 @@ public class GuiMainMenu extends GuiBase {
 		x += this.createButton(x, y, -1, ButtonListener.Type.SELPOSONE, false);
 		x += this.createButton(x, y, -1, ButtonListener.Type.SELPOSTWO, false);
 		x += this.createButton(x, y, -1, ButtonListener.Type.SELDELETE, false);
+		x += this.createButton(x, y, -1, ButtonListener.Type.SELUNDO, false);
 
 		////////////////////////////////////////////////// Bot Control
 		y += 30;
@@ -73,20 +81,35 @@ public class GuiMainMenu extends GuiBase {
 		}
 
 		////////////////////////////////////////////////// Additional Controls
-		y += 60;
-		x = 12;
-		this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.additionalControls");
-		y += 22;
-		x += 5;
-		width = 80;
-		x += this.createButton(x, y, width, ButtonListener.Type.SEL_COPY, false);
-		x += this.createButton(x, y, width, ButtonListener.Type.SEL_PASTE, false);
-		x += this.createButton(x, y, width, ButtonListener.Type.SEL_REPLACE, false);
-		y += 22;
-		x = 17;
-		x += this.createButton(x, y, width, ButtonListener.Type.SEL_SET, false);
-		x += this.createButton(x, y, width, ButtonListener.Type.SEL_SHELL, false);
-		x += this.createButton(x, y, width, ButtonListener.Type.SEL_WALLS, false);
+		if (this.getScreenHeight() >= 290) {
+			y += 60;
+			x = 12;
+			this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.additionalControls");
+			y += 22;
+			x += 5;
+			width = 80;
+
+			textFieldContent = new GuiTextFieldGeneric(x, y + 2, width * 3, 20, this.textRenderer);
+			textFieldContent
+					.setPlaceholder(Text.of(StringUtils.translate("btscreen.gui.textfieldContent.placeholder.content")));
+			textFieldContent.setMaxLengthWrapper(256);
+			if (!Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings().isEmpty() &&
+					!Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue().isEmpty()) {
+				textFieldContent.setTextWrapper(
+						String.join(", ", Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings()) + " | "
+								+ Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
+			}
+			this.addTextField(textFieldContent, null);
+			y += 22;
+			x += this.createButton(x, y, width, ButtonListener.Type.SEL_COPY, false);
+			x += this.createButton(x, y, width, ButtonListener.Type.SEL_PASTE, false);
+			x += this.createButton(x, y, width, ButtonListener.Type.SEL_REPLACE, false);
+			y += 22;
+			x = 17;
+			x += this.createButton(x, y, width, ButtonListener.Type.SEL_SET, false);
+			x += this.createButton(x, y, width, ButtonListener.Type.SEL_SHELL, false);
+			x += this.createButton(x, y, width, ButtonListener.Type.SEL_WALLS, false);
+		}
 
 		////////////////////////////////////////////////// Box Resizing
 		x = this.getScreenWidth() / 2;
@@ -198,6 +221,28 @@ public class GuiMainMenu extends GuiBase {
 		return width;
 	}
 
+	public static void updateBlocksToReplace() {
+		String[] parts = textFieldContent.getText().split("\\|", 2);
+		if (parts.length == 0) {
+			return;
+		}
+		String blockList = parts[0].trim();
+		List<String> newValue = Arrays.stream(blockList.split(","))
+				.map(String::trim)
+				.filter(s -> !s.isEmpty())
+				.collect(Collectors.toList());
+		Configs.Lists.BLOCKS_TO_GET_REPLACED.setStrings(newValue);
+	}
+
+	public static void updateBlockToPlace() {
+		String[] parts = textFieldContent.getText().split("\\|", 2);
+		if (parts.length == 0) {
+			return;
+		}
+		String newValue = parts[1].trim();
+		Configs.Lists.BLOCK_TO_REPLACE_WITH.setValueFromString(newValue);
+	}
+
 	public static class ButtonListener implements IButtonActionListener {
 		private final Type type;
 		private final GuiMainMenu gui;
@@ -264,6 +309,9 @@ public class GuiMainMenu extends GuiBase {
 					CommandUtils.execute("sel clear");
 					this.gui.addMessage(MessageType.WARNING, 1000, "btscreen.info.main_menu.selDelete");
 					return;
+				case Type.SELUNDO:
+					CommandUtils.execute("sel undo");
+					return;
 				case Type.SHIFTX:
 					CommandUtils.execute("sel shift all east " + amount);
 					return;
@@ -307,26 +355,31 @@ public class GuiMainMenu extends GuiBase {
 					this.gui.initGui();
 					return;
 				case Type.SEL_SET:
-					BaritoneAPI.getSettings().layerOrder.value = false;
+					PresetMode.setBuildingAbility();
+					updateBlocksToReplace();
 					CommandUtils.execute("sel set " + Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 					return;
 				case Type.SEL_WALLS:
-					BaritoneAPI.getSettings().layerOrder.value = false;
+					PresetMode.setBuildingAbility();
+					updateBlocksToReplace();
 					CommandUtils.execute("sel walls " + Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 					return;
 				case Type.SEL_SHELL:
-					BaritoneAPI.getSettings().layerOrder.value = false;
+					PresetMode.setBuildingAbility();
+					updateBlocksToReplace();
 					CommandUtils.execute("sel shell " + Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 					return;
 				case Type.SEL_REPLACE:
-					BaritoneAPI.getSettings().layerOrder.value = false;
+					PresetMode.setBuildingAbility();
+					updateBlocksToReplace();
+					updateBlockToPlace();
 					CommandUtils.btBlockAction("sel replace");
 					return;
 				case Type.SEL_COPY:
 					CommandUtils.execute("sel copy");
 					return;
 				case Type.SEL_PASTE:
-					BaritoneAPI.getSettings().layerOrder.value = false;
+					PresetMode.setBuildingAbility();
 					CommandUtils.execute("sel paste");
 					return;
 				default:
@@ -342,6 +395,7 @@ public class GuiMainMenu extends GuiBase {
 			SELPOSONE("btscreen.gui.button.selPosOne", null),
 			SELPOSTWO("btscreen.gui.button.selPosTwo", null),
 			SELDELETE("btscreen.gui.button.selDelete", null),
+			SELUNDO("btscreen.gui.button.selUndo", null),
 			SHIFTX("btscreen.gui.button.shift_sel_x", null),
 			SHIFTY("btscreen.gui.button.shift_sel_y", null),
 			SHIFTZ("btscreen.gui.button.shift_sel_z", null),

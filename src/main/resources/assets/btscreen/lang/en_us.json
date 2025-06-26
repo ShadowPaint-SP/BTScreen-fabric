@@ -18,6 +18,7 @@
 	"btscreen.gui.button.hover.selPosTwoInfoText":"Sets Position 2 to the current player's position",
 	"btscreen.gui.button.selDelete": "Sel Clear",
 	"btscreen.gui.button.hover.selDeleteInfoText":"Deletes all existing selections",
+	"btscreen.gui.button.selUndo": "Sel Undo",
 	"btscreen.gui.button.up": "Up",
 	"btscreen.gui.button.down": "Down",
 	"btscreen.gui.button.north": "North",
@@ -45,6 +46,7 @@
 	"btscreen.gui.button.sel_set": "Sel set",
 	"btscreen.gui.button.sel_shell": "Sel Shell",
 	"btscreen.gui.button.sel_walls": "Sel Walls",
+	"btscreen.gui.textfieldContent.placeholder.content": "blocks, ... | block",
 
 	"btscreen.info.main_menu.startBot": "Bot is running now.\n§8Make sure no one sees u using this ;)",
 	"btscreen.info.main_menu.stopBot": "U ARE SAFE NOW",

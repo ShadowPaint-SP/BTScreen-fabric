@@ -18,6 +18,7 @@
 	"btscreen.gui.button.hover.startBotInfoText": "Sie suchen dich...",
 	"btscreen.gui.button.selPosTwo": "POS 2",
 	"btscreen.gui.button.selDelete": "Auswahl löschen",
+	"btscreen.gui.button.selUndo": "Auswahl ungeschehen",
 	"btscreen.gui.button.up": "Hoch",
 	"btscreen.gui.button.down": "Runter",
 	"btscreen.gui.button.north": "Norden",
@@ -39,6 +40,7 @@
 	"btscreen.gui.button.change_menu.to_main_menu": "BTScreen Hauptmenü",
 	"btscreen.gui.button.change_menu.createCommand": "Befehl erstellen",
 	"btscreen.gui.button.save": "Speichern",
+	"btscreen.gui.textfieldContent.placeholder.content": "blöcke, ... | block",
 
 	"btscreen.info.main_menu.startBot": "Bot läuft jetzt.\n§8Stelle sicher, dass dich niemand dabei sieht ;)",
 	"btscreen.info.main_menu.stopBot": "DU BIST JETZT SICHER",
