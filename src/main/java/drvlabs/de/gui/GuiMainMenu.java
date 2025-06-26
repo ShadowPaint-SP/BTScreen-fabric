@@ -34,7 +34,8 @@ public class GuiMainMenu extends GuiBase {
 	private static MinecraftClient mc = MinecraftClient.getInstance();
 	private static IBuilderProcess baritoneBuildProcess = BaritoneAPI.getProvider().getPrimaryBaritone()
 			.getBuilderProcess();
-	public static GuiTextFieldGeneric textFieldContent;
+	public static GuiTextFieldGeneric textBlocksToReplace;
+	public static GuiTextFieldGeneric textBlocksToPlace;
 
 	public GuiMainMenu() {
 		String version = String.format("v%s", Reference.MOD_VERSION);
@@ -89,17 +90,24 @@ public class GuiMainMenu extends GuiBase {
 			x += 5;
 			width = 80;
 
-			textFieldContent = new GuiTextFieldGeneric(x, y + 2, width * 3, 20, this.textRenderer);
-			textFieldContent
-					.setPlaceholder(Text.of(StringUtils.translate("btscreen.gui.textfieldContent.placeholder.content")));
-			textFieldContent.setMaxLengthWrapper(256);
-			if (!Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings().isEmpty() &&
-					!Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue().isEmpty()) {
-				textFieldContent.setTextWrapper(
-						String.join(", ", Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings()) + " | "
-								+ Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
+			textBlocksToReplace = new GuiTextFieldGeneric(x, y + 2, width * 2, 20, this.textRenderer);
+			textBlocksToReplace
+					.setPlaceholder(Text.of(StringUtils.translate("btscreen.gui.textfieldContent.placeholder.blocksToReplace")));
+			textBlocksToReplace.setMaxLengthWrapper(256);
+			if (!Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings().isEmpty()) {
+				textBlocksToReplace.setTextWrapper(
+						String.join(", ", Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings()));
 			}
-			this.addTextField(textFieldContent, null);
+			this.addTextField(textBlocksToReplace, null);
+
+			textBlocksToPlace = new GuiTextFieldGeneric(x + width * 2, y + 2, width, 20, this.textRenderer);
+			textBlocksToPlace
+					.setPlaceholder(Text.of(StringUtils.translate("btscreen.gui.textfieldContent.placeholder.blockToPlace")));
+			textBlocksToPlace.setMaxLengthWrapper(256);
+			if (!Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue().isEmpty()) {
+				textBlocksToPlace.setTextWrapper(Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
+			}
+			this.addTextField(textBlocksToPlace, null);
 			y += 22;
 			x += this.createButton(x, y, width, ButtonListener.Type.SEL_COPY, false);
 			x += this.createButton(x, y, width, ButtonListener.Type.SEL_PASTE, false);
@@ -222,12 +230,11 @@ public class GuiMainMenu extends GuiBase {
 	}
 
 	public static void updateBlocksToReplace() {
-		String[] parts = textFieldContent.getText().split("\\|", 2);
-		if (parts.length == 0) {
+		String parts = textBlocksToReplace.getText();
+		if (parts.isEmpty()) {
 			return;
 		}
-		String blockList = parts[0].trim();
-		List<String> newValue = Arrays.stream(blockList.split(","))
+		List<String> newValue = Arrays.stream(parts.split(","))
 				.map(String::trim)
 				.filter(s -> !s.isEmpty())
 				.collect(Collectors.toList());
@@ -235,11 +242,10 @@ public class GuiMainMenu extends GuiBase {
 	}
 
 	public static void updateBlockToPlace() {
-		String[] parts = textFieldContent.getText().split("\\|", 2);
-		if (parts.length == 0) {
+		String newValue = textBlocksToPlace.getText();
+		if (newValue.isEmpty()) {
 			return;
 		}
-		String newValue = parts[1].trim();
 		Configs.Lists.BLOCK_TO_REPLACE_WITH.setValueFromString(newValue);
 	}
 

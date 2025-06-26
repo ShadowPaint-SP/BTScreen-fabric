@@ -44,7 +44,8 @@
     "btscreen.gui.button.sel_set": "Sel set",
     "btscreen.gui.button.sel_shell": "Sel Shell",
     "btscreen.gui.button.sel_walls": "Sel Walls",
-		"btscreen.gui.textfieldContent.placeholder.content": "blocks, ... | block",
+		"btscreen.gui.textfieldContent.placeholder.blocksToReplace": "blocks, ...",
+		"btscreen.gui.textfieldContent.placeholder.blockToPlace": "block",
 
     "btscreen.preset_mode.name.farm": "Farm",
     "btscreen.preset_mode.name.default": "Default",
