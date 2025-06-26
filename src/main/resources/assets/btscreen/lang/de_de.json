@@ -6,6 +6,7 @@
 
     "btscreen.gui.button.config_gui.generic": "Allgemein",
     "btscreen.gui.button.config_gui.lists": "Listen",
+    "btscreen.gui.button.config_gui.advanced": "Erweitert",
     "btscreen.gui.button.config_gui.hotkeys": "Hotkeys",
     "btscreen.gui.button.configuration_menu": "Einstellungen",
     "btscreen.gui.button.preset_mode": "Voreinstellung: %s",
@@ -44,10 +45,10 @@
     "btscreen.gui.button.sel_set": "Ausw setzen",
     "btscreen.gui.button.sel_shell": "Ausw Hülle",
     "btscreen.gui.button.sel_walls": "Ausw Wände",
+    "btscreen.gui.textfieldContent.placeholder.content": "blöcke, ... | block",
 
     "btscreen.preset_mode.name.farm": "Farm",
     "btscreen.preset_mode.name.default": "Standard",
-	"btscreen.gui.textfieldContent.placeholder.content": "blöcke, ... | block",
 
     "btscreen.info.main_menu.startBot": "Bot läuft jetzt.\n§8Stelle sicher, dass dich niemand dabei sieht ;)",
     "btscreen.info.main_menu.stopBot": "DU BIST JETZT SICHER",
@@ -62,8 +63,6 @@
     "btscreen.gui.section.label.botControl": "Bot-Steuerung",
     "btscreen.gui.section.label.additionalControls": "Zusätzliche Steuerung",
 
-    "btscreen.config.generic.name.debugLogging": "Debug-Protokollierung",
-    "btscreen.config.generic.comment.debugLogging": "Debug-Protokollierung",
     "btscreen.config.generic.name.autoSleep": "Auto-Schlaf",
     "btscreen.config.generic.comment.autoSleep": "Auto-Schlaf",
     "btscreen.config.generic.name.autoEat": "Auto-Essen",
@@ -119,6 +118,9 @@
     "btscreen.config.lists.comment.farmBlocksToIgnore": "Blöcke, die ignoriert werden sollen\nWenn sie den Weg der Pfadfindung versperren, können sie abgebaut werden",
     "btscreen.config.lists.name.acceptableThrowawayItems": "Blöcke für Pfadfindung",
     "btscreen.config.lists.comment.acceptableThrowawayItems": "Blöcke, die von Bariton zum Bau eines Pfades verwendet werden können",
+
+    "btscreen.config.advanced.name.debugLogging": "Debug-Protokollierung",
+    "btscreen.config.advanced.comment.debugLogging": "Debug-Protokollierung",
 
     "btscreen.config.hotkeys.name.openGuiMainMenu": "BT Screen Hauptmenü",
     "btscreen.config.hotkeys.comment.openGuiMainMenu": "BT Screen Hauptmenü",
