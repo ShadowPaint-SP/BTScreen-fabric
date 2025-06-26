@@ -45,7 +45,8 @@
     "btscreen.gui.button.sel_set": "Ausw setzen",
     "btscreen.gui.button.sel_shell": "Ausw Hülle",
     "btscreen.gui.button.sel_walls": "Ausw Wände",
-    "btscreen.gui.textfieldContent.placeholder.content": "blöcke, ... | block",
+		"btscreen.gui.textfieldContent.placeholder.blocksToReplace": "blöcke, ...",
+		"btscreen.gui.textfieldContent.placeholder.blockToPlace": "block",
 
     "btscreen.preset_mode.name.farm": "Farm",
     "btscreen.preset_mode.name.default": "Standard",
