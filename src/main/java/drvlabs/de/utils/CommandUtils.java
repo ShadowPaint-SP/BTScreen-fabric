@@ -14,16 +14,17 @@ public class CommandUtils {
 		baritone.getCommandManager().execute(command);
 	}
 
-	public static void btBlockAction(String command) {
-		String replace = String.join(" ", Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings());
-		String with = Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue();
-		baritone.getCommandManager().execute(command + " " + replace + " " + with);
+	public static void executeBuild(String command) {
+		if (Configs.Generic.REPEAT_ACTION.getBooleanValue()) {
+			RepeatAction.trackCommand(command);
+		}
+		execute(command);
+		DataManager.setBotStatus(BotStatus.MINING);
 	}
 
-	public static void pause(BotStatus newSatus) {
+	public static void pause(BotStatus newStatus) {
 		execute("pause");
-		DataManager.setBotStatus(newSatus);
-
+		DataManager.setBotStatus(newStatus);
 	}
 
 	public static void resume() {

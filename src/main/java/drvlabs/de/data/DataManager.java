@@ -11,6 +11,7 @@ import drvlabs.de.BTScreen;
 import drvlabs.de.Reference;
 import drvlabs.de.gui.GuiConfigs.ConfigGuiTab;
 import drvlabs.de.utils.BotStatus;
+import drvlabs.de.utils.RepeatAction;
 import drvlabs.de.utils.customcommands.CommandsManager;
 import drvlabs.de.utils.preset.PresetMode;
 import fi.dy.masa.malilib.util.FileUtils;
@@ -58,6 +59,9 @@ public class DataManager {
 
 	public static void setBotStatus(BotStatus status) {
 		BTScreen.debugLog("New Bot Status: " + status);
+		if (status == BotStatus.IDLE) {
+			RepeatAction.startWaitPeriod();
+		}
 		botStatus = status;
 	}
 

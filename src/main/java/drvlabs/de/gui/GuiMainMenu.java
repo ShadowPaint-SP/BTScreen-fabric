@@ -13,6 +13,7 @@ import drvlabs.de.config.Configs;
 import drvlabs.de.data.DataManager;
 import drvlabs.de.utils.BotStatus;
 import drvlabs.de.utils.CommandUtils;
+import drvlabs.de.utils.RepeatAction;
 import drvlabs.de.utils.behavior.AutoDrop;
 import drvlabs.de.utils.customcommands.Commands;
 import drvlabs.de.utils.customcommands.CommandsManager;
@@ -301,6 +302,7 @@ public class GuiMainMenu extends GuiBase {
 				case Type.STOP:
 					CommandUtils.execute("stop");
 					DataManager.getInstance().setActive(false);
+					RepeatAction.cancelRepeatAction();
 					DataManager.setBotStatus(BotStatus.IDLE);
 					this.gui.initGui();
 					this.gui.addMessage(MessageType.SUCCESS, 1000, "btscreen.info.main_menu.stopBot");
@@ -363,23 +365,27 @@ public class GuiMainMenu extends GuiBase {
 				case Type.SEL_SET:
 					PresetMode.setBuildingAbility();
 					updateBlocksToReplace();
-					CommandUtils.execute("sel set " + Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
+					CommandUtils.executeBuild("sel set "
+							+ String.join(" ", Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings()));
 					return;
 				case Type.SEL_WALLS:
 					PresetMode.setBuildingAbility();
 					updateBlocksToReplace();
-					CommandUtils.execute("sel walls " + Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
+					CommandUtils.executeBuild("sel walls "
+							+ Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 					return;
 				case Type.SEL_SHELL:
 					PresetMode.setBuildingAbility();
 					updateBlocksToReplace();
-					CommandUtils.execute("sel shell " + Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
+					CommandUtils.executeBuild("sel shell " + Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 					return;
 				case Type.SEL_REPLACE:
 					PresetMode.setBuildingAbility();
 					updateBlocksToReplace();
 					updateBlockToPlace();
-					CommandUtils.btBlockAction("sel replace");
+					CommandUtils
+							.executeBuild("sel replace " + String.join(" ", Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings()) + " "
+									+ Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 					return;
 				case Type.SEL_COPY:
 					CommandUtils.execute("sel copy");

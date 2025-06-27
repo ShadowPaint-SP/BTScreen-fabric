@@ -46,6 +46,9 @@ public class Configs implements IConfigHandler {
 		public static final ConfigInteger BLOCK_BREAK_COOLDOWN = new ConfigInteger("blockBreakCooldown", 5, 0, 5)
 				.apply(GENERIC_KEY);
 		public static final ConfigBoolean NO_INSTA_BREAK = new ConfigBoolean("noInstaBreak", false).apply(GENERIC_KEY);
+		public static final ConfigBoolean REPEAT_ACTION = new ConfigBoolean("repeatAction", false).apply(GENERIC_KEY);
+		public static final ConfigInteger REPEAT_ACTION_INTERVAL = new ConfigInteger("repeatActionInterval", 100, 0,
+				1000000).apply(GENERIC_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
 				AUTO_SLEEP,
@@ -67,6 +70,8 @@ public class Configs implements IConfigHandler {
 				MIN_LIGHT_LEVEL,
 				BLOCK_BREAK_COOLDOWN,
 				NO_INSTA_BREAK,
+				REPEAT_ACTION,
+				REPEAT_ACTION_INTERVAL,
 				DEBUG_LOGGING);
 	}
 

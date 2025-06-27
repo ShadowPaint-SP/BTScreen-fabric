@@ -103,6 +103,10 @@
     "btscreen.config.generic.comment.blockBreakCooldown": "Lets you configure the cooldown between block breaks",
     "btscreen.config.generic.name.noInstaBreak": "No Instant Break",
     "btscreen.config.generic.comment.noInstaBreak": "If the bot should be able to insta break\n§6NOTE: Some blocks will be insta broken that normally should not",
+    "btscreen.config.generic.name.repeatAction": "Repeat Action",
+    "btscreen.config.generic.comment.repeatAction": "Repeat the last action",
+    "btscreen.config.generic.name.repeatActionInterval": "Repeat Action Interval",
+    "btscreen.config.generic.comment.repeatActionInterval": "The time between repeated actions",
 
     "btscreen.config.lists.name.invPreserveItemBlackList": "Disallow Dropping",
     "btscreen.config.lists.comment.invPreserveItemBlackList": "Items that should not be dropped",
