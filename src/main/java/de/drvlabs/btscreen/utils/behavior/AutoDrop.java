@@ -37,8 +37,7 @@ public class AutoDrop {
 		}
 
 		if (!hasFreeSlot) {
-			DataManager.setBotStatus(BotStatus.DROPPING);
-			CommandUtils.execute("pause");
+			CommandUtils.pause(BotStatus.DROPPING);
 			BTScreen.debugLog("Inventory full");
 			CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
 			CommandUtils.tpTo(Configs.Generic.DROP_HOME.getStringValue());
@@ -48,8 +47,7 @@ public class AutoDrop {
 				// dropWaitFinished = true;
 				mc.currentScreen.close();
 				CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
-				DataManager.setBotStatus(BotStatus.MINING);
-				CommandUtils.execute("resume");
+				CommandUtils.resume();
 				checkInventory(); // To make sure the inventory has space now
 			});
 		}

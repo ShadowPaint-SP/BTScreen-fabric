@@ -8,6 +8,8 @@ import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.utils.BotStatus;
 import de.drvlabs.btscreen.utils.CommandUtils;
 import de.drvlabs.btscreen.utils.IMinecraftClientInvoker;
+import fi.dy.masa.malilib.config.IConfigInteger;
+import fi.dy.masa.malilib.util.GuiUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
@@ -16,8 +18,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
-import fi.dy.masa.malilib.config.IConfigInteger;
-import fi.dy.masa.malilib.util.GuiUtils;
 
 public class AutoRepair {
 	private static final KeybindState KEY_STATE_ATTACK = new KeybindState(MinecraftClient.getInstance().options.attackKey,
@@ -62,8 +62,7 @@ public class AutoRepair {
 		if (!player.getStackInHand(Hand.MAIN_HAND).isDamaged()) {
 			BTScreen.debugLog("Finished Repairing");
 			CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
-			DataManager.setBotStatus(BotStatus.MINING);
-			CommandUtils.execute("resume");
+			CommandUtils.resume();
 			AutoDrop.checkInventory();
 			return;
 		}
@@ -104,8 +103,7 @@ public class AutoRepair {
 
 			if (isItemAtLowDurability(stack, minDurability)) {
 				BTScreen.debugLog("Start Repairing");
-				CommandUtils.execute("pause");
-				DataManager.setBotStatus(BotStatus.REPAIRING);
+				CommandUtils.pause(BotStatus.REPAIRING);
 				swordSlot = getSwordSlotInHotbar();
 				CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
 				CommandUtils.tpTo(Configs.Generic.REPAIR_HOME.getStringValue());

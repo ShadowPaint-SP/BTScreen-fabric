@@ -23,12 +23,14 @@ public class CommandUtils {
 	}
 
 	public static void pause(BotStatus newStatus) {
-		execute("pause");
+		baritone.getBuilderProcess().pause();
+		// execute("pause");
 		DataManager.setBotStatus(newStatus);
 	}
 
 	public static void resume() {
-		execute("resume");
+		baritone.getBuilderProcess().resume();
+		// execute("resume");
 		DataManager.setBotStatus(BotStatus.MINING);
 	}
 

@@ -289,8 +289,7 @@ public class GuiMainMenu extends GuiBase {
 					// check for haste
 					if (Configs.Generic.AUTO_HASTE.getBooleanValue()) {
 						if (!mc.player.hasStatusEffect(StatusEffects.HASTE)) {
-							CommandUtils.execute("pause");
-							DataManager.setBotStatus(BotStatus.HASTING);
+							CommandUtils.pause(BotStatus.HASTING);
 							CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
 							CommandUtils.tpTo(Configs.Generic.HASTE_HOME.getStringValue());
 						}
@@ -350,11 +349,9 @@ public class GuiMainMenu extends GuiBase {
 					return;
 				case Type.PAUSE_RESUME:
 					if (BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().isPaused()) {
-						BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().resume();
-						DataManager.setBotStatus(BotStatus.MINING);
+						CommandUtils.resume();
 					} else {
-						BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().pause();
-						DataManager.setBotStatus(BotStatus.IDLE);
+						CommandUtils.pause(BotStatus.IDLE);
 					}
 					this.gui.initGui();
 					return;

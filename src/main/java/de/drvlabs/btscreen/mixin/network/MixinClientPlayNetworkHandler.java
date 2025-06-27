@@ -51,8 +51,7 @@ public abstract class MixinClientPlayNetworkHandler {
 
 				if (packet.effect().matches(StatusEffects.HASTE::matchesKey)) {
 					BTScreen.debugLog("Lost Haste");
-					CommandUtils.execute("pause");
-					DataManager.setBotStatus(BotStatus.HASTING);
+					CommandUtils.pause(BotStatus.HASTING);
 					CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
 					CommandUtils.tpTo(Configs.Generic.HASTE_HOME.getStringValue());
 				}
@@ -72,8 +71,7 @@ public abstract class MixinClientPlayNetworkHandler {
 				if (packet.getEffectId().matches(StatusEffects.HASTE::matchesKey)) {
 					BTScreen.debugLog("gained Haste");
 					CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
-					DataManager.setBotStatus(BotStatus.MINING);
-					CommandUtils.execute("resume");
+					CommandUtils.resume();
 				}
 			}
 		}

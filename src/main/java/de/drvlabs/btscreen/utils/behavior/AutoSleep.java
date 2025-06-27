@@ -41,12 +41,9 @@ public class AutoSleep {
 				BTScreen.debugLog("Cannot sleep in the nether... Disabling auto sleep");
 				return;
 			}
-
-			DataManager.setBotStatus(BotStatus.SLEEPING);
-			CommandUtils.execute("pause");
+			CommandUtils.pause(BotStatus.SLEEPING);
 			CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
 			CommandUtils.tpTo(Configs.Generic.SLEEP_HOME.getStringValue());
-
 		}
 
 		if (DataManager.getBotStatus() == BotStatus.SLEEPING && isNight()) {
@@ -56,9 +53,7 @@ public class AutoSleep {
 		if (DataManager.getBotStatus() == BotStatus.SLEEPING && isDay()) {
 			sucess = false;
 			CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
-			DataManager.setBotStatus(BotStatus.MINING);
-			CommandUtils.execute("resume");
-
+			CommandUtils.resume();
 		}
 	}
 
