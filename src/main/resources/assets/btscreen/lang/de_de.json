@@ -62,6 +62,7 @@
     "btscreen.gui.section.label.boxMoving": "Box-Verschiebung",
     "btscreen.gui.section.label.botControl": "Bot-Steuerung",
     "btscreen.gui.section.label.additionalControls": "Zusätzliche Steuerung",
+		"btscreen.gui.label.repeatAction": "Wiederholend",
 		
     "btscreen.config.generic.name.debugLogging": "Debug-Protokollierung",
     "btscreen.config.generic.comment.debugLogging": "Debug-Protokollierung",

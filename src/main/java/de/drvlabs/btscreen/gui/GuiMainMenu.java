@@ -90,7 +90,7 @@ public class GuiMainMenu extends GuiBase {
 			x += 5;
 			width = 80;
 
-			textBlocksToReplace = new GuiTextFieldGeneric(x, y + 2, width * 2, 20, this.textRenderer);
+			textBlocksToReplace = new GuiTextFieldGeneric(x, y, width * 2, 20, this.textRenderer);
 			textBlocksToReplace
 					.setPlaceholder(Text.of(StringUtils.translate("btscreen.gui.textfieldContent.placeholder.blocksToReplace")));
 			textBlocksToReplace.setMaxLengthWrapper(256);
@@ -100,7 +100,7 @@ public class GuiMainMenu extends GuiBase {
 			}
 			this.addTextField(textBlocksToReplace, null);
 
-			textBlocksToPlace = new GuiTextFieldGeneric(x + width * 2, y + 2, width, 20, this.textRenderer);
+			textBlocksToPlace = new GuiTextFieldGeneric(x + width * 2, y, width, 20, this.textRenderer);
 			textBlocksToPlace
 					.setPlaceholder(Text.of(StringUtils.translate("btscreen.gui.textfieldContent.placeholder.blockToPlace")));
 			textBlocksToPlace.setMaxLengthWrapper(256);
@@ -108,6 +108,12 @@ public class GuiMainMenu extends GuiBase {
 				textBlocksToPlace.setTextWrapper(Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 			}
 			this.addTextField(textBlocksToPlace, null);
+
+			int labelWidth = this.getStringWidth(StringUtils.translate("btscreen.gui.label.repeatAction"));
+			this.addLabel(x + (width * 3) - labelWidth, y - 22, labelWidth, 20,
+					Configs.Generic.REPEAT_ACTION.getBooleanValue() ? 0x00FF00 : 0xFF0000,
+					"btscreen.gui.label.repeatAction");
+
 			y += 22;
 			x += this.createButton(x, y, width, ButtonListener.Type.SEL_COPY, false);
 			x += this.createButton(x, y, width, ButtonListener.Type.SEL_PASTE, false);
