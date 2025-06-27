@@ -19,7 +19,7 @@ public class BTScreen implements ModInitializer {
 	}
 
 	public static void debugLog(String msg, Object... args) {
-		if (Configs.Advanced.DEBUG_LOGGING.getBooleanValue()) {
+		if (Configs.Generic.DEBUG_LOGGING.getBooleanValue()) {
 			BTScreen.LOGGER.info(msg, args);
 		}
 	}
