@@ -21,9 +21,9 @@ public class Configs implements IConfigHandler {
 	private static final String CONFIG_FILE_NAME = Reference.MOD_ID + ".json";
 	private static final String GENERIC_KEY = Reference.MOD_ID + ".config.generic";
 	private static final String LISTS_KEY = Reference.MOD_ID + ".config.lists";
+	private static final String ADVANCED_KEY = Reference.MOD_ID + ".config.advanced";
 
 	public static class Generic {
-		public static final ConfigBoolean DEBUG_LOGGING = new ConfigBoolean("debugLogging", true).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_SLEEP = new ConfigBoolean("autoSleep", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_REPAIR = new ConfigBoolean("autoRepair", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_EAT = new ConfigBoolean("autoEat", false).apply(GENERIC_KEY);
@@ -71,8 +71,7 @@ public class Configs implements IConfigHandler {
 				BLOCK_BREAK_COOLDOWN,
 				NO_INSTA_BREAK,
 				REPEAT_ACTION,
-				REPEAT_ACTION_INTERVAL,
-				DEBUG_LOGGING);
+				REPEAT_ACTION_INTERVAL);
 	}
 
 	public static class Lists {
@@ -105,6 +104,13 @@ public class Configs implements IConfigHandler {
 				ACCEPTABLE_THROWAWAY_ITEMS);
 	}
 
+	public static class Advanced {
+		public static final ConfigBoolean DEBUG_LOGGING = new ConfigBoolean("debugLogging", true).apply(ADVANCED_KEY);
+
+		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
+				DEBUG_LOGGING);
+	}
+
 	public static void loadFromFile() {
 		Path configFile = FileUtils.getConfigDirectoryAsPath().resolve(CONFIG_FILE_NAME);
 
@@ -116,6 +122,7 @@ public class Configs implements IConfigHandler {
 
 				ConfigUtils.readConfigBase(root, "Generic", Generic.OPTIONS);
 				ConfigUtils.readConfigBase(root, "Lists", Lists.OPTIONS);
+				ConfigUtils.readConfigBase(root, "Advanced", Advanced.OPTIONS);
 				ConfigUtils.readConfigBase(root, "Hotkeys", Hotkeys.HOTKEY_LIST);
 
 				BTScreen.debugLog("loadFromFile(): Successfully loaded config file '{}'.",
@@ -139,6 +146,7 @@ public class Configs implements IConfigHandler {
 
 			ConfigUtils.writeConfigBase(root, "Generic", Generic.OPTIONS);
 			ConfigUtils.writeConfigBase(root, "Lists", Lists.OPTIONS);
+			ConfigUtils.writeConfigBase(root, "Advanced", Advanced.OPTIONS);
 			ConfigUtils.writeConfigBase(root, "Hotkeys", Hotkeys.HOTKEY_LIST);
 
 			JsonUtils.writeJsonToFileAsPath(root, dir.resolve(CONFIG_FILE_NAME));
