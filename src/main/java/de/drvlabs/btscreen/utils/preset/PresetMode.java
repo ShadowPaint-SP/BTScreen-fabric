@@ -24,7 +24,10 @@ public enum PresetMode implements StringIdentifiable {
 			"btscreen.preset_mode.name.default"),
 	FARM(
 			"farm",
-			"btscreen.preset_mode.name.farm");
+			"btscreen.preset_mode.name.farm"),
+	LIQUID(
+			"liquid",
+			"btscreen.preset_mode.name.liquid");
 
 	public static final StringIdentifiable.EnumCodec<PresetMode> CODEC = StringIdentifiable
 			.createCodec(PresetMode::values);
@@ -119,6 +122,14 @@ public enum PresetMode implements StringIdentifiable {
 			bt.buildIgnoreBlocks.value = blocksToIgnore; // Blocks that should be ignored in the selection
 			setAcceptableThrowawayItems();
 			BTScreen.debugLog("Updated settings to farm");
+		}
+		if (this.asString().equals(LIQUID.asString())) {
+			bt.allowBreak.value = true;
+			bt.okIfWater.value = false;
+			bt.allowPlace.value = true;
+			bt.buildInLayers.value = true;
+			bt.layerOrder.value = true;
+			bt.layerHeight.value = 1;
 		}
 	}
 

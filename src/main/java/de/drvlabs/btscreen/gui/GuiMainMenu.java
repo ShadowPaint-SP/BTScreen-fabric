@@ -380,7 +380,9 @@ public class GuiMainMenu extends GuiBase {
 					CommandUtils.executeBuild("sel shell " + Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 					return;
 				case Type.SEL_REPLACE:
-					PresetMode.setBuildingAbility();
+					if (DataManager.getPresetMode() != PresetMode.LIQUID) {
+						PresetMode.setBuildingAbility();
+					}
 					updateBlocksToReplace();
 					updateBlockToPlace();
 					CommandUtils

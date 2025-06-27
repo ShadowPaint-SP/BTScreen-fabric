@@ -49,6 +49,7 @@
 
     "btscreen.preset_mode.name.farm": "Farm",
     "btscreen.preset_mode.name.default": "Default",
+		"btscreen.preset_mode.name.liquid": "Liquid",
 
     "btscreen.info.main_menu.startBot": "Bot is running now.\n§8Make sure no one sees u using this ;)",
     "btscreen.info.main_menu.stopBot": "U ARE SAFE NOW",
