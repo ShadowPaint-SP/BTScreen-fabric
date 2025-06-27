@@ -41,7 +41,7 @@ public class Configs implements IConfigHandler {
 				.apply(GENERIC_KEY);
 		public static final ConfigInteger ITEM_DURABILITY_THRESHOLD = new ConfigInteger("itemDurabilityThreshold", 40, 20,
 				100).apply(GENERIC_KEY);
-		public static final ConfigInteger FOOD_LEVEL = new ConfigInteger("foodLevel", 18, 4, 18).apply(GENERIC_KEY);
+		public static final ConfigInteger FOOD_LEVEL = new ConfigInteger("foodLevel", 6, 2, 18).apply(GENERIC_KEY);
 		public static final ConfigInteger MIN_LIGHT_LEVEL = new ConfigInteger("minLightLevel", 1, 0, 14).apply(GENERIC_KEY);
 		public static final ConfigInteger BLOCK_BREAK_COOLDOWN = new ConfigInteger("blockBreakCooldown", 5, 0, 5)
 				.apply(GENERIC_KEY);
