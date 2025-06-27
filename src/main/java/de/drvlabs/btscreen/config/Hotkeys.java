@@ -1,0 +1,27 @@
+package de.drvlabs.btscreen.config;
+
+import java.util.List;
+
+import com.google.common.collect.ImmutableList;
+
+import de.drvlabs.btscreen.Reference;
+import fi.dy.masa.malilib.config.options.ConfigHotkey;
+import fi.dy.masa.malilib.hotkeys.KeybindSettings;
+
+public class Hotkeys {
+	private static final String HOTKEYS_KEY = Reference.MOD_ID + ".config.hotkeys";
+
+	public static final ConfigHotkey OPEN_GUI_MAIN_MENU = new ConfigHotkey("openGuiMainMenu", "P",
+			KeybindSettings.RELEASE_EXCLUSIVE).apply(HOTKEYS_KEY);
+	public static final ConfigHotkey OPEN_GUI_SETTINGS = new ConfigHotkey("openGuiSettings", "P,C").apply(HOTKEYS_KEY);
+	public static final ConfigHotkey OPEN_GUI_CUSTOM_COMMANDS = new ConfigHotkey("openGuiCustomCommands", "")
+			.apply(HOTKEYS_KEY);
+	public static final ConfigHotkey PAUSE_RESUME = new ConfigHotkey("pauseResume", "", KeybindSettings.RELEASE_EXCLUSIVE)
+			.apply(HOTKEYS_KEY);
+
+	public static final List<ConfigHotkey> HOTKEY_LIST = ImmutableList.of(
+			OPEN_GUI_MAIN_MENU,
+			OPEN_GUI_SETTINGS,
+			OPEN_GUI_CUSTOM_COMMANDS,
+			PAUSE_RESUME);
+}
