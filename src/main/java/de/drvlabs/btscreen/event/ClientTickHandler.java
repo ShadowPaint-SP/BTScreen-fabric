@@ -4,6 +4,7 @@ import baritone.api.BaritoneAPI;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.utils.BotStatus;
+import de.drvlabs.btscreen.utils.LocationCheck;
 import de.drvlabs.btscreen.utils.Waiter;
 import de.drvlabs.btscreen.utils.behavior.AutoRepair;
 import de.drvlabs.btscreen.utils.behavior.AutoSleep;
@@ -24,6 +25,9 @@ public final class ClientTickHandler {
 				}
 				if (DataManager.getBotStatus() == BotStatus.REPAIRING) {
 					AutoRepair.onTick(mc);
+				}
+				if (DataManager.getBotStatus() == BotStatus.MINING) {
+					LocationCheck.checkLocation();
 				}
 				if (Configs.Generic.AUTO_SLEEP.getBooleanValue()) {
 					AutoSleep.tryToSleep();

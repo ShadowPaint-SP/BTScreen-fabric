@@ -13,7 +13,6 @@ import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.utils.BotStatus;
 import de.drvlabs.btscreen.utils.CommandUtils;
-import de.drvlabs.btscreen.utils.RepeatAction;
 import de.drvlabs.btscreen.utils.behavior.AutoDrop;
 import de.drvlabs.btscreen.utils.customcommands.Commands;
 import de.drvlabs.btscreen.utils.customcommands.CommandsManager;
@@ -300,10 +299,7 @@ public class GuiMainMenu extends GuiBase {
 					this.gui.addMessage(MessageType.ERROR, 1000, "btscreen.info.main_menu.startBot");
 					return;
 				case Type.STOP:
-					CommandUtils.execute("stop");
-					DataManager.getInstance().setActive(false);
-					RepeatAction.cancelRepeatAction();
-					DataManager.setBotStatus(BotStatus.IDLE);
+					CommandUtils.stop();
 					this.gui.initGui();
 					this.gui.addMessage(MessageType.SUCCESS, 1000, "btscreen.info.main_menu.stopBot");
 					return;

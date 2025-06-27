@@ -32,6 +32,13 @@ public class CommandUtils {
 		DataManager.setBotStatus(BotStatus.MINING);
 	}
 
+	public static void stop() {
+		CommandUtils.execute("stop");
+		DataManager.getInstance().setActive(false);
+		RepeatAction.cancelRepeatAction();
+		DataManager.setBotStatus(BotStatus.IDLE);
+	}
+
 	public static void tpTo(String homeName) {
 		MinecraftClient client = MinecraftClient.getInstance();
 		if (client.player != null) {
