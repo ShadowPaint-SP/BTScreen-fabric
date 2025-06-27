@@ -16,10 +16,10 @@
 	"environment": "client",
 	"entrypoints": {
 		"main": [
-			"drvlabs.de.BTScreen"
+			"de.drvlabs.btscreen.BTScreen"
 		],
 		"modmenu": [
-			"drvlabs.de.compat.modmenu.ModMenuImpl"
+			"de.drvlabs.btscreen.compat.modmenu.ModMenuImpl"
 		]
 	},
 	"mixins": [

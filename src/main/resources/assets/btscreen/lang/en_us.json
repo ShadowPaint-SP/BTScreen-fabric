@@ -18,6 +18,7 @@
     "btscreen.gui.button.hover.selPosTwoInfoText":"Sets Position 2 to the current player's position",
     "btscreen.gui.button.selDelete": "Sel Clear",
     "btscreen.gui.button.hover.selDeleteInfoText":"Deletes all existing selections",
+		"btscreen.gui.button.selUndo": "Sel Undo",
     "btscreen.gui.button.up": "Up",
     "btscreen.gui.button.down": "Down",
     "btscreen.gui.button.north": "North",
@@ -43,9 +44,12 @@
     "btscreen.gui.button.sel_set": "Sel set",
     "btscreen.gui.button.sel_shell": "Sel Shell",
     "btscreen.gui.button.sel_walls": "Sel Walls",
+		"btscreen.gui.textfieldContent.placeholder.blocksToReplace": "blocks, ...",
+		"btscreen.gui.textfieldContent.placeholder.blockToPlace": "block",
 
     "btscreen.preset_mode.name.farm": "Farm",
     "btscreen.preset_mode.name.default": "Default",
+		"btscreen.preset_mode.name.liquid": "Liquid",
 
     "btscreen.info.main_menu.startBot": "Bot is running now.\n§8Make sure no one sees u using this ;)",
     "btscreen.info.main_menu.stopBot": "U ARE SAFE NOW",
@@ -59,7 +63,8 @@
     "btscreen.gui.section.label.boxMoving": "Box Moving",
     "btscreen.gui.section.label.botControl": "Bot Control",
     "btscreen.gui.section.label.additionalControls": "Additional Controls",
-
+		"btscreen.gui.label.repeatAction": "Repeating",
+		
     "btscreen.config.generic.name.debugLogging": "Debug Logging",
     "btscreen.config.generic.comment.debugLogging": "Debug Logging",
     "btscreen.config.generic.name.autoSleep": "Auto Sleep",
@@ -100,6 +105,10 @@
     "btscreen.config.generic.comment.blockBreakCooldown": "Lets you configure the cooldown between block breaks",
     "btscreen.config.generic.name.noInstaBreak": "No Instant Break",
     "btscreen.config.generic.comment.noInstaBreak": "If the bot should be able to insta break\n§6NOTE: Some blocks will be insta broken that normally should not",
+    "btscreen.config.generic.name.repeatAction": "Repeat Action",
+    "btscreen.config.generic.comment.repeatAction": "Repeat the last action",
+    "btscreen.config.generic.name.repeatActionInterval": "Repeat Action Interval",
+    "btscreen.config.generic.comment.repeatActionInterval": "The time between repeated actions",
 
     "btscreen.config.lists.name.invPreserveItemBlackList": "Disallow Dropping",
     "btscreen.config.lists.comment.invPreserveItemBlackList": "Items that should not be dropped",
@@ -117,6 +126,7 @@
     "btscreen.config.lists.comment.farmBlocksToIgnore": "Blocks that should be ignored\nwhen in the way of pathfinding they can be broken",
     "btscreen.config.lists.name.acceptableThrowawayItems": "Blocks used for pathfinding",
     "btscreen.config.lists.comment.acceptableThrowawayItems": "Blocks that can be used by Bariton to build a path",
+
 
     "btscreen.config.hotkeys.name.openGuiMainMenu": "BT Screen Main Menu",
     "btscreen.config.hotkeys.comment.openGuiMainMenu": "BT Screen Main Menu",

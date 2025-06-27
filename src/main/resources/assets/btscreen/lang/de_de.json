@@ -18,6 +18,7 @@
     "btscreen.gui.button.hover.selPosTwoInfoText":"Setzt Position 2 auf die aktuelle Spielerposition",
     "btscreen.gui.button.selDelete": "Ausw löschen",
     "btscreen.gui.button.hover.selDeleteInfoText":"Löscht alle vorhandenen Auswahlen",
+		"btscreen.gui.button.selUndo": "Auswahl ungeschehen",
     "btscreen.gui.button.up": "Hoch",
     "btscreen.gui.button.down": "Runter",
     "btscreen.gui.button.north": "Norden",
@@ -43,6 +44,8 @@
     "btscreen.gui.button.sel_set": "Ausw setzen",
     "btscreen.gui.button.sel_shell": "Ausw Hülle",
     "btscreen.gui.button.sel_walls": "Ausw Wände",
+		"btscreen.gui.textfieldContent.placeholder.blocksToReplace": "blöcke, ...",
+		"btscreen.gui.textfieldContent.placeholder.blockToPlace": "block",
 
     "btscreen.preset_mode.name.farm": "Farm",
     "btscreen.preset_mode.name.default": "Standard",
@@ -59,7 +62,8 @@
     "btscreen.gui.section.label.boxMoving": "Box-Verschiebung",
     "btscreen.gui.section.label.botControl": "Bot-Steuerung",
     "btscreen.gui.section.label.additionalControls": "Zusätzliche Steuerung",
-
+		"btscreen.gui.label.repeatAction": "Wiederholend",
+		
     "btscreen.config.generic.name.debugLogging": "Debug-Protokollierung",
     "btscreen.config.generic.comment.debugLogging": "Debug-Protokollierung",
     "btscreen.config.generic.name.autoSleep": "Auto-Schlaf",
@@ -117,6 +121,7 @@
     "btscreen.config.lists.comment.farmBlocksToIgnore": "Blöcke, die ignoriert werden sollen\nWenn sie den Weg der Pfadfindung versperren, können sie abgebaut werden",
     "btscreen.config.lists.name.acceptableThrowawayItems": "Blöcke für Pfadfindung",
     "btscreen.config.lists.comment.acceptableThrowawayItems": "Blöcke, die von Bariton zum Bau eines Pfades verwendet werden können",
+		
 
     "btscreen.config.hotkeys.name.openGuiMainMenu": "BT Screen Hauptmenü",
     "btscreen.config.hotkeys.comment.openGuiMainMenu": "BT Screen Hauptmenü",
