@@ -3,7 +3,6 @@ package de.drvlabs.btscreen;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.event.ClientTickHandler;
 import de.drvlabs.btscreen.event.InputHandler;
-import de.drvlabs.btscreen.event.KeyCallbacks;
 import de.drvlabs.btscreen.event.WorldLoadListener;
 import de.drvlabs.btscreen.gui.GuiConfigs;
 import fi.dy.masa.malilib.config.ConfigManager;
@@ -13,7 +12,6 @@ import fi.dy.masa.malilib.interfaces.IInitializationHandler;
 import fi.dy.masa.malilib.registry.Registry;
 import fi.dy.masa.malilib.util.data.ModInfo;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.MinecraftClient;
 
 public class InitHandler implements IInitializationHandler {
 
@@ -28,8 +26,6 @@ public class InitHandler implements IInitializationHandler {
 		WorldLoadListener listener = new WorldLoadListener();
 		WorldLoadHandler.getInstance().registerWorldLoadPreHandler(listener);
 		WorldLoadHandler.getInstance().registerWorldLoadPostHandler(listener);
-
-		KeyCallbacks.init(MinecraftClient.getInstance());
 
 		ClientTickEvents.END_WORLD_TICK.register(ClientTickHandler::onEndTick);
 	}
