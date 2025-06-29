@@ -18,7 +18,7 @@
     "btscreen.gui.button.hover.selPosTwoInfoText":"Setzt Position 2 auf die aktuelle Spielerposition",
     "btscreen.gui.button.selDelete": "Ausw löschen",
     "btscreen.gui.button.hover.selDeleteInfoText":"Löscht alle vorhandenen Auswahlen",
-		"btscreen.gui.button.selUndo": "Auswahl ungeschehen",
+		"btscreen.gui.button.selUndo": "Ausw ungeschehen",
     "btscreen.gui.button.up": "Hoch",
     "btscreen.gui.button.down": "Runter",
     "btscreen.gui.button.north": "Norden",
@@ -49,6 +49,7 @@
 
     "btscreen.preset_mode.name.farm": "Farm",
     "btscreen.preset_mode.name.default": "Standard",
+		"btscreen.preset_mode.name.liquid": "Flüssigkeit",
 
     "btscreen.info.main_menu.startBot": "Bot läuft jetzt.\n§8Stelle sicher, dass dich niemand dabei sieht ;)",
     "btscreen.info.main_menu.stopBot": "DU BIST JETZT SICHER",
@@ -104,6 +105,12 @@
     "btscreen.config.generic.comment.blockBreakCooldown": "Ermöglicht die Konfiguration der Abklingzeit zwischen Block-Abbauvorgängen",
     "btscreen.config.generic.name.noInstaBreak": "Kein Sofortabbau",
     "btscreen.config.generic.comment.noInstaBreak": "Ob der Bot sofort abbauen können soll\n§6HINWEIS: Einige Blöcke werden sofort abgebaut, die normalerweise nicht sollten",
+    "btscreen.config.generic.name.repeatAction": "Wiederhole Aktion",
+    "btscreen.config.generic.comment.repeatAction": "Wiederhole die letzte Aktion",
+    "btscreen.config.generic.name.repeatActionInterval": "Wiederhole Aktionsintervall",
+    "btscreen.config.generic.comment.repeatActionInterval": "Die Zeit zwischen wiederholten Aktionen",
+    "btscreen.config.generic.name.safety": "Sicherheit",
+    "btscreen.config.generic.comment.safety": "Ob der Bot stoppen soll, wenn er sich zu weit entfernt",
 
     "btscreen.config.lists.name.invPreserveItemBlackList": "Abwurf verbieten",
     "btscreen.config.lists.comment.invPreserveItemBlackList": "Gegenstände, die nicht abgeworfen werden sollen",

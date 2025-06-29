@@ -109,6 +109,8 @@
     "btscreen.config.generic.comment.repeatAction": "Repeat the last action",
     "btscreen.config.generic.name.repeatActionInterval": "Repeat Action Interval",
     "btscreen.config.generic.comment.repeatActionInterval": "The time between repeated actions",
+    "btscreen.config.generic.name.safety": "Safety",
+    "btscreen.config.generic.comment.safety": "If the bot should stop when moving too far away",
 
     "btscreen.config.lists.name.invPreserveItemBlackList": "Disallow Dropping",
     "btscreen.config.lists.comment.invPreserveItemBlackList": "Items that should not be dropped",

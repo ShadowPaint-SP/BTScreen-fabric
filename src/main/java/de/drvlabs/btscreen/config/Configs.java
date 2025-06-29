@@ -49,6 +49,7 @@ public class Configs implements IConfigHandler {
 		public static final ConfigBoolean REPEAT_ACTION = new ConfigBoolean("repeatAction", false).apply(GENERIC_KEY);
 		public static final ConfigInteger REPEAT_ACTION_INTERVAL = new ConfigInteger("repeatActionInterval", 100, 0,
 				1000000).apply(GENERIC_KEY);
+		public static final ConfigBoolean SAFETY = new ConfigBoolean("safety", false).apply(GENERIC_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
 				AUTO_SLEEP,
@@ -72,6 +73,7 @@ public class Configs implements IConfigHandler {
 				NO_INSTA_BREAK,
 				REPEAT_ACTION,
 				REPEAT_ACTION_INTERVAL,
+				SAFETY,
 				DEBUG_LOGGING);
 	}
 
