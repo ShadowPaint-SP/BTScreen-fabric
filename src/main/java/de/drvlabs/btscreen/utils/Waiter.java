@@ -1,57 +1,61 @@
 package de.drvlabs.btscreen.utils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.HashSet;
+import java.util.Iterator;
 
-public class Waiter {
-	private static class WaitTask {
-		final Runnable callback;
-		final int interval;
-		final String taskId;
-		int counter = 0;
-		boolean completed = false;
+public final class Waiter {
+	private final Runnable callback;
+	private int waitTicks = 0;
 
-		WaitTask(int interval, Runnable callback) {
-			this.interval = interval;
-			this.callback = callback;
-			this.taskId = UUID.randomUUID().toString();
+	Waiter(Runnable callback) {
+		this.callback = callback;
+	}
+
+	public void tick() {
+		if (isCompleted()) {
+			return;
 		}
-
-		public void tick() {
-			if (completed) {
-				return;
-			}
-
-			counter++;
-			if (counter >= interval) {
-				callback.run();
-				completed = true;
-			}
-		}
-
-		public boolean isCompleted() {
-			return completed;
+		waitTicks--;
+		if (isCompleted()) {
+			callback.run();
 		}
 	}
 
-	private static final Map<String, WaitTask> waiters = new HashMap<>();
-	private static final List<WaitTask> newTasksPendingAddition = new ArrayList<>();
+	public boolean isCompleted() {
+		return waitTicks <= 0;
+	}
+
+	public void cancel() {
+		waitTicks = 0;
+	}
 
 	/**
-	 * Schedules a one-shot task to run after a specified number of ticks.
+	 * Starts the waiter with a specified number of ticks. The waiter will execute
+	 * its callback after the given ticks have elapsed. Can also be used to extend
+	 * the wait time or to restart after finished execution.
+	 * 
+	 * @param waitTicks The number of ticks to wait before the callback is executed.
+	 */
+	public void start(int waitTicks) {
+		this.waitTicks = waitTicks;
+		pendingWaiter.add(this);
+	}
+
+	private static final HashSet<Waiter> activeWaiter = new HashSet<>();
+	private static final HashSet<Waiter> pendingWaiter = new HashSet<>();
+
+	/**
+	 * Schedules a task to run after a specified number of ticks.
 	 * This method adds the task to a temporary list if called during a tickAll
-	 * cycle,
-	 * ensuring it's added to the main map safely afterwards.
-	 *
+	 * cycle, ensuring it's added to the main set safely afterwards.
+	 * 
 	 * @param ticks    The number of ticks to wait before executing the callback.
 	 * @param callback The Runnable to execute once the ticks have elapsed.
 	 */
-	public static void wait(int ticks, Runnable callback) {
-		WaitTask newTask = new WaitTask(ticks, callback);
-		newTasksPendingAddition.add(newTask);
+	public static Waiter wait(int ticks, Runnable callback) {
+		Waiter newTask = new Waiter(callback);
+		newTask.start(ticks);
+		return newTask;
 	}
 
 	/**
@@ -59,21 +63,14 @@ public class Waiter {
 	 * This method is designed to be called once per game tick.
 	 */
 	public static void tickAll() {
-		List<String> tasksToRemove = new ArrayList<>();
-		for (WaitTask task : waiters.values()) {
-			task.tick();
-			if (task.isCompleted()) {
-				tasksToRemove.add(task.taskId);
+		for (Iterator<Waiter> i = activeWaiter.iterator(); i.hasNext();) {
+			Waiter waiter = i.next();
+			waiter.tick();
+			if (waiter.isCompleted()) {
+				i.remove();
 			}
 		}
-
-		for (String taskId : tasksToRemove) {
-			waiters.remove(taskId);
-		}
-
-		for (WaitTask newTask : newTasksPendingAddition) {
-			waiters.put(newTask.taskId, newTask);
-		}
-		newTasksPendingAddition.clear();
+		activeWaiter.addAll(pendingWaiter);
+		pendingWaiter.clear();
 	}
 }
