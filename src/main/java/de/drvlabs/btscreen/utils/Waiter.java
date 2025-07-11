@@ -11,7 +11,7 @@ public final class Waiter {
 		this.callback = callback;
 	}
 
-	public void tick() {
+	private void tick() {
 		if (isCompleted()) {
 			return;
 		}
