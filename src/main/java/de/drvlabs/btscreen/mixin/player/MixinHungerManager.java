@@ -11,6 +11,7 @@ import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.utils.BotStatus;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.player.HungerManager;
@@ -20,6 +21,7 @@ public class MixinHungerManager {
 	@Shadow
 	private int foodLevel;
 
+	/** {@link ClientPlayerInteractionManager#interactItem} */
 	@Inject(method = "setFoodLevel", at = @At("HEAD"))
 	private void onSetFoodLevel(int foodLevel, CallbackInfo ci) {
 		if (DataManager.getActive() && Configs.Generic.AUTO_EAT.getBooleanValue()

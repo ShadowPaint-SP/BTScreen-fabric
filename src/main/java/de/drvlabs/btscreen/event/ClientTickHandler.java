@@ -1,6 +1,8 @@
 package de.drvlabs.btscreen.event;
 
 import baritone.api.BaritoneAPI;
+import baritone.api.process.IBaritoneProcess;
+import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.utils.BotStatus;
@@ -14,8 +16,15 @@ import net.minecraft.client.world.ClientWorld;
 
 public final class ClientTickHandler {
 	private static MinecraftClient mc = MinecraftClient.getInstance();
+	private static IBaritoneProcess lastProcess = null;
 
 	public static void onEndTick(ClientWorld world) {
+		IBaritoneProcess currentProcess = BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager()
+				.mostRecentInControl().orElse(null);
+		if (currentProcess != null && lastProcess != currentProcess) {
+			BTScreen.debugLog("Current Process: {}, {}, {}, {}, {}, {}", currentProcess.displayName(), currentProcess.displayName0(), currentProcess.isActive(), currentProcess.isTemporary(), currentProcess.priority(), currentProcess.toString());
+			lastProcess = currentProcess;
+		}
 		if (world != null && mc.player != null) {
 			Waiter.tickAll();
 			if (DataManager.getActive() && BaritoneAPI.getProvider().getPrimaryBaritone().getPathingControlManager()

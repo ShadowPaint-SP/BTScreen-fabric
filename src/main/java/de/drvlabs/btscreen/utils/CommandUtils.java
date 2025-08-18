@@ -7,11 +7,11 @@ import de.drvlabs.btscreen.data.DataManager;
 import net.minecraft.client.MinecraftClient;
 
 public class CommandUtils {
-
-	private static IBaritone baritone = BaritoneAPI.getProvider().getPrimaryBaritone();
+	private static final MinecraftClient MC = MinecraftClient.getInstance();
+	private static final IBaritone BT = BaritoneAPI.getProvider().getPrimaryBaritone();
 
 	public static void execute(String command) {
-		baritone.getCommandManager().execute(command);
+		BT.getCommandManager().execute(command);
 	}
 
 	public static void executeBuild(String command) {
@@ -23,13 +23,13 @@ public class CommandUtils {
 	}
 
 	public static void pause(BotStatus newStatus) {
-		baritone.getBuilderProcess().pause();
+		BT.getBuilderProcess().pause();
 		// execute("pause");
 		DataManager.setBotStatus(newStatus);
 	}
 
 	public static void resume() {
-		baritone.getBuilderProcess().resume();
+		BT.getBuilderProcess().resume();
 		// execute("resume");
 		DataManager.setBotStatus(BotStatus.MINING);
 	}
@@ -42,35 +42,32 @@ public class CommandUtils {
 	}
 
 	public static void tpTo(String homeName) {
-		MinecraftClient client = MinecraftClient.getInstance();
-		if (client.player != null) {
+		if (MC.player != null) {
 			if (Configs.Generic.HOME_COMMAND.getStringValue().equals("tp")
 					&& homeName.equals(Configs.Generic.DROP_HOME.getStringValue())) {
-				client.player.networkHandler.sendChatCommand(Configs.Generic.HOME_COMMAND.getStringValue()
-						+ " " + client.player.getNameForScoreboard() + " " + homeName + " 180 0");
+				MC.player.networkHandler.sendChatCommand(Configs.Generic.HOME_COMMAND.getStringValue()
+						+ " " + MC.player.getNameForScoreboard() + " " + homeName + " 180 0");
 				return;
 			}
-			client.player.networkHandler
+			MC.player.networkHandler
 					.sendChatCommand(Configs.Generic.HOME_COMMAND.getStringValue() + " " + homeName);
 		}
 	}
 
 	public static void sendCommand(String command) {
-		MinecraftClient client = MinecraftClient.getInstance();
-		if (client.player != null) {
-			client.player.networkHandler.sendChatCommand(command);
+		if (MC.player != null) {
+			MC.getNetworkHandler().sendChatCommand(command);
 		}
 	}
 
 	public static void setHome(String homeName) {
-		MinecraftClient client = MinecraftClient.getInstance();
-		if (client.player != null) {
+		if (MC.player != null) {
 			if (Configs.Generic.HOME_COMMAND.getStringValue().equals("tp")) {
-				Configs.Generic.MINE_HOME.setValueFromString(client.player.getBlockPos().getX() + " "
-						+ client.player.getBlockPos().getY() + " " + client.player.getBlockPos().getZ());
+				Configs.Generic.MINE_HOME.setValueFromString(MC.player.getBlockPos().getX() + " "
+						+ MC.player.getBlockPos().getY() + " " + MC.player.getBlockPos().getZ());
 				return;
 			}
-			client.player.networkHandler
+			MC.player.networkHandler
 					.sendChatCommand(Configs.Generic.SETHOME_COMMAND.getStringValue() + " " + homeName);
 		}
 	}
