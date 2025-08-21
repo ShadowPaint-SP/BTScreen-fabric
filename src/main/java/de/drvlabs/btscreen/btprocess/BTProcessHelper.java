@@ -1,34 +1,33 @@
 package de.drvlabs.btscreen.btprocess;
 
-import baritone.api.BaritoneAPI;
-import baritone.api.IBaritone;
 import baritone.api.process.IBaritoneProcess;
-import baritone.api.utils.IPlayerContext;
+import de.drvlabs.btscreen.utils.Utils;
 import fi.dy.masa.malilib.config.IConfigBoolean;
 
 public abstract class BTProcessHelper implements IBaritoneProcess {
-    protected static final IBaritone BARITONE = BaritoneAPI.getProvider().getPrimaryBaritone();
-    protected final IPlayerContext ctx;
-
-    public BTProcessHelper() {
-        this.ctx = BARITONE.getPlayerContext();
-    }
-
     @Override
     public String displayName0() {
         return this.getClass().getSimpleName();
     }
 
     /**
-     * Hilfsfunktion für Konfigurationsoptionen.
+     * Helper function for configuration options.
      * 
-     * @param config Die Konfigurationsoption, deren Wert überprüft werden soll.
-     * @return {@code true}, wenn die Konfigurationsoption aktiviert ist und der
-     *         Spieler sowie die Welt nicht null sind; ansonsten {@code false}.
+     * @param config The configuration option whose value should be checked.
+     * @return {@code true} if the configuration option is enabled and the
+     *         player and world are not null; otherwise {@code false}.
      */
-    protected boolean isActive(IConfigBoolean config) {
-        return config.getBooleanValue() && ctx.player() != null && ctx.world() != null;
+    protected static boolean isActive(IConfigBoolean config) {
+        return config.getBooleanValue() && Utils.isInGame();
     }
+
+    /**
+     * Should fully reset the {@link IBaritoneProcess}.
+     * <p>
+     * {@inheritDoc}
+     */
+    @Override
+    public abstract void onLostControl();
 
     @Override
     public boolean isTemporary() {
@@ -37,6 +36,6 @@ public abstract class BTProcessHelper implements IBaritoneProcess {
 
     @Override
     public double priority() {
-        return 3;
+        return DEFAULT_PRIORITY + 0.5;
     }
 }

@@ -2,12 +2,8 @@
 	"required": true,
 	"package": "de.drvlabs.btscreen.mixin",
 	"compatibilityLevel": "JAVA_21",
-	"mixins": [
-		"IMixinProfilerSystem"
-	],
 	"client":[
 		"MixinMinecraftClient",
-		"input.IMixinKeyBinding",
 		"network.MixinClientPlayNetworkHandler",
 		"network.MixinClientPlayerInteractionManager",
 		"player.MixinHungerManager"

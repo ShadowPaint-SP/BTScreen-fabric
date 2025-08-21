@@ -1,7 +1,8 @@
 package de.drvlabs.btscreen.utils;
 
+import static de.drvlabs.btscreen.config.Configs.Generic.SAFETY;
+
 import de.drvlabs.btscreen.BTScreen;
-import de.drvlabs.btscreen.config.Configs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -25,10 +26,10 @@ public class LocationCheck {
 
 	public static void checkLocation() {
 		if (!inRange()) {
-			if (Configs.Generic.SAFETY.getBooleanValue()) {
+			if (SAFETY.getBooleanValue()) {
 
 				BTScreen.debugLog("Player has moved too far from the last recorded location.");
-				CommandUtils.stop();
+				Utils.cancel();
 			}
 		}
 	}

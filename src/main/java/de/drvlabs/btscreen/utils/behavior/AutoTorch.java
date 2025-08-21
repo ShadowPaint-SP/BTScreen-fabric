@@ -3,7 +3,7 @@ package de.drvlabs.btscreen.utils.behavior;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.utils.BotStatus;
-import de.drvlabs.btscreen.utils.CommandUtils;
+import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EntityType;
@@ -36,7 +36,7 @@ public class AutoTorch {
 	}
 
 	public static void prepare(MinecraftClient mc) {
-		CommandUtils.pause(BotStatus.LIGHTING);
+		Utils.pause(BotStatus.LIGHTING);
 		mc.player.setPitch(90);
 	}
 
@@ -47,7 +47,7 @@ public class AutoTorch {
 		if (!mc.world.getBlockState(pos).allowsSpawning(mc.world, pos, EntityType.ZOMBIE)) {
 			BTScreen.debugLog("No spawnable Block Disabeling for 600 Ticks");
 			Configs.Generic.AUTO_TORCH.setBooleanValue(false);
-			CommandUtils.resume();
+			Utils.resume();
 			Waiter.wait(600, () -> {
 				Configs.Generic.AUTO_TORCH.setBooleanValue(true);
 			});
@@ -78,7 +78,7 @@ public class AutoTorch {
 	public static void onTick(MinecraftClient mc) {
 		if (success) {
 			success = false;
-			CommandUtils.resume();
+			Utils.resume();
 			return;
 		}
 		int torchSlot = getTorchSlotInHotbar(mc);
@@ -87,7 +87,7 @@ public class AutoTorch {
 		} else {
 			BTScreen.debugLog("No Torch in Hotbar Disabeling");
 			Configs.Generic.AUTO_TORCH.setBooleanValue(false);
-			CommandUtils.resume();
+			Utils.resume();
 		}
 	}
 }

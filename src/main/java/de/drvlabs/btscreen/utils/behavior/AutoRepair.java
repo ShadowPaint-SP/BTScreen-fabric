@@ -6,22 +6,22 @@ import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.utils.BotStatus;
-import de.drvlabs.btscreen.utils.CommandUtils;
-import de.drvlabs.btscreen.utils.IMinecraftClientInvoker;
+import de.drvlabs.btscreen.utils.Utils;
 import fi.dy.masa.malilib.config.IConfigInteger;
 import fi.dy.masa.malilib.util.GuiUtils;
+import net.fabricmc.fabric.api.tag.convention.v2.TagUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Hand;
 
 public class AutoRepair {
-	private static final KeybindState KEY_STATE_ATTACK = new KeybindState(MinecraftClient.getInstance().options.attackKey,
-			(mc) -> ((IMinecraftClientInvoker) mc).btscreen_invokeDoAttack());
+	private static final KeybindState KEY_STATE_ATTACK = new KeybindState(
+			MinecraftClient.getInstance().options.attackKey, MinecraftClient::doAttack);
 
 	private static int swordSlot = -1;
 
@@ -61,8 +61,8 @@ public class AutoRepair {
 
 		if (!player.getStackInHand(Hand.MAIN_HAND).isDamaged()) {
 			BTScreen.debugLog("Finished Repairing");
-			CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
-			CommandUtils.resume();
+			Utils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
+			Utils.resume();
 			AutoDrop.checkInventory();
 			return;
 		}
@@ -103,10 +103,10 @@ public class AutoRepair {
 
 			if (isItemAtLowDurability(stack, minDurability)) {
 				BTScreen.debugLog("Start Repairing");
-				CommandUtils.pause(BotStatus.REPAIRING);
+				Utils.pause(BotStatus.REPAIRING);
 				swordSlot = getSwordSlotInHotbar();
-				CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
-				CommandUtils.tpTo(Configs.Generic.REPAIR_HOME.getStringValue());
+				Utils.setHome(Configs.Generic.MINE_HOME.getStringValue());
+				Utils.tpTo(Configs.Generic.REPAIR_HOME.getStringValue());
 			}
 		}
 	}
@@ -130,11 +130,6 @@ public class AutoRepair {
 	}
 
 	public static boolean isSword(ItemStack stack) {
-		return stack.isOf(Items.WOODEN_SWORD) ||
-				stack.isOf(Items.STONE_SWORD) ||
-				stack.isOf(Items.IRON_SWORD) ||
-				stack.isOf(Items.GOLDEN_SWORD) ||
-				stack.isOf(Items.DIAMOND_SWORD) ||
-				stack.isOf(Items.NETHERITE_SWORD);
+		return TagUtil.isIn(ItemTags.SWORDS, stack.getItem());
 	}
 }

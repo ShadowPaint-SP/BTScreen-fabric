@@ -12,7 +12,7 @@ import de.drvlabs.btscreen.Reference;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.utils.BotStatus;
-import de.drvlabs.btscreen.utils.CommandUtils;
+import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.behavior.AutoDrop;
 import de.drvlabs.btscreen.utils.customcommands.Commands;
 import de.drvlabs.btscreen.utils.customcommands.CommandsManager;
@@ -287,7 +287,7 @@ public class GuiMainMenu extends GuiBase {
 					GuiBase.openGui(new GuiConfigs());
 					return;
 				case Type.START:
-					CommandUtils.execute("sel cleararea");
+					Utils.execute("sel cleararea");
 					DataManager.getInstance().setActive(true);
 					AutoDrop.updateMaxSlots();
 					DataManager.getPresetMode().setSettings();
@@ -295,88 +295,88 @@ public class GuiMainMenu extends GuiBase {
 					// check for haste
 					if (Configs.Generic.AUTO_HASTE.getBooleanValue()) {
 						if (!mc.player.hasStatusEffect(StatusEffects.HASTE)) {
-							CommandUtils.pause(BotStatus.HASTING);
-							CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
-							CommandUtils.tpTo(Configs.Generic.HASTE_HOME.getStringValue());
+							Utils.pause(BotStatus.HASTING);
+							Utils.setHome(Configs.Generic.MINE_HOME.getStringValue());
+							Utils.tpTo(Configs.Generic.HASTE_HOME.getStringValue());
 						}
 					}
 					this.gui.initGui();
 					this.gui.addMessage(MessageType.ERROR, 1000, "btscreen.info.main_menu.startBot");
 					return;
 				case Type.STOP:
-					CommandUtils.stop();
+					Utils.cancel();
 					this.gui.initGui();
 					this.gui.addMessage(MessageType.SUCCESS, 1000, "btscreen.info.main_menu.stopBot");
 					return;
 				case Type.SELPOSONE:
-					CommandUtils.execute("sel pos1");
+					Utils.execute("sel pos1");
 					return;
 				case Type.SELPOSTWO:
-					CommandUtils.execute("sel pos2");
+					Utils.execute("sel pos2");
 					return;
 				case Type.SELDELETE:
-					CommandUtils.execute("sel clear");
+					Utils.execute("sel clear");
 					this.gui.addMessage(MessageType.WARNING, 1000, "btscreen.info.main_menu.selDelete");
 					return;
 				case Type.SELUNDO:
-					CommandUtils.execute("sel undo");
+					Utils.execute("sel undo");
 					return;
 				case Type.SHIFTX:
-					CommandUtils.execute("sel shift all east " + amount);
+					Utils.execute("sel shift all east " + amount);
 					return;
 				case Type.SHIFTY:
-					CommandUtils.execute("sel shift all up " + amount);
+					Utils.execute("sel shift all up " + amount);
 					return;
 				case Type.SHIFTZ:
-					CommandUtils.execute("sel shift all north " + amount);
+					Utils.execute("sel shift all north " + amount);
 					return;
 				case Type.UP:
-					CommandUtils.execute("sel expand all up " + amount);
+					Utils.execute("sel expand all up " + amount);
 					return;
 				case Type.DOWN:
-					CommandUtils.execute("sel expand all down " + amount);
+					Utils.execute("sel expand all down " + amount);
 					return;
 				case Type.NORTH:
-					CommandUtils.execute("sel expand all north " + amount);
+					Utils.execute("sel expand all north " + amount);
 					return;
 				case Type.EAST:
-					CommandUtils.execute("sel expand all east " + amount);
+					Utils.execute("sel expand all east " + amount);
 					return;
 				case Type.SOUTH:
-					CommandUtils.execute("sel expand all south " + amount);
+					Utils.execute("sel expand all south " + amount);
 					return;
 				case Type.WEST:
-					CommandUtils.execute("sel expand all west " + amount);
+					Utils.execute("sel expand all west " + amount);
 					return;
 				case Type.COMMAND:
 					if (this.command != null) {
-						CommandUtils.sendCommand(this.command.getCommand());
+						Utils.sendCommand(this.command.getCommand());
 					}
 					return;
 				case Type.PAUSE_RESUME:
 					if (BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().isPaused()) {
-						CommandUtils.resume();
+						Utils.resume();
 					} else {
-						CommandUtils.pause(BotStatus.IDLE);
+						Utils.pause(BotStatus.IDLE);
 					}
 					this.gui.initGui();
 					return;
 				case Type.SEL_SET:
 					PresetMode.setBuildingAbility();
 					updateBlocksToReplace();
-					CommandUtils.executeBuild("sel set "
+					Utils.executeBuild("sel set "
 							+ String.join(" ", Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings()));
 					return;
 				case Type.SEL_WALLS:
 					PresetMode.setBuildingAbility();
 					updateBlocksToReplace();
-					CommandUtils.executeBuild("sel walls "
+					Utils.executeBuild("sel walls "
 							+ Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 					return;
 				case Type.SEL_SHELL:
 					PresetMode.setBuildingAbility();
 					updateBlocksToReplace();
-					CommandUtils.executeBuild("sel shell " + Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
+					Utils.executeBuild("sel shell " + Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 					return;
 				case Type.SEL_REPLACE:
 					if (DataManager.getPresetMode() != PresetMode.LIQUID) {
@@ -384,16 +384,16 @@ public class GuiMainMenu extends GuiBase {
 					}
 					updateBlocksToReplace();
 					updateBlockToPlace();
-					CommandUtils
+					Utils
 							.executeBuild("sel replace " + String.join(" ", Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings()) + " "
 									+ Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 					return;
 				case Type.SEL_COPY:
-					CommandUtils.execute("sel copy");
+					Utils.execute("sel copy");
 					return;
 				case Type.SEL_PASTE:
 					PresetMode.setBuildingAbility();
-					CommandUtils.execute("sel paste");
+					Utils.execute("sel paste");
 					return;
 				default:
 					break;

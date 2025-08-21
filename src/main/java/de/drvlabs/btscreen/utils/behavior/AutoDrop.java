@@ -13,7 +13,7 @@ import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.utils.BotStatus;
-import de.drvlabs.btscreen.utils.CommandUtils;
+import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
 
 public class AutoDrop {
@@ -37,17 +37,17 @@ public class AutoDrop {
 		}
 
 		if (!hasFreeSlot) {
-			CommandUtils.pause(BotStatus.DROPPING);
+			Utils.pause(BotStatus.DROPPING);
 			BTScreen.debugLog("Inventory full");
-			CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
-			CommandUtils.tpTo(Configs.Generic.DROP_HOME.getStringValue());
+			Utils.setHome(Configs.Generic.MINE_HOME.getStringValue());
+			Utils.tpTo(Configs.Generic.DROP_HOME.getStringValue());
 			Waiter.wait(60, () -> {
 				mc.setScreen(new InventoryScreen(mc.player));
 				dropInventory();
 				// dropWaitFinished = true;
 				mc.currentScreen.close();
-				CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
-				CommandUtils.resume();
+				Utils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
+				Utils.resume();
 				checkInventory(); // To make sure the inventory has space now
 			});
 		}

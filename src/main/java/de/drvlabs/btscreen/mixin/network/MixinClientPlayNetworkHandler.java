@@ -6,74 +6,67 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.btprocess.AutoRepair;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.utils.BotStatus;
-import de.drvlabs.btscreen.utils.CommandUtils;
+import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.behavior.AutoDrop;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
+import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class MixinClientPlayNetworkHandler {
+    // Runs before the change is applied to the inventory
+    @Inject(method = "onScreenHandlerSlotUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/PlayerScreenHandler;setStackInSlot(IILnet/minecraft/item/ItemStack;)V", shift = At.Shift.BEFORE, ordinal = 0))
+    public void onPlayerInventorySlotUpdatePre(ScreenHandlerSlotUpdateS2CPacket packet, CallbackInfo ci) {
+        int slot = packet.getSlot();
+        ItemStack newStack = packet.getStack();
+        ItemStack oldStack = Utils.MC.player.getInventory().getStack(slot);
+        AutoRepair.checkRepairNeeded(slot, newStack, oldStack);
+    }
 
-	MinecraftClient mc = MinecraftClient.getInstance();
+    // Runs after the change is applied to the inventory
+    @Inject(method = "onScreenHandlerSlotUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/PlayerScreenHandler;setStackInSlot(IILnet/minecraft/item/ItemStack;)V", shift = At.Shift.AFTER, ordinal = 0))
+    public void onPlayerInventorySlotUpdatePost(ScreenHandlerSlotUpdateS2CPacket packet, CallbackInfo ci) {
+        if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING
+                && Configs.Generic.AUTO_DROP.getBooleanValue()) {
+            AutoDrop.checkInventory();
+        }
+    }
 
-	@Inject(method = "onScreenHandlerSlotUpdate", at = @At(value = "TAIL", target = "Lnet/minecraft/screen/PlayerScreenHandler;setStackInSlot(IILnet/minecraft/item/ItemStack;)V"))
-	public void onScreenSlotUpdate(net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket packet,
-			CallbackInfo ci) {
-		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING
-				&& Configs.Generic.AUTO_DROP.getBooleanValue()) {
-			AutoDrop.checkInventory();
-		}
-	}
+    @Inject(method = "onRemoveEntityStatusEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/util/thread/ThreadExecutor;)V", shift = At.Shift.AFTER))
+    public void onEntityStatusEffect(RemoveEntityStatusEffectS2CPacket packet, CallbackInfo ci) {
+        if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING
+                && Configs.Generic.AUTO_HASTE.getBooleanValue()) {
+            if (packet.getEntity(Utils.MC.world) == Utils.MC.player) {
 
-	// Executes every second this could be interesting for better waiter function
-	// (TEST THIS)
-	// @Inject(method = "onWorldTimeUpdate", at = @At("RETURN"))
-	// private void
-	// btscreen_onTimeUpdate(net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket
-	// packetIn,
-	// CallbackInfo ci) {
-	// // DataStorage.getInstance().onServerTimeUpdate(packetIn.time());
-	// BTScreen.debugLog("Time updated");
-	// }
+                if (packet.effect().matches(StatusEffects.HASTE::matchesKey)) {
+                    BTScreen.debugLog("Lost Haste");
+                    Utils.pause(BotStatus.HASTING);
+                    Utils.setHome(Configs.Generic.MINE_HOME.getStringValue());
+                    Utils.tpTo(Configs.Generic.HASTE_HOME.getStringValue());
+                }
+            }
+        }
+    }
 
-	@Inject(method = "onRemoveEntityStatusEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/util/thread/ThreadExecutor;)V", shift = At.Shift.AFTER))
-	public void onEntityStatusEffect(net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket packet,
-			CallbackInfo info) {
-		assert mc.player != null;
+    @Inject(method = "onEntityStatusEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/util/thread/ThreadExecutor;)V", shift = At.Shift.AFTER))
+    public void onEntityStatusEffect(EntityStatusEffectS2CPacket packet, CallbackInfo ci) {
+        if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.HASTING
+                && Configs.Generic.AUTO_HASTE.getBooleanValue()) {
+            if (packet.getEntityId() == Utils.MC.player.getId()) {
 
-		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING
-				&& Configs.Generic.AUTO_HASTE.getBooleanValue()) {
-			if (packet.getEntity(mc.world) == mc.player) {
-
-				if (packet.effect().matches(StatusEffects.HASTE::matchesKey)) {
-					BTScreen.debugLog("Lost Haste");
-					CommandUtils.pause(BotStatus.HASTING);
-					CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
-					CommandUtils.tpTo(Configs.Generic.HASTE_HOME.getStringValue());
-				}
-			}
-		}
-	}
-
-	@Inject(method = "onEntityStatusEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/util/thread/ThreadExecutor;)V", shift = At.Shift.AFTER))
-	public void onEntityStatusEffect(net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket packet,
-			CallbackInfo info) {
-		assert mc.player != null;
-
-		if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.HASTING
-				&& Configs.Generic.AUTO_HASTE.getBooleanValue()) {
-			if (packet.getEntityId() == mc.player.getId()) {
-
-				if (packet.getEffectId().matches(StatusEffects.HASTE::matchesKey)) {
-					BTScreen.debugLog("gained Haste");
-					CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
-					CommandUtils.resume();
-				}
-			}
-		}
-	}
+                if (packet.getEffectId().matches(StatusEffects.HASTE::matchesKey)) {
+                    BTScreen.debugLog("gained Haste");
+                    Utils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
+                    Utils.resume();
+                }
+            }
+        }
+    }
 }

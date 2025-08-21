@@ -1,0 +1,95 @@
+package de.drvlabs.btscreen.event;
+
+import baritone.api.pathing.calc.IPathingControlManager;
+import baritone.api.process.IBaritoneProcess;
+import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.Reference;
+import de.drvlabs.btscreen.config.Configs;
+import de.drvlabs.btscreen.data.DataManager;
+import de.drvlabs.btscreen.gui.GuiConfigs;
+import de.drvlabs.btscreen.utils.BotStatus;
+import de.drvlabs.btscreen.utils.LocationCheck;
+import de.drvlabs.btscreen.utils.Utils;
+import de.drvlabs.btscreen.utils.Waiter;
+import de.drvlabs.btscreen.utils.behavior.AutoRepair;
+import de.drvlabs.btscreen.utils.behavior.AutoSleep;
+import de.drvlabs.btscreen.utils.behavior.AutoTorch;
+import fi.dy.masa.malilib.config.ConfigManager;
+import fi.dy.masa.malilib.event.InputEventHandler;
+import fi.dy.masa.malilib.registry.Registry;
+import fi.dy.masa.malilib.util.data.ModInfo;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents.ClientStarted;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.EndWorldTick;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents.AfterClientWorldChange;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.world.ClientWorld;
+
+public final class EventHandler implements EndWorldTick, AfterClientWorldChange, ClientStarted {
+    private IBaritoneProcess lastProcess = null;
+
+    @Override
+    public void onClientStarted(MinecraftClient client) {
+        ConfigManager.getInstance().registerConfigHandler(Reference.MOD_ID, new Configs());
+        Registry.CONFIG_SCREEN.registerConfigScreenFactory(
+                new ModInfo(Reference.MOD_ID, Reference.MOD_NAME, GuiConfigs::new));
+
+        InputEventHandler.getKeybindManager().registerKeybindProvider(InputHandler.INSTANCE);
+
+        final IPathingControlManager controlManager = Utils.BT.getPathingControlManager();
+        controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.AutoRepair());
+    }
+
+    @Override
+    public void onEndTick(ClientWorld world) {
+        IBaritoneProcess currentProcess = Utils.BT.getPathingControlManager()
+                .mostRecentInControl().orElse(null);
+        if (currentProcess != null && lastProcess != currentProcess) {
+            BTScreen.debugLog("Current Process: {}, {}, {}, {}, {}, {}", currentProcess.displayName(),
+                    currentProcess.displayName0(), currentProcess.isActive(), currentProcess.isTemporary(),
+                    currentProcess.priority(), currentProcess.toString());
+            lastProcess = currentProcess;
+        }
+        if (Utils.isInGame()) {
+            Waiter.tickAll();
+            if (DataManager.getActive() && Utils.BT.getPathingControlManager()
+                    .mostRecentInControl().isPresent()) {
+                if (DataManager.getBotStatus() == BotStatus.IDLE) {
+                    return;
+                }
+                if (DataManager.getBotStatus() == BotStatus.REPAIRING) {
+                    AutoRepair.onTick(Utils.MC);
+                }
+                if (DataManager.getBotStatus() == BotStatus.MINING) {
+                    LocationCheck.checkLocation();
+                }
+                if (Configs.Generic.AUTO_SLEEP.getBooleanValue()) {
+                    AutoSleep.tryToSleep();
+                }
+                if (Configs.Generic.AUTO_TORCH.getBooleanValue()) {
+                    if (DataManager.getBotStatus() == BotStatus.MINING && AutoTorch.blockNeedsTorch(Utils.MC)) {
+                        AutoTorch.prepare(Utils.MC);
+                    }
+                    if (DataManager.getBotStatus() == BotStatus.LIGHTING) {
+                        AutoTorch.onTick(Utils.MC);
+                    }
+                }
+            } else {
+                if (DataManager.getBotStatus() != BotStatus.IDLE) {
+                    DataManager.getInstance().setActive(false);
+                    DataManager.setBotStatus(BotStatus.IDLE);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void afterWorldChange(MinecraftClient client, ClientWorld world) {
+        DataManager.save();
+        if (world != null) {
+            DataManager.load();
+            BTScreen.LOGGER.error("Loaded settings");
+        } else {
+            DataManager.clear();
+        }
+    }
+}

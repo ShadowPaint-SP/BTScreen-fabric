@@ -7,7 +7,7 @@ import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.utils.BotStatus;
-import de.drvlabs.btscreen.utils.CommandUtils;
+import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Hand;
@@ -41,9 +41,9 @@ public class AutoSleep {
 				BTScreen.debugLog("Cannot sleep in the nether... Disabling auto sleep");
 				return;
 			}
-			CommandUtils.pause(BotStatus.SLEEPING);
-			CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
-			CommandUtils.tpTo(Configs.Generic.SLEEP_HOME.getStringValue());
+			Utils.pause(BotStatus.SLEEPING);
+			Utils.setHome(Configs.Generic.MINE_HOME.getStringValue());
+			Utils.tpTo(Configs.Generic.SLEEP_HOME.getStringValue());
 		}
 
 		if (DataManager.getBotStatus() == BotStatus.SLEEPING && isNight()) {
@@ -52,8 +52,8 @@ public class AutoSleep {
 
 		if (DataManager.getBotStatus() == BotStatus.SLEEPING && isDay()) {
 			sucess = false;
-			CommandUtils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
-			CommandUtils.resume();
+			Utils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
+			Utils.resume();
 		}
 	}
 

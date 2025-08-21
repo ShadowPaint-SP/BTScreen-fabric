@@ -36,7 +36,7 @@ public class RepeatAction {
 				DataManager.setBotStatus(BotStatus.MINING);
 				DataManager dataManager = DataManager.getInstance();
 				dataManager.setActive(true);
-				CommandUtils.execute(lastCommand);
+				Utils.execute(lastCommand);
 				isWaiting = false;
 			}
 		});

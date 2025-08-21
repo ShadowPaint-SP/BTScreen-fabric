@@ -5,10 +5,16 @@ import baritone.api.IBaritone;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 
-public class CommandUtils {
-	private static final MinecraftClient MC = MinecraftClient.getInstance();
-	private static final IBaritone BT = BaritoneAPI.getProvider().getPrimaryBaritone();
+public class Utils {
+	public static final MinecraftClient MC = MinecraftClient.getInstance();
+	public static final IBaritone BT = BaritoneAPI.getProvider().getPrimaryBaritone();
+
+	public static boolean isInGame() {
+		return MC.player != null && Utils.MC.world != null;
+	}
 
 	public static void execute(String command) {
 		BT.getCommandManager().execute(command);
@@ -24,18 +30,17 @@ public class CommandUtils {
 
 	public static void pause(BotStatus newStatus) {
 		BT.getBuilderProcess().pause();
-		// execute("pause");
 		DataManager.setBotStatus(newStatus);
 	}
 
 	public static void resume() {
 		BT.getBuilderProcess().resume();
-		// execute("resume");
 		DataManager.setBotStatus(BotStatus.MINING);
 	}
 
-	public static void stop() {
-		CommandUtils.execute("stop");
+	public static void cancel() {
+		BT.getPathingBehavior().cancelEverything();
+		execute("stop");
 		DataManager.getInstance().setActive(false);
 		RepeatAction.cancelRepeatAction();
 		DataManager.setBotStatus(BotStatus.IDLE);
@@ -54,12 +59,6 @@ public class CommandUtils {
 		}
 	}
 
-	public static void sendCommand(String command) {
-		if (MC.player != null) {
-			MC.getNetworkHandler().sendChatCommand(command);
-		}
-	}
-
 	public static void setHome(String homeName) {
 		if (MC.player != null) {
 			if (Configs.Generic.HOME_COMMAND.getStringValue().equals("tp")) {
@@ -70,5 +69,27 @@ public class CommandUtils {
 			MC.player.networkHandler
 					.sendChatCommand(Configs.Generic.SETHOME_COMMAND.getStringValue() + " " + homeName);
 		}
+	}
+
+	public static void chatMessage(Text... message) {
+		if (!isInGame())
+			return;
+		MutableText msg = Text.literal("");
+		for (Text text : message) {
+			msg.append(text);
+		}
+		MC.getMessageHandler().onGameMessage(msg, false);
+	}
+
+	public static void overlayMessage(Text message) {
+		if (!isInGame())
+			return;
+		MC.inGameHud.setOverlayMessage(message, false);
+	}
+
+	public static void sendCommand(String command) {
+		if (!isInGame())
+			return;
+		MC.getNetworkHandler().sendChatCommand(command);
 	}
 }

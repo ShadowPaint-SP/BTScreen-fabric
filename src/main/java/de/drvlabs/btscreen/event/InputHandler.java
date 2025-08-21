@@ -7,14 +7,7 @@ import fi.dy.masa.malilib.hotkeys.IKeybindManager;
 import fi.dy.masa.malilib.hotkeys.IKeybindProvider;
 
 public class InputHandler implements IKeybindProvider {
-	private static final InputHandler INSTANCE = new InputHandler();
-
-	private InputHandler() {
-	}
-
-	public static InputHandler getInstance() {
-		return INSTANCE;
-	}
+	public static final InputHandler INSTANCE = new InputHandler();
 
 	@Override
 	public void addKeysToMap(IKeybindManager manager) {

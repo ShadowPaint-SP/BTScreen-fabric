@@ -3,15 +3,13 @@ package de.drvlabs.btscreen.btprocess;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.config.Configs;
-import de.drvlabs.btscreen.utils.CommandUtils;
+import de.drvlabs.btscreen.utils.Utils;
 import fi.dy.masa.malilib.config.options.ConfigString;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.Vec3d;
 
 public class Teleport extends BTProcessHelper {
-    private static final MinecraftClient MC = MinecraftClient.getInstance();
-    public static Home nextHome = null;
+    private static Home nextHome = null;
     private boolean teleporting = false;
     private boolean teleportBack = false;
     private int timeoutTicks = 0;
@@ -20,18 +18,18 @@ public class Teleport extends BTProcessHelper {
 
     @Override
     public boolean isActive() {
-        return true;
+        return nextHome != null || teleporting || teleportBack;
     }
 
     @Override
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         // Timeout
         if (timeoutTicks > 100) {
-            CommandUtils.stop();
+            Utils.cancel();
             onLostControl();
         }
         // Teleport Finished
-        if (teleporting && (!oldPos.isInRange(MC.player.getPos(), 1) || oldWorld != MC.world)) {
+        if (teleporting && (!oldPos.isInRange(Utils.MC.player.getPos(), 1) || oldWorld != Utils.MC.world)) {
             teleporting = false;
             timeoutTicks = 0;
             oldPos = null;
@@ -49,8 +47,8 @@ public class Teleport extends BTProcessHelper {
                 return new PathingCommand(null, PathingCommandType.DEFER);
             }
             teleporting = true;
-            oldPos = MC.player.getPos();
-            oldWorld = MC.world;
+            oldPos = Utils.MC.player.getPos();
+            oldWorld = Utils.MC.world;
             if (!teleportBack && nextHome != Home.MINE) {
                 teleportBack = true;
                 Home.MINE.setHome();
@@ -65,7 +63,6 @@ public class Teleport extends BTProcessHelper {
 
     @Override
     public void onLostControl() {
-        // Reset
         nextHome = null;
         teleporting = false;
         teleportBack = false;
@@ -77,9 +74,24 @@ public class Teleport extends BTProcessHelper {
     @Override
     public double priority() {
         if (teleporting || nextHome != null) {
-            return super.priority() + 0.1;
+            return super.priority() + 0.01;
         }
-        return super.priority() - 0.1;
+        return super.priority() - 0.01;
+    }
+
+    /**
+     * Requests a teleport to the specified home.
+     * If a teleport is already pending, the request is ignored.
+     * 
+     * @param home
+     * @return
+     */
+    public static boolean requestTeleport(Home home) {
+        if (nextHome != null) {
+            return false;
+        }
+        nextHome = home;
+        return true;
     }
 
     public static enum Home {
@@ -97,11 +109,11 @@ public class Teleport extends BTProcessHelper {
         private final ConfigString config;
 
         private void tpToHome() {
-            CommandUtils.sendCommand(Configs.Generic.HOME_COMMAND.getStringValue() + " " + config.getStringValue());
+            Utils.sendCommand(Configs.Generic.HOME_COMMAND.getStringValue() + " " + config.getStringValue());
         }
 
         private void setHome() {
-            CommandUtils.sendCommand(Configs.Generic.SETHOME_COMMAND.getStringValue() + " " + config.getStringValue());
+            Utils.sendCommand(Configs.Generic.SETHOME_COMMAND.getStringValue() + " " + config.getStringValue());
         }
     }
 }

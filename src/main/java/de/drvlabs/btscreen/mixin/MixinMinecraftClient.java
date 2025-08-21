@@ -1,16 +1,5 @@
 package de.drvlabs.btscreen.mixin;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.FoodComponent;
-import net.minecraft.util.Hand;
-import net.minecraft.util.thread.ReentrantThreadExecutor;
-
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,56 +11,36 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.utils.BotStatus;
-import de.drvlabs.btscreen.utils.IMinecraftClientInvoker;
+import de.drvlabs.btscreen.utils.Utils;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
+import net.minecraft.util.Hand;
 
 @Mixin(value = MinecraftClient.class)
-public abstract class MixinMinecraftClient extends ReentrantThreadExecutor<Runnable>
-		implements IMinecraftClientInvoker {
+public abstract class MixinMinecraftClient {
 	@Shadow
 	@Nullable
 	public Screen currentScreen;
 
 	@Shadow
-	@Nullable
-	public ClientPlayerInteractionManager interactionManager;
-
-	@Shadow
-	private boolean doAttack() {
-		return false;
-	}
-
-	@Shadow
 	@Final
 	public GameOptions options;
-
-	@Shadow
-	private int itemUseCooldown;
-
-	@Override
-	public void btscreen_setItemUseCooldown(int value) {
-		this.itemUseCooldown = value;
-	}
-
-	@Override
-	public boolean btscreen_invokeDoAttack() {
-		return this.doAttack();
-	}
-
-	public MixinMinecraftClient(String string_1) {
-		super(string_1);
-	}
 
 	@Inject(method = "handleInputEvents", at = @At("HEAD"))
 	private void onProcessKeybindsPre(CallbackInfo ci) {
 		if (this.currentScreen == null) {
 			if (DataManager.getActive() && Configs.Generic.AUTO_EAT.getBooleanValue() && DataManager.getNeedsToEat()
 					&& DataManager.getBotStatus() != BotStatus.IDLE) {
-				FoodComponent food = MinecraftClient.getInstance().player.getOffHandStack().get(DataComponentTypes.FOOD);
+				FoodComponent food = Utils.MC.player.getOffHandStack().get(DataComponentTypes.FOOD);
 				if (food != null) {
-					KeyBinding.setKeyPressed(InputUtil.fromTranslationKey(this.options.useKey.getBoundKeyTranslationKey()),
-							true);
-					MinecraftClient.getInstance().interactionManager.interactItem(MinecraftClient.getInstance().player,
-							Hand.OFF_HAND);
+					KeyBinding.setKeyPressed(
+							InputUtil.fromTranslationKey(this.options.useKey.getBoundKeyTranslationKey()), true);
+					Utils.MC.interactionManager.interactItem(Utils.MC.player, Hand.OFF_HAND);
 				}
 			}
 		}

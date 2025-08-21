@@ -13,11 +13,15 @@ import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.util.StringUtils;
+import net.minecraft.client.gui.screen.Screen;
 
 public class GuiConfigs extends GuiConfigsBase {
-
 	public GuiConfigs() {
-		super(10, 50, Reference.MOD_ID, null, "btscreen.gui.title.configs", String.format("%s", Reference.MOD_VERSION));
+		this(null);
+	}
+
+	public GuiConfigs(Screen parent) {
+		super(10, 50, Reference.MOD_ID, parent, "btscreen.gui.title.configs", Reference.MOD_VERSION);
 	}
 
 	@Override
