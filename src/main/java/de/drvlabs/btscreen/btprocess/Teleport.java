@@ -74,7 +74,7 @@ public class Teleport extends BTProcessHelper {
     @Override
     public double priority() {
         if (teleporting || nextHome != null) {
-            return super.priority() + 0.01;
+            return super.priority() + 0.05;
         }
         return super.priority() - 0.01;
     }

@@ -14,10 +14,10 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.text.Text;
 
-public class AutoRepair extends BTProcessHelper {
+public class AutoRepair extends BTProcessWithInitializer {
     private static boolean active = false;
-    private static boolean initialized = false;
     private static int slot = -1;
     private int attackIntervalCounter = 0;
     private int swordSlot = -1;
@@ -28,24 +28,26 @@ public class AutoRepair extends BTProcessHelper {
     }
 
     @Override
-    public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
-        if (!active) {
-            return new PathingCommand(null, PathingCommandType.DEFER);
-        }
-        if (!initialized) {
-            initialized = true;
-            attackIntervalCounter = 0;
-            swordSlot = getSwordSlotInHotbar();
-            Teleport.requestTeleport(Teleport.Home.REPAIR);
-        } else if (++attackIntervalCounter >= PERIODIC_ATTACK_INTERVAL.getIntegerValue()) {
-            if (PlayerInventory.isValidHotbarIndex(slot)) {
-                PlayerInventory inventory = Utils.MC.player.getInventory();
-                int tmpSlot = inventory.getSelectedSlot();
+    protected void onInitialize() {
+        attackIntervalCounter = 0;
+        swordSlot = getSwordSlotInHotbar();
+        Teleport.requestTeleport(Teleport.Home.REPAIR);
+        BTScreen.chatMessage(Text.literal("Started Repairing"));
+    }
+
+    @Override
+    protected PathingCommand onTick() {
+        if (++attackIntervalCounter >= PERIODIC_ATTACK_INTERVAL.getIntegerValue()) {
+            PlayerInventory inventory = Utils.MC.player.getInventory();
+            int tmpSlot = inventory.getSelectedSlot();
+            if (PlayerInventory.isValidHotbarIndex(swordSlot)) {
                 inventory.setSelectedSlot(swordSlot);
-                Utils.MC.doAttack();
-                inventory.setSelectedSlot(tmpSlot);
+            }
+            Utils.MC.doAttack();
+            if (PlayerInventory.isValidHotbarIndex(slot)) {
+                inventory.setSelectedSlot(slot);
             } else {
-                Utils.MC.doAttack();
+                inventory.setSelectedSlot(tmpSlot);
             }
             attackIntervalCounter = 0;
         }
@@ -53,13 +55,7 @@ public class AutoRepair extends BTProcessHelper {
     }
 
     @Override
-    public void onLostControl() {
-        reset();
-    }
-
-    private static void reset() {
-        active = false;
-        initialized = false;
+    protected void onReset() {
         slot = -1;
     }
 
@@ -70,8 +66,8 @@ public class AutoRepair extends BTProcessHelper {
         if (DataManager.getActive() && newStack.isDamageable() && areEqualIgnoreDamage(newStack, oldStack)) {
             if (!newStack.isDamaged()) {
                 // stop
-                reset();
-                BTScreen.debugLog("Finished Repairing");
+                active = false;
+                BTScreen.chatMessage(Text.literal("Finished Repairing"));
                 return;
                 // Utils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
                 // Utils.resume();
