@@ -12,6 +12,7 @@ import net.minecraft.text.Text;
 
 public class AutoHaste extends BTProcessWithInitializer {
     private static boolean hasHaste = false;
+    private int timeoutTicks = 0;
 
     @Override
     public boolean isActive() {
@@ -21,18 +22,22 @@ public class AutoHaste extends BTProcessWithInitializer {
     @Override
     protected void onInitialize() {
         Teleport.requestTeleport(Teleport.Home.HASTE);
-        BTScreen.chatMessage(Text.literal("Started waiting for Haste"));
+        BTScreen.chatMessage(Text.literal("Waiting for Haste"));
     }
 
     @Override
     protected PathingCommand onTick() {
+        if (++timeoutTicks > 120) {
+            AUTO_HASTE.setBooleanValue(false);
+            BTScreen.chatMessage(Text.literal("Error: Waited too long for Haste! Disabled AutoHaste."));
+        }
         return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
     }
 
     @Override
     protected void onReset() {
         hasHaste = false;
-        BTScreen.chatMessage(Text.literal("Finished waiting for Haste"));
+        timeoutTicks = 0;
     }
 
     public static void onEffect(EntityStatusEffectS2CPacket packet) {

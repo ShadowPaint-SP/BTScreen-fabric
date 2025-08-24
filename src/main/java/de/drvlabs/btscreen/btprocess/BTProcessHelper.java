@@ -18,7 +18,7 @@ public abstract class BTProcessHelper implements IBaritoneProcess {
      *         player and world are not null; otherwise {@code false}.
      */
     protected static boolean isActive(IConfigBoolean config) {
-        return config.getBooleanValue() && Utils.isInGame();
+        return config.getBooleanValue() && Utils.isActive();
     }
 
     /**

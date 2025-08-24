@@ -1,5 +1,7 @@
 package de.drvlabs.btscreen.event;
 
+import java.util.List;
+
 import baritone.api.pathing.calc.IPathingControlManager;
 import baritone.api.process.IBaritoneProcess;
 import de.drvlabs.btscreen.BTScreen;
@@ -23,6 +25,23 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 
 public final class EventHandler implements EndWorldTick, AfterClientWorldChange, ClientStarted {
+    private static boolean baritoneIsActive = false;
+    private static final List<IBaritoneProcess> IS_ACTIVE_LIST = List.of(
+            Utils.BT.getFarmProcess(),
+            Utils.BT.getMineProcess(),
+            Utils.BT.getBuilderProcess(),
+            Utils.BT.getExploreProcess(),
+            Utils.BT.getCustomGoalProcess(),
+            Utils.BT.getGetToBlockProcess());
+
+    private static void setBaritoneActive() {
+        baritoneIsActive = IS_ACTIVE_LIST.stream().anyMatch(IBaritoneProcess::isActive);
+    }
+
+    public static boolean isBaritoneActive() {
+        return baritoneIsActive;
+    }
+
     private IBaritoneProcess lastProcess = null;
 
     @Override
@@ -78,6 +97,7 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
                 }
             }
         }
+        setBaritoneActive();
     }
 
     @Override

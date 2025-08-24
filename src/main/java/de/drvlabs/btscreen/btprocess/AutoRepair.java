@@ -29,7 +29,6 @@ public class AutoRepair extends BTProcessWithInitializer {
 
     @Override
     protected void onInitialize() {
-        attackIntervalCounter = 0;
         swordSlot = getSwordSlotInHotbar();
         Teleport.requestTeleport(Teleport.Home.REPAIR);
         BTScreen.chatMessage(Text.literal("Started Repairing"));
@@ -57,6 +56,8 @@ public class AutoRepair extends BTProcessWithInitializer {
     @Override
     protected void onReset() {
         slot = -1;
+        attackIntervalCounter = 0;
+        swordSlot = -1;
     }
 
     public static void checkRepairNeeded(int slot, ItemStack newStack, ItemStack oldStack) {
