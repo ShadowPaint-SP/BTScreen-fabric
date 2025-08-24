@@ -41,7 +41,7 @@ public class AutoDrop {
 			BTScreen.debugLog("Inventory full");
 			Utils.setHome(Configs.Generic.MINE_HOME.getStringValue());
 			Utils.tpTo(Configs.Generic.DROP_HOME.getStringValue());
-			Waiter.wait(60, () -> {
+			Waiter.wait(60, w -> {
 				mc.setScreen(new InventoryScreen(mc.player));
 				dropInventory();
 				// dropWaitFinished = true;

@@ -24,10 +24,23 @@ public abstract class BTProcessWithInitializer extends BTProcessHelper {
         return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
     }
 
+    /**
+     * Called at the first tick if {@link #isActive} is {@code true} and process is
+     * in control of pathing only at the first tick
+     */
     abstract protected void onInitialize();
 
+    /**
+     * Called when this process is in control of pathing and initialized
+     * 
+     * @return What the IPathingBehavior should do
+     */
     abstract protected PathingCommand onTick();
 
+    /**
+     * Called after {@link #isActive} returns {@code false} again, in the same, or
+     * next tick
+     */
     abstract protected void onReset();
 
     @Override

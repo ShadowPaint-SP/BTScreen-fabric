@@ -30,7 +30,7 @@ public class RepeatAction {
 		}
 		isWaiting = true;
 		BTScreen.debugLog("starting wait period for repeat action");
-		Waiter.wait(Configs.Generic.REPEAT_ACTION_INTERVAL.getIntegerValue(), () -> {
+		Waiter.wait(Configs.Generic.REPEAT_ACTION_INTERVAL.getIntegerValue(), w -> {
 			if (isWaiting) {
 				BTScreen.debugLog("wait period over, executing last command");
 				DataManager.setBotStatus(BotStatus.MINING);

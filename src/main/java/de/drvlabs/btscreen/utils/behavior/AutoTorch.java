@@ -48,7 +48,7 @@ public class AutoTorch {
 			BTScreen.debugLog("No spawnable Block Disabeling for 600 Ticks");
 			Configs.Generic.AUTO_TORCH.setBooleanValue(false);
 			Utils.resume();
-			Waiter.wait(600, () -> {
+			Waiter.wait(600, w -> {
 				Configs.Generic.AUTO_TORCH.setBooleanValue(true);
 			});
 			return;
@@ -59,14 +59,14 @@ public class AutoTorch {
 		}
 		currTrying = true;
 		mc.player.setPitch(90);
-		Waiter.wait(5, () -> {
+		Waiter.wait(5, w -> {
 			BlockHitResult hit = new BlockHitResult(Vec3d.ofCenter(pos), Direction.UP,
 					pos, false);
 			for (int i = 0; i <= 4; i++) {
 				mc.interactionManager.interactBlock(mc.player, Hand.MAIN_HAND, hit);
 				mc.player.swingHand(Hand.MAIN_HAND);
 			}
-			Waiter.wait(10, () -> {
+			Waiter.wait(10, w2 -> {
 				if (!blockNeedsTorch(mc)) {
 					success = true;
 				}

@@ -11,8 +11,6 @@ import de.drvlabs.btscreen.utils.BotStatus;
 import de.drvlabs.btscreen.utils.LocationCheck;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
-import de.drvlabs.btscreen.utils.behavior.AutoRepair;
-import de.drvlabs.btscreen.utils.behavior.AutoSleep;
 import de.drvlabs.btscreen.utils.behavior.AutoTorch;
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.event.InputEventHandler;
@@ -36,7 +34,13 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         InputEventHandler.getKeybindManager().registerKeybindProvider(InputHandler.INSTANCE);
 
         final IPathingControlManager controlManager = Utils.BT.getPathingControlManager();
+        controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.Teleport());
+        controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.AutoDrop());
+        controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.AutoEat());
+        controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.AutoHaste());
         controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.AutoRepair());
+        controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.AutoSleep());
+        controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.AutoTorch());
     }
 
     @Override
@@ -56,14 +60,8 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
                 if (DataManager.getBotStatus() == BotStatus.IDLE) {
                     return;
                 }
-                if (DataManager.getBotStatus() == BotStatus.REPAIRING) {
-                    AutoRepair.onTick(Utils.MC);
-                }
                 if (DataManager.getBotStatus() == BotStatus.MINING) {
                     LocationCheck.checkLocation();
-                }
-                if (Configs.Generic.AUTO_SLEEP.getBooleanValue()) {
-                    AutoSleep.tryToSleep();
                 }
                 if (Configs.Generic.AUTO_TORCH.getBooleanValue()) {
                     if (DataManager.getBotStatus() == BotStatus.MINING && AutoTorch.blockNeedsTorch(Utils.MC)) {

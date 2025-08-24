@@ -4,7 +4,6 @@ import net.minecraft.MinecraftVersion;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public class Reference {
-
 	public static final String MOD_ID = "btscreen";
 	public static final String MOD_NAME = "BTScreen";
 	public static final String MOD_VERSION = StringUtils.getModVersionString(MOD_ID);

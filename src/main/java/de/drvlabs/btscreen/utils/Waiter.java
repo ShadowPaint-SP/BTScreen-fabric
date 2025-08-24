@@ -62,18 +62,6 @@ public final class Waiter {
     }
 
     /**
-     * Schedules a task to run after a specified number of ticks.
-     * This method adds the task to a temporary list if called during a tickAll
-     * cycle, ensuring it's added to the main set safely afterwards.
-     * 
-     * @param ticks    The number of ticks to wait before executing the callback.
-     * @param callback The function to execute once the ticks have elapsed.
-     */
-    public static Waiter wait(int ticks, Runnable callback) {
-        return wait(ticks, w -> callback.run());
-    }
-
-    /**
      * Ticks all active waiter tasks. Tasks that complete are automatically removed.
      * This method is designed to be called once per game tick.
      */
