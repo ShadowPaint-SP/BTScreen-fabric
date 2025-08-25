@@ -3,7 +3,6 @@
 	"package": "de.drvlabs.btscreen.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"client":[
-		"MixinMinecraftClient",
 		"network.MixinClientPlayNetworkHandler",
 		"network.MixinClientPlayerInteractionManager",
 		"player.MixinHungerManager"

@@ -7,7 +7,6 @@ import static de.drvlabs.btscreen.config.Configs.Generic.PERIODIC_ATTACK_INTERVA
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.BTScreen;
-import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
@@ -60,30 +59,22 @@ public class AutoRepair extends BTProcessWithInitializer {
         swordSlot = -1;
     }
 
-    public static void checkRepairNeeded(int slot, ItemStack newStack, ItemStack oldStack) {
+    public static void onPlayerInventorySlotUpdatePre(int slot, ItemStack newStack, ItemStack oldStack) {
         if (!isActive(AUTO_REPAIR)) {
             return;
         }
-        if (DataManager.getActive() && newStack.isDamageable() && areEqualIgnoreDamage(newStack, oldStack)) {
+        if (newStack.isDamageable() && areEqualIgnoreDamage(newStack, oldStack)) {
             if (!newStack.isDamaged()) {
                 // stop
                 active = false;
                 BTScreen.chatMessage(Text.literal("Finished Repairing"));
                 return;
-                // Utils.tpTo(Configs.Generic.MINE_HOME.getStringValue());
-                // Utils.resume();
-                // AutoDrop.checkInventory();
             }
             if (newStack.getMaxDamage() - newStack.getDamage() <= ITEM_DURABILITY_THRESHOLD.getIntegerValue()) {
                 // start
                 active = true;
                 AutoRepair.slot = slot;
                 return;
-                // BTScreen.debugLog("Start Repairing");
-                // Utils.pause(BotStatus.REPAIRING);
-                // swordSlot = getSwordSlotInHotbar();
-                // Utils.setHome(Configs.Generic.MINE_HOME.getStringValue());
-                // Utils.tpTo(Configs.Generic.REPAIR_HOME.getStringValue());
             }
         }
     }

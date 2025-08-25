@@ -33,7 +33,7 @@ public abstract class MixinClientPlayNetworkHandler {
         int slot = packet.getSlot();
         ItemStack newStack = packet.getStack();
         ItemStack oldStack = Utils.MC.player.getInventory().getStack(slot);
-        AutoRepair.checkRepairNeeded(slot, newStack, oldStack);
+        AutoRepair.onPlayerInventorySlotUpdatePre(slot, newStack, oldStack);
     }
 
     // Runs after the change is applied to the inventory

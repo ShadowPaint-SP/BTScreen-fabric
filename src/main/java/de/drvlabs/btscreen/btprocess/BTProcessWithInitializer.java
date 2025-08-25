@@ -52,7 +52,8 @@ public abstract class BTProcessWithInitializer extends BTProcessHelper {
     @Override
     public double priority() {
         if (!RESET_WAITER.isCompleted()) {
-            return super.priority() + 0.01;
+            // makes sure to be the first process if initialized
+            return super.priority() + 0.001;
         }
         return super.priority();
     }

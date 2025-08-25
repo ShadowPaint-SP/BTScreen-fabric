@@ -9,11 +9,15 @@ import com.google.gson.JsonObject;
 
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.Reference;
+import de.drvlabs.btscreen.btprocess.AutoEat;
 import de.drvlabs.btscreen.utils.preset.PresetMode;
 import fi.dy.masa.malilib.config.ConfigUtils;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigHandler;
-import fi.dy.masa.malilib.config.options.*;
+import fi.dy.masa.malilib.config.options.ConfigBoolean;
+import fi.dy.masa.malilib.config.options.ConfigInteger;
+import fi.dy.masa.malilib.config.options.ConfigString;
+import fi.dy.masa.malilib.config.options.ConfigStringList;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
 
@@ -31,18 +35,21 @@ public class Configs implements IConfigHandler {
 		public static final ConfigBoolean AUTO_DROP = new ConfigBoolean("autoDrop", false).apply(GENERIC_KEY);
 		public static final ConfigBoolean AUTO_TORCH = new ConfigBoolean("autoTorch", false).apply(GENERIC_KEY);
 		public static final ConfigString HOME_COMMAND = new ConfigString("homeCommand", "home").apply(GENERIC_KEY);
-		public static final ConfigString SETHOME_COMMAND = new ConfigString("setHomeCommand", "sethome").apply(GENERIC_KEY);
+		public static final ConfigString SETHOME_COMMAND = new ConfigString("setHomeCommand", "sethome")
+				.apply(GENERIC_KEY);
 		public static final ConfigString SLEEP_HOME = new ConfigString("sleepHome", "sleep").apply(GENERIC_KEY);
 		public static final ConfigString DROP_HOME = new ConfigString("dropHome", "drop").apply(GENERIC_KEY);
 		public static final ConfigString HASTE_HOME = new ConfigString("hasteHome", "haste").apply(GENERIC_KEY);
 		public static final ConfigString REPAIR_HOME = new ConfigString("repairHome", "repair").apply(GENERIC_KEY);
 		public static final ConfigString MINE_HOME = new ConfigString("mineHome", "mine").apply(GENERIC_KEY);
-		public static final ConfigInteger PERIODIC_ATTACK_INTERVAL = new ConfigInteger("periodicAttackInterval", 25, 1, 400)
+		public static final ConfigInteger PERIODIC_ATTACK_INTERVAL = new ConfigInteger("periodicAttackInterval", 25, 1,
+				400).apply(GENERIC_KEY);
+		public static final ConfigInteger ITEM_DURABILITY_THRESHOLD = new ConfigInteger("itemDurabilityThreshold", 40,
+				20, 100).apply(GENERIC_KEY);
+		public static final ConfigInteger FOOD_LEVEL = new ConfigInteger("foodLevel", AutoEat.MIN_FOOD_LEVEL,
+				AutoEat.MIN_FOOD_LEVEL, 20).apply(GENERIC_KEY);
+		public static final ConfigInteger MIN_LIGHT_LEVEL = new ConfigInteger("minLightLevel", 1, 0, 14)
 				.apply(GENERIC_KEY);
-		public static final ConfigInteger ITEM_DURABILITY_THRESHOLD = new ConfigInteger("itemDurabilityThreshold", 40, 20,
-				100).apply(GENERIC_KEY);
-		public static final ConfigInteger FOOD_LEVEL = new ConfigInteger("foodLevel", 6, 2, 18).apply(GENERIC_KEY);
-		public static final ConfigInteger MIN_LIGHT_LEVEL = new ConfigInteger("minLightLevel", 1, 0, 14).apply(GENERIC_KEY);
 		public static final ConfigInteger BLOCK_BREAK_COOLDOWN = new ConfigInteger("blockBreakCooldown", 5, 0, 5)
 				.apply(GENERIC_KEY);
 		public static final ConfigBoolean NO_INSTA_BREAK = new ConfigBoolean("noInstaBreak", false).apply(GENERIC_KEY);
@@ -78,13 +85,14 @@ public class Configs implements IConfigHandler {
 	}
 
 	public static class Lists {
-		public static final ConfigStringList INV_PRESERVE_ITEM_BLACKLIST = new ConfigStringList("invPreserveItemBlackList",
-				ImmutableList.of()).apply(LISTS_KEY);
+		public static final ConfigStringList INV_PRESERVE_ITEM_BLACKLIST = new ConfigStringList(
+				"invPreserveItemBlackList", ImmutableList.of()).apply(LISTS_KEY);
 		public static final ConfigStringList BLOCKS_TO_GET_REPLACED = new ConfigStringList("blocksToGetReplaced",
-				ImmutableList.of("small_amethyst_bud", " medium_amethyst_bud", "large_amethyst_bud", "amethyst_cluster"))
+				ImmutableList.of("small_amethyst_bud", " medium_amethyst_bud", "large_amethyst_bud",
+						"amethyst_cluster"))
 				.apply(LISTS_KEY);
-		public static final ConfigString BLOCK_TO_REPLACE_WITH = new ConfigString("blockToReplaceWith",
-				"air").apply(LISTS_KEY);
+		public static final ConfigString BLOCK_TO_REPLACE_WITH = new ConfigString("blockToReplaceWith", "air")
+				.apply(LISTS_KEY);
 		public static final ConfigStringList DEFAULT_BLOCKS_TO_DISALLOW_BREAKING = new ConfigStringList(
 				"defaultBlocksToDisallowBreaking", PresetMode.getGlobalDisallowBreakingList()).apply(LISTS_KEY);
 		public static final ConfigStringList DEFAULT_BLOCKS_TO_IGNORE = new ConfigStringList("defaultBlocksToIgnore",
@@ -93,8 +101,8 @@ public class Configs implements IConfigHandler {
 				"farmBlocksToDisallowBreaking", PresetMode.getGlobalDisallowBreakingList()).apply(LISTS_KEY);
 		public static final ConfigStringList FARM_BLOCKS_TO_IGNORE = new ConfigStringList("farmBlocksToIgnore",
 				PresetMode.getFarmIgnoreList()).apply(LISTS_KEY);
-		public static final ConfigStringList ACCEPTABLE_THROWAWAY_ITEMS = new ConfigStringList("acceptableThrowawayItems",
-				PresetMode.getAcceptableThrowawayItems()).apply(LISTS_KEY);
+		public static final ConfigStringList ACCEPTABLE_THROWAWAY_ITEMS = new ConfigStringList(
+				"acceptableThrowawayItems", PresetMode.getAcceptableThrowawayItems()).apply(LISTS_KEY);
 
 		public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
 				INV_PRESERVE_ITEM_BLACKLIST,
