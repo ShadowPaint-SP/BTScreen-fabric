@@ -53,6 +53,7 @@ public class AutoEat extends BTProcessWithInitializer {
     }
 
     public static void onSetFoodLevel(int foodLevel) {
+        boolean oldShouldEat = shouldEat;
         shouldEat = foodLevel < FOOD_LEVEL.getIntegerValue();
         if (!shouldEat) {
             FoodComponent food = Utils.MC.player.getOffHandStack().get(DataComponentTypes.FOOD);
@@ -62,7 +63,8 @@ public class AutoEat extends BTProcessWithInitializer {
                 BTScreen.chatMessage(Text.literal("Error: No food in offhand!").formatted(Formatting.RED));
             }
         }
-        if (isActive(AUTO_EAT) && !shouldEat) {
+        if (isActive(AUTO_EAT) && !shouldEat && oldShouldEat) {
+            Utils.MC.options.useKey.setPressed(false);
             BTScreen.chatMessage(Text.literal("Finished Eating"));
         }
     }
@@ -71,6 +73,7 @@ public class AutoEat extends BTProcessWithInitializer {
         if (!Utils.MC.player.isUsingItem()) {
             // Utils.MC.doItemUse(); // accesswidener:
             // accessible method net/minecraft/client/MinecraftClient doItemUse ()V
+            Utils.MC.options.useKey.setPressed(true);
             if (Utils.MC.interactionManager.interactItem(Utils.MC.player, Hand.OFF_HAND) instanceof Success success) {
                 if (success.swingSource() == SwingSource.CLIENT) {
                     Utils.MC.player.swingHand(Hand.OFF_HAND);
