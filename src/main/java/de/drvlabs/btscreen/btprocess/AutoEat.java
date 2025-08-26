@@ -17,8 +17,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 
 public class AutoEat extends BTProcessWithInitializer {
-    // TODO: check if setting is correct
-    public static final int MIN_FOOD_LEVEL = 21 - Registries.ITEM.stream().parallel()
+    public static final int MIN_FOOD_LEVEL = 21 - Registries.ITEM.stream()
             .map(i -> i.getComponents().get(DataComponentTypes.FOOD)).filter(i -> i != null)
             .mapToInt(FoodComponent::nutrition).max().orElse(20);
     private static boolean shouldEat = false;
