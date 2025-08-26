@@ -5,7 +5,6 @@ import java.util.List;
 import baritone.api.pathing.calc.IPathingControlManager;
 import baritone.api.process.IBaritoneProcess;
 import de.drvlabs.btscreen.BTScreen;
-import de.drvlabs.btscreen.Reference;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.gui.GuiConfigs;
@@ -46,9 +45,9 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
 
     @Override
     public void onClientStarted(MinecraftClient client) {
-        ConfigManager.getInstance().registerConfigHandler(Reference.MOD_ID, new Configs());
+        ConfigManager.getInstance().registerConfigHandler(BTScreen.MOD_ID, new Configs());
         Registry.CONFIG_SCREEN.registerConfigScreenFactory(
-                new ModInfo(Reference.MOD_ID, Reference.MOD_NAME, GuiConfigs::new));
+                new ModInfo(BTScreen.MOD_ID, BTScreen.MOD_NAME, GuiConfigs::new));
 
         InputEventHandler.getKeybindManager().registerKeybindProvider(InputHandler.INSTANCE);
 

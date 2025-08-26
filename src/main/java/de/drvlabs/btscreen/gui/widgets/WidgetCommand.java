@@ -1,6 +1,7 @@
 package de.drvlabs.btscreen.gui.widgets;
 
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.gui.GuiConfigureCommand;
 import de.drvlabs.btscreen.utils.customcommands.Commands;
@@ -108,9 +109,9 @@ public class WidgetCommand extends WidgetListEntryBase<Commands> {
 		}
 
 		public enum ButtonType {
-			EXECUTE("btscreen.gui.button.customCommand.execute"),
-			CONFIGURE("btscreen.gui.button.customCommand.configure"),
-			REMOVE("btscreen.gui.button.customCommand.remove");
+			EXECUTE(LangKeys.GUI_BUTTON + ".customCommand.execute"),
+			CONFIGURE(LangKeys.GUI_BUTTON + ".customCommand.configure"),
+			REMOVE(LangKeys.GUI_BUTTON + ".customCommand.remove");
 
 			private final String translationKey;
 

@@ -1,13 +1,14 @@
 {
-	"required": true,
-	"package": "de.drvlabs.btscreen.mixin",
-	"compatibilityLevel": "JAVA_21",
-	"client":[
-		"network.MixinClientPlayNetworkHandler",
-		"network.MixinClientPlayerInteractionManager",
-		"player.MixinHungerManager"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	}
+  "required": true,
+  "package": "de.drvlabs.btscreen.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "plugin": "de.drvlabs.btscreen.mixin.MixinPlugin",
+  "client": [
+    "network.MixinClientPlayNetworkHandler",
+    "network.MixinClientPlayerInteractionManager",
+    "player.MixinHungerManager"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

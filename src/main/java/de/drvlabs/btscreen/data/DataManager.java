@@ -8,7 +8,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 import de.drvlabs.btscreen.BTScreen;
-import de.drvlabs.btscreen.Reference;
 import de.drvlabs.btscreen.gui.GuiConfigs.ConfigGuiTab;
 import de.drvlabs.btscreen.utils.BotStatus;
 import de.drvlabs.btscreen.utils.RepeatAction;
@@ -87,7 +86,7 @@ public class DataManager {
 	}
 
 	public static Path getCurrentConfigDirectory() {
-		return FileUtils.getConfigDirectoryAsPath().resolve(Reference.MOD_ID);
+		return FileUtils.getConfigDirectoryAsPath().resolve(BTScreen.MOD_ID);
 	}
 
 	private static Path getCurrentStorageFile(boolean globalData) {
@@ -101,7 +100,7 @@ public class DataManager {
 			BTScreen.LOGGER.warn("Failed to create the config directory '{}'", dir.toAbsolutePath());
 		}
 
-		return dir.resolve(StringUtils.getStorageFileName(globalData, Reference.MOD_ID + "_", ".json", "default"));
+		return dir.resolve(StringUtils.getStorageFileName(globalData, BTScreen.MOD_ID + "_", ".json", "default"));
 	}
 
 	public static void load() {
