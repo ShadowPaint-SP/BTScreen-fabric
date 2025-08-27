@@ -27,7 +27,7 @@ public class AutoTorch extends BTProcessHelper {
 
     @Override
     public boolean isActive() {
-        return isActive(AUTO_TORCH) && tick > 0 || isValid();
+        return isActive(AUTO_TORCH) && (tick > 0 || isValid());
     }
 
     @Override
