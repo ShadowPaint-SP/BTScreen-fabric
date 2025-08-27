@@ -4,15 +4,15 @@ import java.util.List;
 
 import baritone.api.pathing.calc.IPathingControlManager;
 import baritone.api.process.IBaritoneProcess;
+import baritone.api.process.PathingCommand;
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.btprocess.BTProcessHelper;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.gui.GuiConfigs;
-import de.drvlabs.btscreen.utils.BotStatus;
 import de.drvlabs.btscreen.utils.LocationCheck;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
-import de.drvlabs.btscreen.utils.behavior.AutoTorch;
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.registry.Registry;
@@ -24,6 +24,23 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 
 public final class EventHandler implements EndWorldTick, AfterClientWorldChange, ClientStarted {
+    private final class BaritoneCancelListener extends BTProcessHelper {
+        @Override
+        public boolean isActive() {
+            return false;
+        }
+
+        @Override
+        public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
+            throw new UnsupportedOperationException("Should never tick! Always inactive");
+        }
+
+        @Override
+        public void onLostControl() {
+            baritoneIsActive = false;
+        }
+    }
+
     private static boolean baritoneIsActive = false;
     private static final List<IBaritoneProcess> IS_ACTIVE_LIST = List.of(
             Utils.BT.getFarmProcess(),
@@ -52,6 +69,7 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         InputEventHandler.getKeybindManager().registerKeybindProvider(InputHandler.INSTANCE);
 
         final IPathingControlManager controlManager = Utils.BT.getPathingControlManager();
+        controlManager.registerProcess(new BaritoneCancelListener());
         controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.Teleport());
         controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.AutoDrop());
         controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.AutoEat());
@@ -71,30 +89,9 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
                     currentProcess.priority(), currentProcess.toString());
             lastProcess = currentProcess;
         }
+        Waiter.tickAll();
         if (Utils.isInGame()) {
-            Waiter.tickAll();
-            if (DataManager.getActive() && Utils.BT.getPathingControlManager()
-                    .mostRecentInControl().isPresent()) {
-                if (DataManager.getBotStatus() == BotStatus.IDLE) {
-                    return;
-                }
-                if (DataManager.getBotStatus() == BotStatus.MINING) {
-                    LocationCheck.checkLocation();
-                }
-                if (Configs.Generic.AUTO_TORCH.getBooleanValue()) {
-                    if (DataManager.getBotStatus() == BotStatus.MINING && AutoTorch.blockNeedsTorch(Utils.MC)) {
-                        AutoTorch.prepare(Utils.MC);
-                    }
-                    if (DataManager.getBotStatus() == BotStatus.LIGHTING) {
-                        AutoTorch.onTick(Utils.MC);
-                    }
-                }
-            } else {
-                if (DataManager.getBotStatus() != BotStatus.IDLE) {
-                    DataManager.getInstance().setActive(false);
-                    DataManager.setBotStatus(BotStatus.IDLE);
-                }
-            }
+            LocationCheck.checkLocation();
         }
         setBaritoneActive();
     }

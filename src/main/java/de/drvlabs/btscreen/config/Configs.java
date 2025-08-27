@@ -45,7 +45,7 @@ public class Configs implements IConfigHandler {
                 20, 100);
         public static final ConfigInteger FOOD_LEVEL = new ConfigInteger("foodLevel", AutoEat.MIN_FOOD_LEVEL,
                 AutoEat.MIN_FOOD_LEVEL, 20);
-        public static final ConfigInteger MIN_LIGHT_LEVEL = new ConfigInteger("minLightLevel", 1, 0, 14);
+        public static final ConfigInteger MIN_LIGHT_LEVEL = new ConfigInteger("minLightLevel", 1, 1, 15);
         public static final ConfigInteger BLOCK_BREAK_COOLDOWN = new ConfigInteger("blockBreakCooldown", 5, 0, 5);
         public static final ConfigBoolean NO_INSTA_BREAK = new ConfigBoolean("noInstaBreak", false);
         public static final ConfigBoolean REPEAT_ACTION = new ConfigBoolean("repeatAction", false);

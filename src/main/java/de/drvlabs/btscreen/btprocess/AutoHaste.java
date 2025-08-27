@@ -9,6 +9,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 public class AutoHaste extends BTProcessWithInitializer {
     private static boolean hasHaste = false;
@@ -29,7 +30,8 @@ public class AutoHaste extends BTProcessWithInitializer {
     protected PathingCommand onTick() {
         if (++timeoutTicks > 120) {
             AUTO_HASTE.setBooleanValue(false);
-            BTScreen.chatMessage(Text.literal("Error: Waited too long for Haste! Disabled AutoHaste."));
+            BTScreen.chatMessage(
+                    Text.literal("Error: Waited too long for Haste! Disabled AutoHaste.").formatted(Formatting.RED));
         }
         return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
     }

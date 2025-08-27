@@ -15,11 +15,13 @@ public abstract class BTProcessWithInitializer extends BTProcessHelper {
 
     @Override
     public final PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
-        if (RESET_WAITER.isCompleted()) {
-            RESET_WAITER.start(1);
-            onInitialize();
-        } else {
-            return onTick();
+        if (isSafeToCancel) {
+            if (RESET_WAITER.isCompleted()) {
+                RESET_WAITER.start(1);
+                onInitialize();
+            } else {
+                return onTick();
+            }
         }
         return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
     }

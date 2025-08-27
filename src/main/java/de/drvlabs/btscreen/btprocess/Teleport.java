@@ -23,41 +23,40 @@ public class Teleport extends BTProcessHelper {
 
     @Override
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
-        // Timeout
-        if (timeoutTicks > 100) {
-            Utils.cancel();
-            onLostControl();
-        }
-        // Teleport Finished
-        if (teleporting && (!oldPos.isInRange(Utils.MC.player.getPos(), 1) || oldWorld != Utils.MC.world)) {
-            teleporting = false;
-            timeoutTicks = 0;
-            oldPos = null;
-            oldWorld = null;
-        }
-        // Teleport Back
-        if (!teleporting && teleportBack) {
-            teleporting = true;
-            teleportBack = false;
-            Home.MINE.tpToHome();
-        }
-        // Teleport to Home
-        if (!teleporting) {
-            if (nextHome == null) {
-                return new PathingCommand(null, PathingCommandType.DEFER);
+        if (isSafeToCancel) {
+            if (timeoutTicks > 100) {
+                // Timeout
+                Utils.cancel();
+                onLostControl();
             }
-            teleporting = true;
-            oldPos = Utils.MC.player.getPos();
-            oldWorld = Utils.MC.world;
-            if (!teleportBack && nextHome != Home.MINE) {
-                teleportBack = true;
-                Home.MINE.setHome();
+            if (!teleporting) {
+                if (nextHome != null) {
+                    // Teleport to Home
+                    teleporting = true;
+                    oldPos = Utils.MC.player.getPos();
+                    oldWorld = Utils.MC.world;
+                    // Set Mine home before teleporting
+                    if (!teleportBack && nextHome != Home.MINE) {
+                        teleportBack = true;
+                        Home.MINE.setHome();
+                    }
+                    nextHome.tpToHome();
+                    nextHome = null;
+                } else if (teleportBack) {
+                    // Teleport Back
+                    teleporting = true;
+                    teleportBack = false;
+                    Home.MINE.tpToHome();
+                }
+            } else if (!oldPos.isInRange(Utils.MC.player.getPos(), 1) || oldWorld != Utils.MC.world) {
+                // Teleport Finished
+                teleporting = false;
+                timeoutTicks = 0;
+                oldPos = null;
+                oldWorld = null;
             }
-            nextHome.tpToHome();
-            nextHome = null;
+            timeoutTicks++;
         }
-        // Pause while teleporting
-        timeoutTicks++;
         return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
     }
 
