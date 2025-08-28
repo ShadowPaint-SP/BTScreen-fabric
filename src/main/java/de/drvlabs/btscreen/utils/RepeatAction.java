@@ -34,8 +34,6 @@ public class RepeatAction {
 			if (isWaiting) {
 				BTScreen.debugLog("wait period over, executing last command");
 				DataManager.setBotStatus(BotStatus.MINING);
-				DataManager dataManager = DataManager.getInstance();
-				dataManager.setActive(true);
 				Utils.execute(lastCommand);
 				isWaiting = false;
 			}

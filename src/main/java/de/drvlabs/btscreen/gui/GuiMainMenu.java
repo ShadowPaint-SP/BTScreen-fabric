@@ -6,15 +6,12 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
-import baritone.api.BaritoneAPI;
-import baritone.api.process.IBuilderProcess;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.utils.BotStatus;
 import de.drvlabs.btscreen.utils.Utils;
-import de.drvlabs.btscreen.utils.behavior.AutoDrop;
 import de.drvlabs.btscreen.utils.customcommands.Commands;
 import de.drvlabs.btscreen.utils.customcommands.CommandsManager;
 import de.drvlabs.btscreen.utils.preset.PresetMode;
@@ -27,14 +24,10 @@ import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.text.Text;
 
 public class GuiMainMenu extends GuiBase {
 	private final int textColor = 0xFEFEFEFE;
-	private static MinecraftClient mc = MinecraftClient.getInstance();
-	private static IBuilderProcess baritoneBuildProcess = BaritoneAPI.getProvider().getPrimaryBaritone()
-			.getBuilderProcess();
 	public static GuiTextFieldGeneric textBlocksToReplace;
 	public static GuiTextFieldGeneric textBlocksToPlace;
 
@@ -72,8 +65,8 @@ public class GuiMainMenu extends GuiBase {
 		x += this.createButton(x, y, x - 17, ButtonListener.Type.STOP, false);
 		y += 22;
 		x = 17;
-		if (DataManager.getActive()) {
-			if (baritoneBuildProcess.isPaused()) {
+		if (Utils.isActive()) {
+			if (Utils.paused()) {
 				label = StringUtils.translate(LangKeys.GUI_BUTTON + ".resume");
 			} else {
 				label = StringUtils.translate(LangKeys.GUI_BUTTON + ".pause");
@@ -290,18 +283,8 @@ public class GuiMainMenu extends GuiBase {
 					return;
 				case Type.START:
 					Utils.execute("sel cleararea");
-					DataManager.getInstance().setActive(true);
-					AutoDrop.updateMaxSlots();
 					DataManager.getPresetMode().setSettings();
 					DataManager.setBotStatus(BotStatus.MINING);
-					// check for haste
-					if (Configs.Generic.AUTO_HASTE.getBooleanValue()) {
-						if (!mc.player.hasStatusEffect(StatusEffects.HASTE)) {
-							Utils.pause(BotStatus.HASTING);
-							Utils.setHome(Configs.Generic.MINE_HOME.getStringValue());
-							Utils.tpTo(Configs.Generic.HASTE_HOME.getStringValue());
-						}
-					}
 					this.gui.initGui();
 					this.gui.addMessage(MessageType.ERROR, 1000, LangKeys.INFO + ".main_menu.startBot");
 					return;
@@ -356,10 +339,10 @@ public class GuiMainMenu extends GuiBase {
 					}
 					return;
 				case Type.PAUSE_RESUME:
-					if (BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().isPaused()) {
+					if (Utils.paused()) {
 						Utils.resume();
 					} else {
-						Utils.pause(BotStatus.IDLE);
+						Utils.pause();
 					}
 					this.gui.initGui();
 					return;

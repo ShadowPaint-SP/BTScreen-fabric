@@ -26,7 +26,6 @@ public class DataManager {
 	private static boolean canSave;
 	private static PresetMode operationMode = PresetMode.DEFAULT;
 	private static BotStatus botStatus = BotStatus.IDLE;
-	private static boolean isActive = false;
 	private static boolean needsToEat = false;
 
 	private DataManager() {
@@ -62,14 +61,6 @@ public class DataManager {
 			RepeatAction.startWaitPeriod();
 		}
 		botStatus = status;
-	}
-
-	public static boolean getActive() {
-		return isActive;
-	}
-
-	public void setActive(boolean active) {
-		isActive = active;
 	}
 
 	public static boolean getNeedsToEat() {
@@ -156,7 +147,6 @@ public class DataManager {
 	public static void clear() {
 		BTScreen.debugLog("Clearing data");
 		botStatus = BotStatus.IDLE;
-		getInstance().setActive(false);
 		needsToEat = false;
 	}
 

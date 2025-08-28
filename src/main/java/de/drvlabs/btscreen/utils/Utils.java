@@ -3,9 +3,9 @@ package de.drvlabs.btscreen.utils;
 import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
 import baritone.api.process.IBaritoneProcess;
+import de.drvlabs.btscreen.btprocess.BTActiveListener;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
-import de.drvlabs.btscreen.event.EventHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -35,25 +35,23 @@ public class Utils {
     }
 
     public static boolean isActive() {
-        return isInGame() && EventHandler.isBaritoneActive();
+        return isInGame() && BTActiveListener.isBaritoneActive();
     }
 
-    public static void pause(BotStatus newStatus) {
+    public static boolean paused() {
+        return BTActiveListener.isBaritonePaused();
+    }
+
+    public static void pause() {
         execute("pause");
-        DataManager.setBotStatus(newStatus);
     }
 
     public static void resume() {
         execute("resume");
-        DataManager.setBotStatus(BotStatus.MINING);
     }
 
     public static void cancel() {
-        BT.getPathingBehavior().cancelEverything();
-        execute("stop");
-        DataManager.getInstance().setActive(false);
-        RepeatAction.cancelRepeatAction();
-        DataManager.setBotStatus(BotStatus.IDLE);
+        execute("cancel");
     }
 
     public static void tpTo(String homeName) {

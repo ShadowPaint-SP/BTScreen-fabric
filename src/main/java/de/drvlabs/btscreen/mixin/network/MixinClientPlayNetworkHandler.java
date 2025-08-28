@@ -7,13 +7,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import de.drvlabs.btscreen.btprocess.AutoDrop;
 import de.drvlabs.btscreen.btprocess.AutoHaste;
 import de.drvlabs.btscreen.btprocess.AutoRepair;
-import de.drvlabs.btscreen.config.Configs;
-import de.drvlabs.btscreen.data.DataManager;
-import de.drvlabs.btscreen.utils.BotStatus;
 import de.drvlabs.btscreen.utils.Utils;
-import de.drvlabs.btscreen.utils.behavior.AutoDrop;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
@@ -39,10 +36,7 @@ public abstract class MixinClientPlayNetworkHandler {
     // Runs after the change is applied to the inventory
     @Inject(method = "onScreenHandlerSlotUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/PlayerScreenHandler;setStackInSlot(IILnet/minecraft/item/ItemStack;)V", shift = At.Shift.AFTER, ordinal = 0))
     public void onPlayerInventorySlotUpdatePost(ScreenHandlerSlotUpdateS2CPacket packet, CallbackInfo ci) {
-        if (DataManager.getActive() && DataManager.getBotStatus() == BotStatus.MINING
-                && Configs.Generic.AUTO_DROP.getBooleanValue()) {
-            AutoDrop.checkInventory();
-        }
+        AutoDrop.checkInventory();
     }
 
     @Inject(method = "onEntityStatusEffect", at = @At("TAIL"))

@@ -1,16 +1,24 @@
 package de.drvlabs.btscreen.event;
 
-import java.util.List;
-
 import baritone.api.pathing.calc.IPathingControlManager;
 import baritone.api.process.IBaritoneProcess;
-import baritone.api.process.PathingCommand;
 import de.drvlabs.btscreen.BTScreen;
-import de.drvlabs.btscreen.btprocess.BTProcessHelper;
+import de.drvlabs.btscreen.btprocess.AutoDrop;
+import de.drvlabs.btscreen.btprocess.AutoEat;
+import de.drvlabs.btscreen.btprocess.AutoHaste;
+import de.drvlabs.btscreen.btprocess.AutoRepair;
+import de.drvlabs.btscreen.btprocess.AutoSleep;
+import de.drvlabs.btscreen.btprocess.AutoTorch;
+import de.drvlabs.btscreen.btprocess.BTActiveListener;
+import de.drvlabs.btscreen.btprocess.BTActiveListener.BaritoneStarted;
+import de.drvlabs.btscreen.btprocess.BTActiveListener.BaritoneStopped;
+import de.drvlabs.btscreen.btprocess.Teleport;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.gui.GuiConfigs;
+import de.drvlabs.btscreen.utils.BotStatus;
 import de.drvlabs.btscreen.utils.LocationCheck;
+import de.drvlabs.btscreen.utils.RepeatAction;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
 import fi.dy.masa.malilib.config.ConfigManager;
@@ -23,43 +31,8 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents.After
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 
-public final class EventHandler implements EndWorldTick, AfterClientWorldChange, ClientStarted {
-    private final class BaritoneCancelListener extends BTProcessHelper {
-        @Override
-        public boolean isActive() {
-            return false;
-        }
-
-        @Override
-        public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
-            throw new UnsupportedOperationException("Should never tick! Always inactive");
-        }
-
-        @Override
-        public void onLostControl() {
-            baritoneIsActive = false;
-        }
-    }
-
-    private static boolean baritoneIsActive = false;
-    private static final List<IBaritoneProcess> IS_ACTIVE_LIST = List.of(
-            Utils.BT.getFarmProcess(),
-            Utils.BT.getMineProcess(),
-            Utils.BT.getBuilderProcess(),
-            Utils.BT.getExploreProcess(),
-            Utils.BT.getCustomGoalProcess(),
-            Utils.BT.getGetToBlockProcess());
-
-    private static void setBaritoneActive() {
-        baritoneIsActive = IS_ACTIVE_LIST.stream().anyMatch(IBaritoneProcess::isActive);
-    }
-
-    public static boolean isBaritoneActive() {
-        return baritoneIsActive;
-    }
-
-    private IBaritoneProcess lastProcess = null;
-
+public final class EventHandler implements EndWorldTick, AfterClientWorldChange, ClientStarted,
+        BaritoneStarted, BaritoneStopped {
     @Override
     public void onClientStarted(MinecraftClient client) {
         ConfigManager.getInstance().registerConfigHandler(BTScreen.MOD_ID, new Configs());
@@ -68,32 +41,40 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
 
         InputEventHandler.getKeybindManager().registerKeybindProvider(InputHandler.INSTANCE);
 
+        BTActiveListener.STARTED.register(this);
+        BTActiveListener.STOPPED.register(this);
+
         final IPathingControlManager controlManager = Utils.BT.getPathingControlManager();
-        controlManager.registerProcess(new BaritoneCancelListener());
-        controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.Teleport());
-        controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.AutoDrop());
-        controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.AutoEat());
-        controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.AutoHaste());
-        controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.AutoRepair());
-        controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.AutoSleep());
-        controlManager.registerProcess(new de.drvlabs.btscreen.btprocess.AutoTorch());
+        controlManager.registerProcess(new BTActiveListener());
+        controlManager.registerProcess(new Teleport());
+        controlManager.registerProcess(new AutoDrop());
+        controlManager.registerProcess(new AutoEat());
+        controlManager.registerProcess(new AutoHaste());
+        controlManager.registerProcess(new AutoRepair());
+        controlManager.registerProcess(new AutoSleep());
+        controlManager.registerProcess(new AutoTorch());
     }
+
+    private IBaritoneProcess lastProcess = null;
 
     @Override
     public void onEndTick(ClientWorld world) {
         IBaritoneProcess currentProcess = Utils.BT.getPathingControlManager()
                 .mostRecentInControl().orElse(null);
+        BTActiveListener.setPauseProcess(currentProcess);
         if (currentProcess != null && lastProcess != currentProcess) {
-            BTScreen.debugLog("Current Process: {}, {}, {}, {}, {}, {}", currentProcess.displayName(),
-                    currentProcess.displayName0(), currentProcess.isActive(), currentProcess.isTemporary(),
-                    currentProcess.priority(), currentProcess.toString());
-            lastProcess = currentProcess;
+            BTScreen.debugLog(
+                    "Current Process: displayName: {}, displayName0: {}, isActive: {}, isTemporary: {}, priority: {}, toString: {}, className: {}",
+                    currentProcess.displayName(), currentProcess.displayName0(), currentProcess.isActive(),
+                    currentProcess.isTemporary(), currentProcess.priority(), currentProcess.toString(),
+                    currentProcess.getClass().getName());
         }
+        lastProcess = currentProcess;
         Waiter.tickAll();
         if (Utils.isInGame()) {
             LocationCheck.checkLocation();
         }
-        setBaritoneActive();
+        BTActiveListener.updateBaritoneIsActive();
     }
 
     @Override
@@ -101,9 +82,22 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         DataManager.save();
         if (world != null) {
             DataManager.load();
-            BTScreen.LOGGER.error("Loaded settings");
+            BTScreen.debugLog("Loaded settings");
         } else {
             DataManager.clear();
         }
+    }
+
+    @Override
+    public void baritoneStarted() {
+        BTScreen.debugLog("Baritone is active");
+        AutoDrop.updateMaxSlots();
+    }
+
+    @Override
+    public void baritoneStopped() {
+        BTScreen.debugLog("Baritone is inactive");
+        RepeatAction.cancelRepeatAction();
+        DataManager.setBotStatus(BotStatus.IDLE);
     }
 }

@@ -27,11 +27,11 @@ public class KeyCallbacks {
 	}
 
 	public static boolean pauseResume(KeyAction action, IKeybind key) {
-		if (Utils.BT.getBuilderProcess().isPaused()) {
-			Utils.BT.getBuilderProcess().resume();
+		if (Utils.paused()) {
+			Utils.resume();
 			DataManager.setBotStatus(BotStatus.MINING);
 		} else {
-			Utils.BT.getBuilderProcess().pause();
+			Utils.pause();
 			DataManager.setBotStatus(BotStatus.IDLE);
 		}
 		return true;
