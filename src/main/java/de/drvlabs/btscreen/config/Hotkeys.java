@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import de.drvlabs.btscreen.event.KeyCallbacks;
+import de.drvlabs.btscreen.utils.Utils;
 import fi.dy.masa.malilib.config.options.ConfigHotkey;
 import fi.dy.masa.malilib.hotkeys.IHotkeyCallback;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
-import net.minecraft.client.MinecraftClient;
 
 public enum Hotkeys implements IHotkeyCallback {
     OPEN_GUI_MAIN_MENU(new ConfigHotkey("openGuiMainMenu", "P", KeybindSettings.RELEASE_EXCLUSIVE),
@@ -29,11 +29,9 @@ public enum Hotkeys implements IHotkeyCallback {
 
     public static final List<ConfigHotkey> HOTKEY_LIST = List.of(values()).stream().map(h -> h.hotkey).toList();
 
-    private static final MinecraftClient mc = MinecraftClient.getInstance();
-
     @Override
     public boolean onKeyAction(KeyAction action, IKeybind key) {
-        if (mc.player == null || mc.world == null) {
+        if (Utils.MC.player == null || Utils.MC.world == null) {
             return false;
         }
         return callback.apply(action, key);

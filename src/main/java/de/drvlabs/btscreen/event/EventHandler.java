@@ -16,7 +16,6 @@ import de.drvlabs.btscreen.btprocess.Teleport;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.gui.GuiConfigs;
-import de.drvlabs.btscreen.utils.BotStatus;
 import de.drvlabs.btscreen.utils.LocationCheck;
 import de.drvlabs.btscreen.utils.RepeatAction;
 import de.drvlabs.btscreen.utils.Utils;
@@ -98,6 +97,5 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
     public void baritoneStopped() {
         BTScreen.debugLog("Baritone is inactive");
         RepeatAction.cancelRepeatAction();
-        DataManager.setBotStatus(BotStatus.IDLE);
     }
 }

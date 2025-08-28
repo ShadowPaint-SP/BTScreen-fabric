@@ -5,7 +5,6 @@ import baritone.api.IBaritone;
 import baritone.api.process.IBaritoneProcess;
 import de.drvlabs.btscreen.btprocess.BTActiveListener;
 import de.drvlabs.btscreen.config.Configs;
-import de.drvlabs.btscreen.data.DataManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -31,7 +30,6 @@ public class Utils {
             RepeatAction.trackCommand(command);
         }
         execute(command);
-        DataManager.setBotStatus(BotStatus.MINING);
     }
 
     public static boolean isActive() {

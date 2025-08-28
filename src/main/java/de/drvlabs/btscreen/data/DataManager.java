@@ -9,8 +9,6 @@ import com.google.gson.JsonPrimitive;
 
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.gui.GuiConfigs.ConfigGuiTab;
-import de.drvlabs.btscreen.utils.BotStatus;
-import de.drvlabs.btscreen.utils.RepeatAction;
 import de.drvlabs.btscreen.utils.customcommands.CommandsManager;
 import de.drvlabs.btscreen.utils.preset.PresetMode;
 import fi.dy.masa.malilib.util.FileUtils;
@@ -18,175 +16,144 @@ import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public class DataManager {
+    public static final DataManager INSTANCE = new DataManager();
 
-	private static final DataManager INSTANCE = new DataManager();
+    private static CommandsManager commandsManager = new CommandsManager();
+    private static ConfigGuiTab configGuiTab = ConfigGuiTab.GENERIC;
+    private static boolean canSave;
+    private static PresetMode operationMode = PresetMode.DEFAULT;
 
-	private static CommandsManager commandsManager = new CommandsManager();
-	private static ConfigGuiTab configGuiTab = ConfigGuiTab.GENERIC;
-	private static boolean canSave;
-	private static PresetMode operationMode = PresetMode.DEFAULT;
-	private static BotStatus botStatus = BotStatus.IDLE;
-	private static boolean needsToEat = false;
+    private DataManager() {
+    }
 
-	private DataManager() {
-	}
+    public static ConfigGuiTab getConfigGuiTab() {
+        return configGuiTab;
+    }
 
-	public static DataManager getInstance() {
-		return INSTANCE;
-	}
+    public static void setConfigGuiTab(ConfigGuiTab tab) {
+        configGuiTab = tab;
+    }
 
-	public static ConfigGuiTab getConfigGuiTab() {
-		return configGuiTab;
-	}
+    public static PresetMode getPresetMode() {
+        return operationMode;
+    }
 
-	public static void setConfigGuiTab(ConfigGuiTab tab) {
-		configGuiTab = tab;
-	}
+    public static void setPresetMode(PresetMode mode) {
+        operationMode = mode;
+    }
 
-	public static PresetMode getPresetMode() {
-		return operationMode;
-	}
+    public static CommandsManager getCommandsManager() {
+        return commandsManager;
+    }
 
-	public static void setPresetMode(PresetMode mode) {
-		operationMode = mode;
-	}
+    public static Path getCurrentConfigDirectory() {
+        return FileUtils.getConfigDirectoryAsPath().resolve(BTScreen.MOD_ID);
+    }
 
-	public static BotStatus getBotStatus() {
-		return botStatus;
-	}
+    private static Path getCurrentStorageFile(boolean globalData) {
+        Path dir = getCurrentConfigDirectory();
 
-	public static void setBotStatus(BotStatus status) {
-		BTScreen.debugLog("New Bot Status: " + status);
-		if (status == BotStatus.IDLE) {
-			RepeatAction.startWaitPeriod();
-		}
-		botStatus = status;
-	}
+        if (!Files.exists(dir)) {
+            FileUtils.createDirectoriesIfMissing(dir);
+        }
 
-	public static boolean getNeedsToEat() {
-		return needsToEat;
-	}
+        if (!Files.isDirectory(dir)) {
+            BTScreen.LOGGER.warn("Failed to create the config directory '{}'", dir.toAbsolutePath());
+        }
 
-	public static void setNeedsToEat(boolean bool) {
-		BTScreen.debugLog("Eating: " + bool);
-		needsToEat = bool;
-	}
+        return dir.resolve(StringUtils.getStorageFileName(globalData, BTScreen.MOD_ID + "_", ".json", "default"));
+    }
 
-	public static CommandsManager getCommandsManager() {
-		return commandsManager;
-	}
+    public static void load() {
+        INSTANCE.loadPerDimensionData();
+        Path file = getCurrentStorageFile(true);
+        JsonElement element = JsonUtils.parseJsonFileAsPath(file);
 
-	public static Path getCurrentConfigDirectory() {
-		return FileUtils.getConfigDirectoryAsPath().resolve(BTScreen.MOD_ID);
-	}
+        if (element != null && element.isJsonObject()) {
 
-	private static Path getCurrentStorageFile(boolean globalData) {
-		Path dir = getCurrentConfigDirectory();
+            JsonObject root = element.getAsJsonObject();
 
-		if (!Files.exists(dir)) {
-			FileUtils.createDirectoriesIfMissing(dir);
-		}
+            if (JsonUtils.hasString(root, "config_gui_tab")) {
+                try {
+                    configGuiTab = ConfigGuiTab.valueOf(root.get("config_gui_tab").getAsString());
+                } catch (Exception ignored) {
+                    BTScreen.LOGGER.error("Failed to load config gui tab");
+                }
 
-		if (!Files.isDirectory(dir)) {
-			BTScreen.LOGGER.warn("Failed to create the config directory '{}'", dir.toAbsolutePath());
-		}
+                if (configGuiTab == null) {
+                    configGuiTab = ConfigGuiTab.GENERIC;
+                }
+            }
+            if (JsonUtils.hasObject(root, "commands")) {
+                commandsManager.loadFromJson(root.get("commands").getAsJsonObject());
+            }
+        }
 
-		return dir.resolve(StringUtils.getStorageFileName(globalData, BTScreen.MOD_ID + "_", ".json", "default"));
-	}
+        canSave = true;
+    }
 
-	public static void load() {
-		getInstance().loadPerDimensionData();
-		Path file = getCurrentStorageFile(true);
-		JsonElement element = JsonUtils.parseJsonFileAsPath(file);
+    public static void save() {
+        save(false);
+    }
 
-		if (element != null && element.isJsonObject()) {
+    public static void save(boolean forceSave) {
+        if (canSave == false && forceSave == false) {
+            return;
+        }
+        BTScreen.debugLog("Saving data");
+        INSTANCE.savePerDimensionData();
 
-			JsonObject root = element.getAsJsonObject();
+        JsonObject root = new JsonObject();
 
-			if (JsonUtils.hasString(root, "config_gui_tab")) {
-				try {
-					configGuiTab = ConfigGuiTab.valueOf(root.get("config_gui_tab").getAsString());
-				} catch (Exception ignored) {
-					BTScreen.LOGGER.error("Failed to load config gui tab");
-				}
+        root.add("commands", commandsManager.toJson());
+        root.add("config_gui_tab", new JsonPrimitive(configGuiTab.name()));
 
-				if (configGuiTab == null) {
-					configGuiTab = ConfigGuiTab.GENERIC;
-				}
-			}
-			if (JsonUtils.hasObject(root, "commands")) {
-				commandsManager.loadFromJson(root.get("commands").getAsJsonObject());
-			}
-		}
+        Path file = getCurrentStorageFile(true);
+        JsonUtils.writeJsonToFileAsPath(root, file);
 
-		canSave = true;
-	}
+        canSave = false;
+    }
 
-	public static void save() {
-		save(false);
-	}
+    public static void clear() {
+        BTScreen.debugLog("Clearing data");
+    }
 
-	public static void save(boolean forceSave) {
-		if (canSave == false && forceSave == false) {
-			return;
-		}
-		BTScreen.debugLog("Saving data");
-		getInstance().savePerDimensionData();
+    // dimension specific storage
 
-		JsonObject root = new JsonObject();
+    private void savePerDimensionData() {
+        JsonObject root = this.toJson();
+        Path file = getCurrentStorageFile(false);
+        JsonUtils.writeJsonToFileAsPath(root, file);
+    }
 
-		root.add("commands", commandsManager.toJson());
-		root.add("config_gui_tab", new JsonPrimitive(configGuiTab.name()));
+    private void loadPerDimensionData() {
+        Path file = getCurrentStorageFile(false);
+        JsonElement element = JsonUtils.parseJsonFileAsPath(file);
 
-		Path file = getCurrentStorageFile(true);
-		JsonUtils.writeJsonToFileAsPath(root, file);
+        if (element != null && element.isJsonObject()) {
+            JsonObject root = element.getAsJsonObject();
+            this.fromJson(root);
+        }
+    }
 
-		canSave = false;
-	}
+    private void fromJson(JsonObject obj) {
+        if (JsonUtils.hasString(obj, "operation_mode")) {
+            try {
+                operationMode = PresetMode.valueOf(obj.get("operation_mode").getAsString());
+            } catch (Exception ignored) {
+            }
 
-	public static void clear() {
-		BTScreen.debugLog("Clearing data");
-		botStatus = BotStatus.IDLE;
-		needsToEat = false;
-	}
+            if (operationMode == null) {
+                operationMode = PresetMode.DEFAULT;
+            }
+        }
+    }
 
-	// dimension specific storage
+    private JsonObject toJson() {
+        JsonObject obj = new JsonObject();
 
-	private void savePerDimensionData() {
-		JsonObject root = this.toJson();
-		Path file = getCurrentStorageFile(false);
-		JsonUtils.writeJsonToFileAsPath(root, file);
-	}
+        obj.add("operation_mode", new JsonPrimitive(operationMode.name()));
 
-	private void loadPerDimensionData() {
-		Path file = getCurrentStorageFile(false);
-		JsonElement element = JsonUtils.parseJsonFileAsPath(file);
-
-		if (element != null && element.isJsonObject()) {
-			JsonObject root = element.getAsJsonObject();
-			this.fromJson(root);
-		}
-	}
-
-	private void fromJson(JsonObject obj) {
-		if (JsonUtils.hasString(obj, "operation_mode")) {
-			try {
-				operationMode = PresetMode.valueOf(obj.get("operation_mode").getAsString());
-			} catch (Exception ignored) {
-			}
-
-			if (operationMode == null) {
-				operationMode = PresetMode.DEFAULT;
-			}
-		}
-	}
-
-	private JsonObject toJson() {
-		JsonObject obj = new JsonObject();
-
-		obj.add("operation_mode", new JsonPrimitive(operationMode.name()));
-
-		return obj;
-	}
-
+        return obj;
+    }
 }

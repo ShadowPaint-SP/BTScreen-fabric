@@ -6,6 +6,7 @@ import de.drvlabs.btscreen.BTScreen;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+// TODO: fix for new system
 public class LocationCheck {
 	private static Vec3d lastLocation = null;
 	private static World lastWorld = null;

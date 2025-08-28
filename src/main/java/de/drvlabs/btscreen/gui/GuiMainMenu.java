@@ -10,7 +10,6 @@ import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.data.DataManager;
-import de.drvlabs.btscreen.utils.BotStatus;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.customcommands.Commands;
 import de.drvlabs.btscreen.utils.customcommands.CommandsManager;
@@ -284,7 +283,6 @@ public class GuiMainMenu extends GuiBase {
 				case Type.START:
 					Utils.execute("sel cleararea");
 					DataManager.getPresetMode().setSettings();
-					DataManager.setBotStatus(BotStatus.MINING);
 					this.gui.initGui();
 					this.gui.addMessage(MessageType.ERROR, 1000, LangKeys.INFO + ".main_menu.startBot");
 					return;

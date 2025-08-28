@@ -2,8 +2,8 @@ package de.drvlabs.btscreen.utils;
 
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
-import de.drvlabs.btscreen.data.DataManager;
 
+// TODO: fix for new system
 public class RepeatAction {
 	private static String lastCommand = "";
 	private static boolean isWaiting = false;
@@ -33,7 +33,6 @@ public class RepeatAction {
 		Waiter.wait(Configs.Generic.REPEAT_ACTION_INTERVAL.getIntegerValue(), w -> {
 			if (isWaiting) {
 				BTScreen.debugLog("wait period over, executing last command");
-				DataManager.setBotStatus(BotStatus.MINING);
 				Utils.execute(lastCommand);
 				isWaiting = false;
 			}
