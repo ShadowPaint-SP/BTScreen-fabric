@@ -38,7 +38,7 @@ public class AutoRepair extends BTProcessWithInitializer {
     protected PathingCommand onTick() {
         if (++attackIntervalCounter >= PERIODIC_ATTACK_INTERVAL.getIntegerValue()) {
             PlayerInventory inventory = Utils.MC.player.getInventory();
-            int tmpSlot = inventory.getSelectedSlot();
+            int tmpSlot = inventory.selectedSlot;
             if (PlayerInventory.isValidHotbarIndex(swordSlot)) {
                 inventory.setSelectedSlot(swordSlot);
             }
