@@ -26,9 +26,7 @@ public class Utils {
     }
 
     public static void executeBuild(String command) {
-        if (Configs.Generic.REPEAT_ACTION.getBooleanValue()) {
-            RepeatAction.trackCommand(command);
-        }
+        RepeatAction.trackCommand(command);
         execute(command);
     }
 

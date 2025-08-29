@@ -19,9 +19,9 @@ public class BTActiveListener extends BTProcessHelper {
                 }
             });
     public static final Event<BaritoneStopped> STOPPED = EventFactory
-            .createArrayBacked(BaritoneStopped.class, callbacks -> () -> {
+            .createArrayBacked(BaritoneStopped.class, callbacks -> canceled -> {
                 for (BaritoneStopped callback : callbacks) {
-                    callback.baritoneStopped();
+                    callback.baritoneStopped(canceled);
                 }
             });
 
@@ -32,7 +32,7 @@ public class BTActiveListener extends BTProcessHelper {
 
     @FunctionalInterface
     public interface BaritoneStopped {
-        void baritoneStopped();
+        void baritoneStopped(boolean canceled);
     }
 
     private static final List<IBaritoneProcess> IS_ACTIVE_LIST = List.of(
@@ -46,7 +46,7 @@ public class BTActiveListener extends BTProcessHelper {
     private static boolean baritoneIsActive = false;
 
     public static void updateBaritoneIsActive() {
-        setBaritoneActive(IS_ACTIVE_LIST.stream().anyMatch(IBaritoneProcess::isActive));
+        setBaritoneActive(IS_ACTIVE_LIST.stream().anyMatch(IBaritoneProcess::isActive), false);
     }
 
     @Override
@@ -61,15 +61,15 @@ public class BTActiveListener extends BTProcessHelper {
 
     @Override
     public void onLostControl() {
-        setBaritoneActive(false);
+        setBaritoneActive(false, true);
     }
 
-    private static void setBaritoneActive(boolean newBaritoneIsActive) {
+    private static void setBaritoneActive(boolean newBaritoneIsActive, boolean canceled) {
         if (newBaritoneIsActive && !baritoneIsActive) {
             STARTED.invoker().baritoneStarted();
         }
         if (!newBaritoneIsActive && baritoneIsActive) {
-            STOPPED.invoker().baritoneStopped();
+            STOPPED.invoker().baritoneStopped(canceled);
         }
         baritoneIsActive = newBaritoneIsActive;
     }
