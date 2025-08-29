@@ -2,23 +2,27 @@ package de.drvlabs.btscreen.btprocess;
 
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
+import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
+import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
 import fi.dy.masa.malilib.config.options.ConfigString;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 
 public class Teleport extends BTProcessHelper {
     private static Home nextHome = null;
+    private Home lastHome = null;
     private boolean teleporting = false;
-    private boolean teleportBack = false;
     private int timeoutTicks = 0;
     private Vec3d oldPos = null;
     private ClientWorld oldWorld = null;
 
     @Override
     public boolean isActive() {
-        return nextHome != null || teleporting || teleportBack;
+        return nextHome != null || teleporting || lastHome != null;
     }
 
     @Override
@@ -26,29 +30,42 @@ public class Teleport extends BTProcessHelper {
         if (isSafeToCancel) {
             if (timeoutTicks > 100) {
                 // Timeout
+                BTScreen.chatMessage(
+                        Text.translatable(LangKeys.INFO + ".teleport.timeout").formatted(Formatting.RED));
                 Utils.cancel();
                 onLostControl();
             }
             if (!teleporting) {
                 if (nextHome != null) {
-                    // Teleport to Home
+                    if (nextHome.isSame(lastHome)) {
+                        nextHome = null;
+                        return new PathingCommand(null, PathingCommandType.DEFER);
+                    }
+                    BTScreen.debugLog("Teleporting to " + nextHome + " Home");
+                    // Teleport to Home prepare
                     teleporting = true;
                     oldPos = Utils.MC.player.getPos();
                     oldWorld = Utils.MC.world;
                     // Set Mine home before teleporting
-                    if (!teleportBack && nextHome != Home.MINE) {
-                        teleportBack = true;
-                        Home.MINE.setHome();
+                    if (nextHome != Home.MINE) {
+                        if (lastHome == null) {
+                            Home.MINE.setHome();
+                            AutoDrop.teleportIntegration();
+                        }
+                        lastHome = nextHome;
                     }
-                    nextHome.tpToHome();
-                    nextHome = null;
-                } else if (teleportBack) {
+                } else if (lastHome != null) {
                     // Teleport Back
-                    teleporting = true;
-                    teleportBack = false;
-                    Home.MINE.tpToHome();
+                    lastHome = null;
+                    nextHome = Home.MINE;
                 }
-            } else if (!oldPos.isInRange(Utils.MC.player.getPos(), 1) || oldWorld != Utils.MC.world) {
+            } else if (nextHome != null) {
+                // Teleport to Home
+                nextHome.tpToHome();
+                nextHome = null;
+            } else if (oldPos != null
+                    && (!oldPos.isInRange(Utils.MC.player.getPos(), 1) || oldWorld != Utils.MC.world)) {
+                BTScreen.debugLog("Teleport Finished");
                 // Teleport Finished
                 teleporting = false;
                 timeoutTicks = 0;
@@ -64,7 +81,7 @@ public class Teleport extends BTProcessHelper {
     public void onLostControl() {
         nextHome = null;
         teleporting = false;
-        teleportBack = false;
+        lastHome = null;
         timeoutTicks = 0;
         oldPos = null;
         oldWorld = null;
@@ -113,6 +130,10 @@ public class Teleport extends BTProcessHelper {
 
         private void setHome() {
             Utils.sendCommand(Configs.Generic.SETHOME_COMMAND.getStringValue() + " " + config.getStringValue());
+        }
+
+        private boolean isSame(Home home) {
+            return home != null && (this == home || config.getStringValue().equals(home.config.getStringValue()));
         }
     }
 }

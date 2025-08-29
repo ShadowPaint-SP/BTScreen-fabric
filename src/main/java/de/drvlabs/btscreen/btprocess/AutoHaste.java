@@ -39,7 +39,6 @@ public class AutoHaste extends BTProcessWithInitializer {
 
     @Override
     protected void onReset() {
-        hasHaste = false;
         timeoutTicks = 0;
     }
 

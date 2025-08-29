@@ -22,7 +22,7 @@ public class AutoDrop extends BTProcessWithInitializer {
     private static final Set<Identifier> blacklist = new HashSet<>();
     private static final Set<Integer> workingSlots = new HashSet<>();
     private static boolean hasFreeSlot = false;
-    private boolean active = false;
+    private static boolean active = false;
 
     @Override
     public boolean isActive() {
@@ -47,12 +47,21 @@ public class AutoDrop extends BTProcessWithInitializer {
                 break;
             }
         }
+        if (!active) {
+            checkInventory();
+        }
         return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
     }
 
     @Override
     protected void onReset() {
         active = false;
+    }
+
+    static void teleportIntegration() {
+        if (isActive(AUTO_DROP) && !workingSlots.isEmpty()) {
+            active = true;
+        }
     }
 
     public static void checkInventory() {
@@ -69,6 +78,7 @@ public class AutoDrop extends BTProcessWithInitializer {
             }
         }
         BTScreen.debugLog("Empty Slots: " + workingSlots);
+        AutoDrop.checkInventory();
     }
 
     static {

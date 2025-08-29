@@ -137,6 +137,7 @@
   "btscreen.config.hotkeys.comment.pauseResume": "Quickly pause and resume the bot",
 
   "btscreen.info.locationCheck.playerMovedTooFar": "Error: Player has moved too far from the last recorded location.",
+  "btscreen.info.teleport.timeout": "Error: Waited too long for Teleport!",
   "btscreen.info.autoTorch.noTorch": "Error: No Torch in Hotbar! Disabled AutoTorch.",
   "btscreen.info.autoTorch.started": "Started placing a Torch",
   "btscreen.info.autoTorch.finished": "Finished placing a Torch",

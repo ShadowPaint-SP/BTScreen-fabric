@@ -137,6 +137,7 @@
   "btscreen.config.hotkeys.comment.pauseResume": "Bot schnell pausieren und fortsetzen",
 
   "btscreen.info.locationCheck.playerMovedTooFar": "Fehler: Spieler hat sich zu weit vom letzten aufgezeichneten Ort entfernt.",
+  "btscreen.info.teleport.timeout": "Fehler: Zu lange auf Teleport gewartet!",
   "btscreen.info.autoTorch.noTorch": "Fehler: Keine Fackel in der Hotbar! AutoTorch deaktiviert.",
   "btscreen.info.autoTorch.started": "Beginne mit dem Platzieren einer Fackel.",
   "btscreen.info.autoTorch.finished": "Platzieren einer Fackel abgeschlossen.",

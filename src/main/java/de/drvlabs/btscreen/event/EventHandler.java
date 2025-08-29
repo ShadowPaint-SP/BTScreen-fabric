@@ -93,7 +93,7 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
 
     @Override
     public void baritoneStopped(boolean canceled) {
-        BTScreen.debugLog("Baritone is inactive");
+        BTScreen.debugLog("Baritone is inactive. canceled: " + canceled);
         RepeatAction.baritoneStopped(canceled);
     }
 }
