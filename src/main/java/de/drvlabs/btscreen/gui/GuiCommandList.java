@@ -1,5 +1,6 @@
 package de.drvlabs.btscreen.gui;
 
+import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.gui.GuiMainMenu.ButtonListenerChangeMenu;
 import de.drvlabs.btscreen.gui.widgets.WidgetCommand;
@@ -10,14 +11,13 @@ import fi.dy.masa.malilib.gui.GuiListBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.util.StringUtils;
 
-public class GuiCommandList
-		extends GuiListBase<Commands, WidgetCommand, WidgetCommandList> {
+public class GuiCommandList extends GuiListBase<Commands, WidgetCommand, WidgetCommandList> {
 	public final CommandsManager manager;
 
 	public GuiCommandList() {
 		super(12, 30);
 
-		this.title = StringUtils.translate("btscreen.gui.title.manage_command_list");
+		this.title = StringUtils.translate(LangKeys.GUI_TITLE + ".manage_command_list");
 		this.manager = DataManager.getCommandsManager();
 	}
 

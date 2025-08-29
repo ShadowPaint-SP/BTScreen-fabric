@@ -3,6 +3,7 @@ package de.drvlabs.btscreen.gui;
 import org.jetbrains.annotations.Nullable;
 
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.utils.customcommands.Commands;
 import fi.dy.masa.malilib.gui.GuiBase;
@@ -30,7 +31,7 @@ public class GuiConfigureCommand extends GuiBase {
 			this.command = command;
 			newCommand = false;
 		}
-		this.title = StringUtils.translate("btscreen.gui.title.configure_command");
+		this.title = StringUtils.translate(LangKeys.GUI_TITLE + ".configure_command");
 	}
 
 	@Override
@@ -88,7 +89,7 @@ public class GuiConfigureCommand extends GuiBase {
 					if (this.parent.textFieldCommand.getTextWrapper().equals("")
 							|| this.parent.textFieldName.getTextWrapper().equals("")) {
 						BTScreen.debugLog("Command name or command is empty");
-						this.parent.addMessage(MessageType.ERROR, 1000, "btscreen.info.guiConfigureCommand.saveError");
+						this.parent.addMessage(MessageType.ERROR, 1000, LangKeys.INFO + ".guiConfigureCommand.saveError");
 						return;
 					}
 					BTScreen.debugLog("Command name: " + this.parent.textFieldName.getTextWrapper());
@@ -105,7 +106,7 @@ public class GuiConfigureCommand extends GuiBase {
 		}
 
 		public enum Type {
-			SAVE("btscreen.gui.button.save");
+			SAVE(LangKeys.GUI_BUTTON + ".save");
 
 			private final String translationKey;
 			@Nullable

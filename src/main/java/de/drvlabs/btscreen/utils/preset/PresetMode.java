@@ -18,15 +18,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 
 public enum PresetMode implements StringIdentifiable {
-	DEFAULT(
-			"default",
-			"btscreen.preset_mode.name.default"),
-	FARM(
-			"farm",
-			"btscreen.preset_mode.name.farm"),
-	LIQUID(
-			"liquid",
-			"btscreen.preset_mode.name.liquid");
+	DEFAULT("default", BTScreen.MOD_ID + ".preset_mode.name.default"),
+	FARM("farm", BTScreen.MOD_ID + ".preset_mode.name.farm"),
+	LIQUID("liquid", BTScreen.MOD_ID + ".preset_mode.name.liquid");
 
 	public static final ImmutableList<PresetMode> VALUES = ImmutableList.copyOf(values());
 	private static final Settings bt = BaritoneAPI.getSettings();

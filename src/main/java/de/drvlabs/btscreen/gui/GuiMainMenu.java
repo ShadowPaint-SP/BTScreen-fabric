@@ -6,14 +6,11 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
-import baritone.api.BaritoneAPI;
-import baritone.api.process.IBuilderProcess;
-import de.drvlabs.btscreen.Reference;
+import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
+import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.data.DataManager;
-import de.drvlabs.btscreen.utils.BotStatus;
-import de.drvlabs.btscreen.utils.CommandUtils;
-import de.drvlabs.btscreen.utils.behavior.AutoDrop;
+import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.customcommands.Commands;
 import de.drvlabs.btscreen.utils.customcommands.CommandsManager;
 import de.drvlabs.btscreen.utils.preset.PresetMode;
@@ -24,22 +21,18 @@ import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.util.StringUtils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.text.Text;
 
 public class GuiMainMenu extends GuiBase {
 	private final int textColor = 0xFEFEFEFE;
-	private static MinecraftClient mc = MinecraftClient.getInstance();
-	private static IBuilderProcess baritoneBuildProcess = BaritoneAPI.getProvider().getPrimaryBaritone()
-			.getBuilderProcess();
 	public static GuiTextFieldGeneric textBlocksToReplace;
 	public static GuiTextFieldGeneric textBlocksToPlace;
 
 	public GuiMainMenu() {
-		String version = String.format("v%s", Reference.MOD_VERSION);
-		this.title = StringUtils.translate("btscreen.gui.title.btscreen_main_menu", version);
+		this.title = StringUtils.translate(LangKeys.GUI_TITLE + ".btscreen_main_menu",
+				BTScreen.MOD_NAME,
+				BTScreen.MOD_VERSION);
 	}
 
 	@Override
@@ -52,7 +45,7 @@ public class GuiMainMenu extends GuiBase {
 		ButtonGeneric button;
 
 		////////////////////////////////////////////////// Selection Management
-		this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.selManagement");
+		this.addLabel(x, y, width, 20, textColor, LangKeys.GUI_SECTION + ".label.selManagement");
 		y += 22;
 		x += 5;
 		x += this.createButton(x, y, -1, ButtonListener.Type.SELPOSONE, false);
@@ -63,18 +56,18 @@ public class GuiMainMenu extends GuiBase {
 		////////////////////////////////////////////////// Bot Control
 		y += 30;
 		x = 12;
-		this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.botControl");
+		this.addLabel(x, y, width, 20, textColor, LangKeys.GUI_SECTION + ".label.botControl");
 		y += 22;
 		x += 5;
 		x += this.createButton(x, y, -1, ButtonListener.Type.START, true);
 		x += this.createButton(x, y, x - 17, ButtonListener.Type.STOP, false);
 		y += 22;
 		x = 17;
-		if (DataManager.getActive()) {
-			if (baritoneBuildProcess.isPaused()) {
-				label = StringUtils.translate("btscreen.gui.button.resume");
+		if (Utils.isActive()) {
+			if (Utils.paused()) {
+				label = StringUtils.translate(LangKeys.GUI_BUTTON + ".resume");
 			} else {
-				label = StringUtils.translate("btscreen.gui.button.pause");
+				label = StringUtils.translate(LangKeys.GUI_BUTTON + ".pause");
 			}
 			width = this.getStringWidth(label) + 10;
 			button = new ButtonGeneric(x, y, width, 20, label);
@@ -85,14 +78,14 @@ public class GuiMainMenu extends GuiBase {
 		if (this.getScreenHeight() >= 290) {
 			y += 60;
 			x = 12;
-			this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.additionalControls");
+			this.addLabel(x, y, width, 20, textColor, LangKeys.GUI_SECTION + ".label.additionalControls");
 			y += 22;
 			x += 5;
 			width = 80;
 
 			textBlocksToReplace = new GuiTextFieldGeneric(x, y, width * 2, 20, this.textRenderer);
-			textBlocksToReplace
-					.setPlaceholder(Text.of(StringUtils.translate("btscreen.gui.textfieldContent.placeholder.blocksToReplace")));
+			textBlocksToReplace.setPlaceholder(
+					Text.of(StringUtils.translate(LangKeys.GUI + ".textfieldContent.placeholder.blocksToReplace")));
 			textBlocksToReplace.setMaxLengthWrapper(256);
 			if (!Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings().isEmpty()) {
 				textBlocksToReplace.setTextWrapper(
@@ -101,18 +94,18 @@ public class GuiMainMenu extends GuiBase {
 			this.addTextField(textBlocksToReplace, null);
 
 			textBlocksToPlace = new GuiTextFieldGeneric(x + width * 2, y, width, 20, this.textRenderer);
-			textBlocksToPlace
-					.setPlaceholder(Text.of(StringUtils.translate("btscreen.gui.textfieldContent.placeholder.blockToPlace")));
+			textBlocksToPlace.setPlaceholder(
+					Text.of(StringUtils.translate(LangKeys.GUI + ".textfieldContent.placeholder.blockToPlace")));
 			textBlocksToPlace.setMaxLengthWrapper(256);
 			if (!Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue().isEmpty()) {
 				textBlocksToPlace.setTextWrapper(Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 			}
 			this.addTextField(textBlocksToPlace, null);
 
-			int labelWidth = this.getStringWidth(StringUtils.translate("btscreen.gui.label.repeatAction"));
+			int labelWidth = this.getStringWidth(StringUtils.translate(LangKeys.GUI + ".label.repeatAction"));
 			this.addLabel(x + (width * 3) - labelWidth, y - 22, labelWidth, 20,
 					Configs.Generic.REPEAT_ACTION.getBooleanValue() ? 0x00FF00 : 0xFF0000,
-					"btscreen.gui.label.repeatAction");
+					LangKeys.GUI + ".label.repeatAction");
 
 			y += 22;
 			x += this.createButton(x, y, width, ButtonListener.Type.SEL_COPY, false);
@@ -128,7 +121,7 @@ public class GuiMainMenu extends GuiBase {
 		////////////////////////////////////////////////// Box Resizing
 		x = this.getScreenWidth() / 2;
 		y = 30;
-		this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.boxResizing");
+		this.addLabel(x, y, width, 20, textColor, LangKeys.GUI_SECTION + ".label.boxResizing");
 		y += 22;
 		x += 5;
 		this.createCoordinateInput(x, y, width, CoordinateType.NORTH);
@@ -146,7 +139,7 @@ public class GuiMainMenu extends GuiBase {
 		////////////////////////////////////////////////// Box Moving
 		x = this.getScreenWidth() / 2;
 		y += 30;
-		this.addLabel(x, y, width, 20, textColor, "btscreen.gui.section.label.boxMoving");
+		this.addLabel(x, y, width, 20, textColor, LangKeys.GUI_SECTION + ".label.boxMoving");
 		y += 22;
 		x += 5;
 		x += this.createCoordinateInput(x, y, width, CoordinateType.SHIFTX) + 3;
@@ -173,7 +166,7 @@ public class GuiMainMenu extends GuiBase {
 		x = 12;
 		y = this.getScreenHeight() - 26;
 		x += this.createButton(x, y, -1, ButtonListener.Type.CONFIGURATION, true);
-		label = StringUtils.translate("btscreen.gui.button.preset_mode", DataManager.getPresetMode().getName());
+		label = StringUtils.translate(LangKeys.GUI_BUTTON + ".preset_mode", DataManager.getPresetMode().getName());
 		width = this.getStringWidth(label) + 10;
 		button = new ButtonGeneric(x, y, width, 20, label);
 		x += this.addButton(button, new ButtonListenerCyclePresetMode(this)).getWidth();
@@ -221,13 +214,13 @@ public class GuiMainMenu extends GuiBase {
 		}
 
 		if (type == ButtonListener.Type.START) {
-			button.setHoverStrings(StringUtils.translate("btscreen.gui.button.hover.startBotInfoText"));
+			button.setHoverStrings(StringUtils.translate(LangKeys.GUI_BUTTON + ".hover.startBotInfoText"));
 		} else if (type == ButtonListener.Type.SELDELETE) {
-			button.setHoverStrings(StringUtils.translate("btscreen.gui.button.hover.selDeleteInfoText"));
+			button.setHoverStrings(StringUtils.translate(LangKeys.GUI_BUTTON + ".hover.selDeleteInfoText"));
 		} else if (type == ButtonListener.Type.SELPOSONE) {
-			button.setHoverStrings(StringUtils.translate("btscreen.gui.button.hover.selPosOneInfoText"));
+			button.setHoverStrings(StringUtils.translate(LangKeys.GUI_BUTTON + ".hover.selPosOneInfoText"));
 		} else if (type == ButtonListener.Type.SELPOSTWO) {
-			button.setHoverStrings(StringUtils.translate("btscreen.gui.button.hover.selPosTwoInfoText"));
+			button.setHoverStrings(StringUtils.translate(LangKeys.GUI_BUTTON + ".hover.selPosTwoInfoText"));
 		}
 
 		this.addButton(button, listener);
@@ -287,96 +280,85 @@ public class GuiMainMenu extends GuiBase {
 					GuiBase.openGui(new GuiConfigs());
 					return;
 				case Type.START:
-					CommandUtils.execute("sel cleararea");
-					DataManager.getInstance().setActive(true);
-					AutoDrop.updateMaxSlots();
+					Utils.execute("sel cleararea");
 					DataManager.getPresetMode().setSettings();
-					DataManager.setBotStatus(BotStatus.MINING);
-					// check for haste
-					if (Configs.Generic.AUTO_HASTE.getBooleanValue()) {
-						if (!mc.player.hasStatusEffect(StatusEffects.HASTE)) {
-							CommandUtils.pause(BotStatus.HASTING);
-							CommandUtils.setHome(Configs.Generic.MINE_HOME.getStringValue());
-							CommandUtils.tpTo(Configs.Generic.HASTE_HOME.getStringValue());
-						}
-					}
 					this.gui.initGui();
-					this.gui.addMessage(MessageType.ERROR, 1000, "btscreen.info.main_menu.startBot");
+					this.gui.addMessage(MessageType.ERROR, 1000, LangKeys.INFO + ".main_menu.startBot");
 					return;
 				case Type.STOP:
-					CommandUtils.stop();
+					Utils.cancel();
 					this.gui.initGui();
-					this.gui.addMessage(MessageType.SUCCESS, 1000, "btscreen.info.main_menu.stopBot");
+					this.gui.addMessage(MessageType.SUCCESS, 1000, LangKeys.INFO + ".main_menu.stopBot");
 					return;
 				case Type.SELPOSONE:
-					CommandUtils.execute("sel pos1");
+					Utils.execute("sel pos1");
 					return;
 				case Type.SELPOSTWO:
-					CommandUtils.execute("sel pos2");
+					Utils.execute("sel pos2");
 					return;
 				case Type.SELDELETE:
-					CommandUtils.execute("sel clear");
-					this.gui.addMessage(MessageType.WARNING, 1000, "btscreen.info.main_menu.selDelete");
+					Utils.execute("sel clear");
+					this.gui.addMessage(MessageType.WARNING, 1000, LangKeys.INFO + ".main_menu.selDelete");
 					return;
 				case Type.SELUNDO:
-					CommandUtils.execute("sel undo");
+					Utils.execute("sel undo");
 					return;
 				case Type.SHIFTX:
-					CommandUtils.execute("sel shift all east " + amount);
+					Utils.execute("sel shift all east " + amount);
 					return;
 				case Type.SHIFTY:
-					CommandUtils.execute("sel shift all up " + amount);
+					Utils.execute("sel shift all up " + amount);
 					return;
 				case Type.SHIFTZ:
-					CommandUtils.execute("sel shift all north " + amount);
+					Utils.execute("sel shift all north " + amount);
 					return;
 				case Type.UP:
-					CommandUtils.execute("sel expand all up " + amount);
+					Utils.execute("sel expand all up " + amount);
 					return;
 				case Type.DOWN:
-					CommandUtils.execute("sel expand all down " + amount);
+					Utils.execute("sel expand all down " + amount);
 					return;
 				case Type.NORTH:
-					CommandUtils.execute("sel expand all north " + amount);
+					Utils.execute("sel expand all north " + amount);
 					return;
 				case Type.EAST:
-					CommandUtils.execute("sel expand all east " + amount);
+					Utils.execute("sel expand all east " + amount);
 					return;
 				case Type.SOUTH:
-					CommandUtils.execute("sel expand all south " + amount);
+					Utils.execute("sel expand all south " + amount);
 					return;
 				case Type.WEST:
-					CommandUtils.execute("sel expand all west " + amount);
+					Utils.execute("sel expand all west " + amount);
 					return;
 				case Type.COMMAND:
 					if (this.command != null) {
-						CommandUtils.sendCommand(this.command.getCommand());
+						Utils.sendCommand(this.command.getCommand());
 					}
 					return;
 				case Type.PAUSE_RESUME:
-					if (BaritoneAPI.getProvider().getPrimaryBaritone().getBuilderProcess().isPaused()) {
-						CommandUtils.resume();
+					if (Utils.paused()) {
+						Utils.resume();
 					} else {
-						CommandUtils.pause(BotStatus.IDLE);
+						Utils.pause();
 					}
 					this.gui.initGui();
 					return;
 				case Type.SEL_SET:
 					PresetMode.setBuildingAbility();
 					updateBlocksToReplace();
-					CommandUtils.executeBuild("sel set "
+					Utils.executeBuild("sel set "
 							+ String.join(" ", Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings()));
 					return;
 				case Type.SEL_WALLS:
 					PresetMode.setBuildingAbility();
 					updateBlocksToReplace();
-					CommandUtils.executeBuild("sel walls "
+					Utils.executeBuild("sel walls "
 							+ Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 					return;
 				case Type.SEL_SHELL:
 					PresetMode.setBuildingAbility();
 					updateBlocksToReplace();
-					CommandUtils.executeBuild("sel shell " + Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
+					Utils.executeBuild("sel shell " + Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 					return;
 				case Type.SEL_REPLACE:
 					if (DataManager.getPresetMode() != PresetMode.LIQUID) {
@@ -384,16 +366,16 @@ public class GuiMainMenu extends GuiBase {
 					}
 					updateBlocksToReplace();
 					updateBlockToPlace();
-					CommandUtils
-							.executeBuild("sel replace " + String.join(" ", Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings()) + " "
-									+ Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
+					Utils.executeBuild("sel replace "
+							+ String.join(" ", Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings()) + " "
+							+ Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 					return;
 				case Type.SEL_COPY:
-					CommandUtils.execute("sel copy");
+					Utils.execute("sel copy");
 					return;
 				case Type.SEL_PASTE:
 					PresetMode.setBuildingAbility();
-					CommandUtils.execute("sel paste");
+					Utils.execute("sel paste");
 					return;
 				default:
 					break;
@@ -402,30 +384,30 @@ public class GuiMainMenu extends GuiBase {
 		}
 
 		public enum Type {
-			CONFIGURATION("btscreen.gui.button.configuration_menu", ButtonIcons.CONFIGURATION),
-			START("btscreen.gui.button.startBot", ButtonIcons.RUNNER),
-			STOP("btscreen.gui.button.stopBot", null),
-			SELPOSONE("btscreen.gui.button.selPosOne", null),
-			SELPOSTWO("btscreen.gui.button.selPosTwo", null),
-			SELDELETE("btscreen.gui.button.selDelete", null),
-			SELUNDO("btscreen.gui.button.selUndo", null),
-			SHIFTX("btscreen.gui.button.shift_sel_x", null),
-			SHIFTY("btscreen.gui.button.shift_sel_y", null),
-			SHIFTZ("btscreen.gui.button.shift_sel_z", null),
-			UP("btscreen.gui.button.up", null),
-			DOWN("btscreen.gui.button.down", null),
-			NORTH("btscreen.gui.button.north", null),
-			EAST("btscreen.gui.button.east", null),
-			SOUTH("btscreen.gui.button.south", null),
-			WEST("btscreen.gui.button.west", null),
-			COMMAND("btscreen.gui.button.command", null),
-			PAUSE_RESUME("btscreen.gui.button.pause_resume", null),
-			SEL_SET("btscreen.gui.button.sel_set", null),
-			SEL_WALLS("btscreen.gui.button.sel_walls", null),
-			SEL_SHELL("btscreen.gui.button.sel_shell", null),
-			SEL_REPLACE("btscreen.gui.button.sel_replace", null),
-			SEL_COPY("btscreen.gui.button.sel_copy", null),
-			SEL_PASTE("btscreen.gui.button.sel_paste", null);
+			CONFIGURATION(LangKeys.GUI_BUTTON + ".configuration_menu", ButtonIcons.CONFIGURATION),
+			START(LangKeys.GUI_BUTTON + ".startBot", ButtonIcons.RUNNER),
+			STOP(LangKeys.GUI_BUTTON + ".stopBot", null),
+			SELPOSONE(LangKeys.GUI_BUTTON + ".selPosOne", null),
+			SELPOSTWO(LangKeys.GUI_BUTTON + ".selPosTwo", null),
+			SELDELETE(LangKeys.GUI_BUTTON + ".selDelete", null),
+			SELUNDO(LangKeys.GUI_BUTTON + ".selUndo", null),
+			SHIFTX(LangKeys.GUI_BUTTON + ".shift_sel_x", null),
+			SHIFTY(LangKeys.GUI_BUTTON + ".shift_sel_y", null),
+			SHIFTZ(LangKeys.GUI_BUTTON + ".shift_sel_z", null),
+			UP(LangKeys.GUI_BUTTON + ".up", null),
+			DOWN(LangKeys.GUI_BUTTON + ".down", null),
+			NORTH(LangKeys.GUI_BUTTON + ".north", null),
+			EAST(LangKeys.GUI_BUTTON + ".east", null),
+			SOUTH(LangKeys.GUI_BUTTON + ".south", null),
+			WEST(LangKeys.GUI_BUTTON + ".west", null),
+			COMMAND(LangKeys.GUI_BUTTON + ".command", null),
+			PAUSE_RESUME(LangKeys.GUI_BUTTON + ".pause_resume", null),
+			SEL_SET(LangKeys.GUI_BUTTON + ".sel_set", null),
+			SEL_WALLS(LangKeys.GUI_BUTTON + ".sel_walls", null),
+			SEL_SHELL(LangKeys.GUI_BUTTON + ".sel_shell", null),
+			SEL_REPLACE(LangKeys.GUI_BUTTON + ".sel_replace", null),
+			SEL_COPY(LangKeys.GUI_BUTTON + ".sel_copy", null),
+			SEL_PASTE(LangKeys.GUI_BUTTON + ".sel_paste", null);
 
 			private final String translationKey;
 			private final ButtonIcons icon;
@@ -482,13 +464,13 @@ public class GuiMainMenu extends GuiBase {
 
 		public enum ButtonType {
 			// Command List Interaction GUI
-			COMMAND_LIST_MANAGER("btscreen.gui.button.change_menu.command_list_manager", ButtonIcons.BROWSER),
+			COMMAND_LIST_MANAGER(LangKeys.GUI_BUTTON + ".change_menu.command_list_manager", ButtonIcons.BROWSER),
 			// Create a new command
-			CREATE_COMMAND("btscreen.gui.button.change_menu.createCommand", null),
+			CREATE_COMMAND(LangKeys.GUI_BUTTON + ".change_menu.createCommand", null),
 			// In-game Configuration GUI
-			CONFIGURATION("btscreen.gui.button.change_menu.configuration_menu", ButtonIcons.CONFIGURATION),
+			CONFIGURATION(LangKeys.GUI_BUTTON + ".change_menu.configuration_menu", ButtonIcons.CONFIGURATION),
 			// Switch to the BTScreen main menu
-			MAIN_MENU("btscreen.gui.button.change_menu.to_main_menu", null);
+			MAIN_MENU(LangKeys.GUI_BUTTON + ".change_menu.to_main_menu", null);
 
 			private final String labelKey;
 			private final ButtonIcons icon;
@@ -503,7 +485,7 @@ public class GuiMainMenu extends GuiBase {
 			}
 
 			public String getDisplayName() {
-				return StringUtils.translate(this.getLabelKey());
+				return StringUtils.translate(this.getLabelKey(), BTScreen.MOD_NAME, BTScreen.MOD_VERSION);
 			}
 
 			public ButtonIcons getIcon() {
@@ -521,7 +503,7 @@ public class GuiMainMenu extends GuiBase {
 
 		@Override
 		public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
-			PresetMode mode = DataManager.getPresetMode().cycle(MinecraftClient.getInstance().player, mouseButton == 0);
+			PresetMode mode = DataManager.getPresetMode().cycle(Utils.MC.player, mouseButton == 0);
 			DataManager.setPresetMode(mode);
 			mode.setSettings();
 			this.gui.initGui();
@@ -573,7 +555,7 @@ public class GuiMainMenu extends GuiBase {
 
 	protected void createCoordinateButton(int x, int y,
 			ButtonListener.Type type) {
-		String hover = StringUtils.translate("btscreen.gui.button.hover.plus_minus_tip_ctrl_alt_shift");
+		String hover = StringUtils.translate(LangKeys.GUI_BUTTON + ".hover.plus_minus_tip_ctrl_alt_shift");
 		ButtonGeneric button = new ButtonGeneric(x, y, ButtonIcons.BUTTON_PLUS_MINUS_16, hover);
 		ButtonListener listener = new ButtonListener(type, this);
 		this.addButton(button, listener);

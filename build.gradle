@@ -6,6 +6,10 @@ plugins {
 version = project.mod_version
 group = project.maven_group
 
+loom {
+    accessWidenerPath = file("src/main/resources/btscreen.accesswidener")
+}
+
 base {
 	archivesName = project.archives_base_name
 }
@@ -55,10 +59,8 @@ dependencies {
 // The artifact path needs to be specified for remap to work correctly         artifact {             name = "mymod"             extension = "jar"             type = "jar"         }     }
 
 processResources {
-	inputs.property "version", project.version
-
 	filesMatching("fabric.mod.json") {
-		expand "version": inputs.properties.version
+		expand project.properties
 	}
 }
 

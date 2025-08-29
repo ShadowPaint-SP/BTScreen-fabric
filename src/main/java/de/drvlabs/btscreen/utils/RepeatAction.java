@@ -1,44 +1,41 @@
 package de.drvlabs.btscreen.utils;
 
+import static de.drvlabs.btscreen.config.Configs.Generic.REPEAT_ACTION;
+import static de.drvlabs.btscreen.config.Configs.Generic.REPEAT_ACTION_INTERVAL;
+
 import de.drvlabs.btscreen.BTScreen;
-import de.drvlabs.btscreen.config.Configs;
-import de.drvlabs.btscreen.data.DataManager;
 
 public class RepeatAction {
-	private static String lastCommand = "";
-	private static boolean isWaiting = false;
+    private static String lastCommand = "";
+    private static Waiter waiter = null;
 
-	public static void trackCommand(String command) {
-		if (!Configs.Generic.REPEAT_ACTION.getBooleanValue()) {
-			return;
-		}
-		lastCommand = command;
-	}
+    public static void trackCommand(String command) {
+        lastCommand = command;
+    }
 
-	public static void cancelRepeatAction() {
-		if (!Configs.Generic.REPEAT_ACTION.getBooleanValue()) {
-			return;
-		}
-		isWaiting = false;
-		Configs.Generic.REPEAT_ACTION.setBooleanValue(false);
-		BTScreen.debugLog("canceled repeat action");
-	}
+    public static void baritoneStopped(boolean canceled) {
+        if (canceled) {
+            cancel();
+        } else if (REPEAT_ACTION.getBooleanValue()) {
+            start();
+        }
+    }
 
-	public static void startWaitPeriod() {
-		if (!Configs.Generic.REPEAT_ACTION.getBooleanValue()) {
-			return;
-		}
-		isWaiting = true;
-		BTScreen.debugLog("starting wait period for repeat action");
-		Waiter.wait(Configs.Generic.REPEAT_ACTION_INTERVAL.getIntegerValue(), () -> {
-			if (isWaiting) {
-				BTScreen.debugLog("wait period over, executing last command");
-				DataManager.setBotStatus(BotStatus.MINING);
-				DataManager dataManager = DataManager.getInstance();
-				dataManager.setActive(true);
-				CommandUtils.execute(lastCommand);
-				isWaiting = false;
-			}
-		});
-	}
+    private static void cancel() {
+        if (waiter == null) {
+            return;
+        }
+        waiter.cancel();
+        waiter = null;
+        REPEAT_ACTION.setBooleanValue(false);
+        BTScreen.debugLog("canceled repeat action");
+    }
+
+    private static void start() {
+        BTScreen.debugLog("starting wait period for repeat action");
+        waiter = Waiter.wait(REPEAT_ACTION_INTERVAL.getIntegerValue(), w -> {
+            BTScreen.debugLog("wait period over, executing last command");
+            Utils.execute(lastCommand);
+        });
+    }
 }

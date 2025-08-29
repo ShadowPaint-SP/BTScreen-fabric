@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.jetbrains.annotations.Nullable;
 
-import de.drvlabs.btscreen.Reference;
+import de.drvlabs.btscreen.BTScreen;
 import fi.dy.masa.malilib.gui.interfaces.IFileBrowserIconProvider;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.RenderUtils;
@@ -29,7 +29,7 @@ public enum ButtonIcons implements IGuiIcon, IFileBrowserIconProvider {
 	BUTTON_PLUS_MINUS_12(24, 0, 12, 12),
 	BUTTON_PLUS_MINUS_16(0, 128, 16, 16),;
 
-	public static final Identifier TEXTURE = Identifier.of(Reference.MOD_ID, "textures/gui/gui_widgets.png");
+	public static final Identifier TEXTURE = Identifier.of(BTScreen.MOD_ID, "textures/gui/gui_widgets.png");
 
 	private final int u;
 	private final int v;

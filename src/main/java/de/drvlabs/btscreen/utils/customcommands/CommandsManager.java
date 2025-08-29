@@ -7,7 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import de.drvlabs.btscreen.utils.CommandUtils;
+import de.drvlabs.btscreen.utils.Utils;
 import fi.dy.masa.malilib.util.JsonUtils;
 
 public class CommandsManager {
@@ -27,7 +27,7 @@ public class CommandsManager {
 
 	public boolean executeCommand(Commands command) {
 		if (command != null) {
-			CommandUtils.sendCommand(command.getCommand());
+			Utils.sendCommand(command.getCommand());
 			return true;
 		}
 		return false;
