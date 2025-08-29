@@ -39,7 +39,7 @@ public class Configs implements IConfigHandler {
         public static final ConfigString HASTE_HOME = new ConfigString("hasteHome", "haste");
         public static final ConfigString REPAIR_HOME = new ConfigString("repairHome", "repair");
         public static final ConfigString MINE_HOME = new ConfigString("mineHome", "mine");
-        public static final ConfigInteger PERIODIC_ATTACK_INTERVAL = new ConfigInteger("periodicAttackInterval", 25, 1,
+        public static final ConfigTicks PERIODIC_ATTACK_INTERVAL = new ConfigTicks("periodicAttackInterval", 25, 1,
                 400);
         public static final ConfigInteger ITEM_DURABILITY_THRESHOLD = new ConfigInteger("itemDurabilityThreshold", 40,
                 20, 100);
@@ -49,7 +49,7 @@ public class Configs implements IConfigHandler {
         public static final ConfigInteger BLOCK_BREAK_COOLDOWN = new ConfigInteger("blockBreakCooldown", 5, 0, 5);
         public static final ConfigBoolean NO_INSTA_BREAK = new ConfigBoolean("noInstaBreak", false);
         public static final ConfigBoolean REPEAT_ACTION = new ConfigBoolean("repeatAction", false);
-        public static final ConfigInteger REPEAT_ACTION_INTERVAL = new ConfigInteger("repeatActionInterval", 100, 0,
+        public static final ConfigTicks REPEAT_ACTION_INTERVAL = new ConfigTicks("repeatActionInterval", 100, 0,
                 1000000);
         public static final ConfigBoolean SAFETY = new ConfigBoolean("safety", false);
 
