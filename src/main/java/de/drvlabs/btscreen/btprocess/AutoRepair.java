@@ -7,6 +7,7 @@ import static de.drvlabs.btscreen.config.Configs.Generic.PERIODIC_ATTACK_INTERVA
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
@@ -30,7 +31,7 @@ public class AutoRepair extends BTProcessWithInitializer {
     protected void onInitialize() {
         swordSlot = getSwordSlotInHotbar();
         Teleport.requestTeleport(Teleport.Home.REPAIR);
-        BTScreen.chatMessage(Text.literal("Started Repairing"));
+        BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoRepair.started"));
     }
 
     @Override
@@ -67,7 +68,7 @@ public class AutoRepair extends BTProcessWithInitializer {
             if (!newStack.isDamaged()) {
                 // stop
                 active = false;
-                BTScreen.chatMessage(Text.literal("Finished Repairing"));
+                BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoRepair.finished"));
                 return;
             }
             if (newStack.getMaxDamage() - newStack.getDamage() <= ITEM_DURABILITY_THRESHOLD.getIntegerValue()) {

@@ -6,6 +6,7 @@ import static de.drvlabs.btscreen.config.Configs.Generic.MIN_LIGHT_LEVEL;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -38,11 +39,11 @@ public class AutoTorch extends BTProcessHelper {
                     torchSlot = getTorchSlotInHotbar();
                     if (torchSlot == -1) {
                         AUTO_TORCH.setBooleanValue(false);
-                        BTScreen.chatMessage(Text.literal("Error: No Torch in Hotbar! Disabled AutoTorch.")
+                        BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoTorch.noTorch")
                                 .formatted(Formatting.RED));
                         return new PathingCommand(null, PathingCommandType.DEFER);
                     }
-                    BTScreen.chatMessage(Text.literal("Started placing a Torch"));
+                    BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoTorch.started"));
                 }
                 case 1 -> Utils.MC.player.getInventory().setSelectedSlot(torchSlot);
                 case 2 -> Utils.MC.player.setPitch(90);
@@ -61,7 +62,7 @@ public class AutoTorch extends BTProcessHelper {
                 case 6 -> Utils.MC.player.setPitch(0);
                 default -> {
                     tick = -1;
-                    BTScreen.chatMessage(Text.literal("Finished placing a Torch"));
+                    BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoTorch.finished"));
                 }
             }
             tick++;

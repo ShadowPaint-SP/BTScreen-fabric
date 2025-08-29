@@ -21,7 +21,6 @@ import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.util.StringUtils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
@@ -504,7 +503,7 @@ public class GuiMainMenu extends GuiBase {
 
 		@Override
 		public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
-			PresetMode mode = DataManager.getPresetMode().cycle(MinecraftClient.getInstance().player, mouseButton == 0);
+			PresetMode mode = DataManager.getPresetMode().cycle(Utils.MC.player, mouseButton == 0);
 			DataManager.setPresetMode(mode);
 			mode.setSettings();
 			this.gui.initGui();

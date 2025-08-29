@@ -5,6 +5,7 @@ import static de.drvlabs.btscreen.config.Configs.Generic.AUTO_HASTE;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.config.LangKeys;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
@@ -23,7 +24,7 @@ public class AutoHaste extends BTProcessWithInitializer {
     @Override
     protected void onInitialize() {
         Teleport.requestTeleport(Teleport.Home.HASTE);
-        BTScreen.chatMessage(Text.literal("Waiting for Haste"));
+        BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoHaste.waiting"));
     }
 
     @Override
@@ -31,7 +32,7 @@ public class AutoHaste extends BTProcessWithInitializer {
         if (++timeoutTicks > 120) {
             AUTO_HASTE.setBooleanValue(false);
             BTScreen.chatMessage(
-                    Text.literal("Error: Waited too long for Haste! Disabled AutoHaste.").formatted(Formatting.RED));
+                    Text.translatable(LangKeys.INFO + ".autoHaste.timeout").formatted(Formatting.RED));
         }
         return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
     }

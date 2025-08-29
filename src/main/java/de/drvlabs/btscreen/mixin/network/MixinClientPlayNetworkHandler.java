@@ -26,7 +26,7 @@ public abstract class MixinClientPlayNetworkHandler {
 
     // Runs before the change is applied to the inventory
     @Inject(method = "onScreenHandlerSlotUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/PlayerScreenHandler;setStackInSlot(IILnet/minecraft/item/ItemStack;)V", shift = At.Shift.BEFORE, ordinal = 0))
-    public void onPlayerInventorySlotUpdatePre(ScreenHandlerSlotUpdateS2CPacket packet, CallbackInfo ci) {
+    private void onPlayerInventorySlotUpdatePre(ScreenHandlerSlotUpdateS2CPacket packet, CallbackInfo ci) {
         int slot = packet.getSlot();
         ItemStack newStack = packet.getStack();
         ItemStack oldStack = Utils.MC.player.getInventory().getStack(slot);
@@ -35,12 +35,12 @@ public abstract class MixinClientPlayNetworkHandler {
 
     // Runs after the change is applied to the inventory
     @Inject(method = "onScreenHandlerSlotUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/PlayerScreenHandler;setStackInSlot(IILnet/minecraft/item/ItemStack;)V", shift = At.Shift.AFTER, ordinal = 0))
-    public void onPlayerInventorySlotUpdatePost(ScreenHandlerSlotUpdateS2CPacket packet, CallbackInfo ci) {
+    private void onPlayerInventorySlotUpdatePost(ScreenHandlerSlotUpdateS2CPacket packet, CallbackInfo ci) {
         AutoDrop.checkInventory();
     }
 
     @Inject(method = "onEntityStatusEffect", at = @At("TAIL"))
-    public void onEntityStatusEffect(EntityStatusEffectS2CPacket packet, CallbackInfo ci) {
+    private void onEntityStatusEffect(EntityStatusEffectS2CPacket packet, CallbackInfo ci) {
         if (packet.getEntityId() != Utils.MC.player.getId()) {
             return;
         }
@@ -48,7 +48,7 @@ public abstract class MixinClientPlayNetworkHandler {
     }
 
     @Inject(method = "onRemoveEntityStatusEffect", at = @At("TAIL"))
-    public void onRemoveEntityStatusEffect(RemoveEntityStatusEffectS2CPacket packet, CallbackInfo ci) {
+    private void onRemoveEntityStatusEffect(RemoveEntityStatusEffectS2CPacket packet, CallbackInfo ci) {
         if (packet.getEntity(this.world) != Utils.MC.player) {
             return;
         }

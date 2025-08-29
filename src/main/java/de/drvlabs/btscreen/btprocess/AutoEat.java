@@ -6,6 +6,7 @@ import static de.drvlabs.btscreen.config.Configs.Generic.FOOD_LEVEL;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
@@ -29,7 +30,7 @@ public class AutoEat extends BTProcessWithInitializer {
 
     @Override
     protected void onInitialize() {
-        BTScreen.chatMessage(Text.literal("Started Eating"));
+        BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoEat.started"));
     }
 
     @Override
@@ -60,12 +61,12 @@ public class AutoEat extends BTProcessWithInitializer {
             if (food != null) {
                 shouldEat = (foodLevel + food.nutrition()) <= 20;
             } else if (isActive(AUTO_EAT)) {
-                BTScreen.chatMessage(Text.literal("Error: No food in offhand!").formatted(Formatting.RED));
+                BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoEat.noFood").formatted(Formatting.RED));
             }
         }
         if (isActive(AUTO_EAT) && !shouldEat && oldShouldEat) {
             Utils.MC.options.useKey.setPressed(false);
-            BTScreen.chatMessage(Text.literal("Finished Eating"));
+            BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoEat.finished"));
         }
     }
 

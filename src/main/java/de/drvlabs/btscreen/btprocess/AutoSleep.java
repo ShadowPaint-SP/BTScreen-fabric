@@ -8,6 +8,7 @@ import java.util.List;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.screen.Screen;
@@ -33,7 +34,7 @@ public class AutoSleep extends BTProcessWithInitializer {
     protected void onInitialize() {
         oldWorld = Utils.MC.world;
         Teleport.requestTeleport(Teleport.Home.SLEEP);
-        BTScreen.chatMessage(Text.literal("Started Sleeping"));
+        BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoSleep.started"));
     }
 
     @Override
@@ -43,7 +44,7 @@ public class AutoSleep extends BTProcessWithInitializer {
         }
         if (oldWorld != Utils.MC.world) {
             AUTO_SLEEP.setBooleanValue(false);
-            BTScreen.chatMessage(Text.literal("Error: Dimention not the same after teleport! Disabled AutoSleep.")
+            BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoSleep.wrongDimension")
                     .formatted(Formatting.RED));
         }
         if (!Utils.MC.player.isSleeping()) {
@@ -55,7 +56,8 @@ public class AutoSleep extends BTProcessWithInitializer {
                     hitBed(pos);
                 } else {
                     oldWorld = null;
-                    BTScreen.chatMessage(Text.literal("Error: No usable Bed found!").formatted(Formatting.RED));
+                    BTScreen.chatMessage(
+                            Text.translatable(LangKeys.INFO + ".autoSleep.noBed").formatted(Formatting.RED));
                 }
             }
         } else if (Utils.MC.player.canResetTimeBySleeping()) {
@@ -64,7 +66,7 @@ public class AutoSleep extends BTProcessWithInitializer {
             if (screen != null) {
                 screen.close();
             }
-            BTScreen.chatMessage(Text.literal("Finished Sleeping"));
+            BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoSleep.finished"));
         }
         return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
     }

@@ -13,6 +13,29 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.options.ConfigInteger;
 
 public class ConfigTicks extends ConfigInteger {
+    private enum TimeUnit {
+        TICKS('t', 1),
+        SECONDS('s', TICKS_PER_SECOND),
+        MINUTES('m', TICKS_PER_SECOND * 60),
+        HOURS('h', TICKS_PER_SECOND * 3600), // 60 * 60
+        DAYS('d', TICKS_PER_SECOND * 86400), // 3600 * 24
+        WEEKS('w', TICKS_PER_SECOND * 604800); // 86400 * 7
+
+        final char unit;
+        final int ticks;
+
+        TimeUnit(char unit, int ticks) {
+            this.unit = unit;
+            this.ticks = ticks;
+        }
+
+        static final List<TimeUnit> SORTED_BY_TICKS_DESC = Arrays.stream(values())
+                .sorted(Comparator.comparingInt(o -> -o.ticks))
+                .collect(Collectors.toList());
+    }
+
+    private static final Pattern TIME_STRING_PATTERN = Pattern.compile("(\\d+)([a-zA-Z])");
+
     public ConfigTicks(String name, int defaultValue) {
         super(name, defaultValue);
     }
@@ -108,8 +131,7 @@ public class ConfigTicks extends ConfigInteger {
 
         int totalTicks = 0;
         // Regex to find pairs of numbers and letters
-        Pattern pattern = Pattern.compile("(\\d+)([a-zA-Z])");
-        Matcher matcher = pattern.matcher(s);
+        Matcher matcher = TIME_STRING_PATTERN.matcher(s);
 
         int lastMatchEnd = 0;
         while (matcher.find()) {
@@ -143,26 +165,5 @@ public class ConfigTicks extends ConfigInteger {
         }
 
         return totalTicks;
-    }
-
-    private enum TimeUnit {
-        TICKS('t', 1),
-        SECONDS('s', TICKS_PER_SECOND),
-        MINUTES('m', SECONDS.ticks * 60),
-        HOURS('h', MINUTES.ticks * 60),
-        DAYS('d', HOURS.ticks * 24),
-        WEEKS('w', DAYS.ticks * 7);
-
-        final char unit;
-        final int ticks;
-
-        TimeUnit(char unit, int ticks) {
-            this.unit = unit;
-            this.ticks = ticks;
-        }
-
-        static final List<TimeUnit> SORTED_BY_TICKS_DESC = Arrays.stream(values())
-                .sorted(Comparator.comparingInt(o -> -o.ticks))
-                .collect(Collectors.toList());
     }
 }

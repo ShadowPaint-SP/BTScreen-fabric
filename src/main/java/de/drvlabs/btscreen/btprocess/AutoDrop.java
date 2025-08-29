@@ -9,6 +9,7 @@ import java.util.Set;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -32,7 +33,7 @@ public class AutoDrop extends BTProcessWithInitializer {
     protected void onInitialize() {
         active = true;
         Teleport.requestTeleport(Teleport.Home.DROP);
-        BTScreen.chatMessage(Text.literal("Started dropping Items"));
+        BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoDrop.started"));
     }
 
     @Override
