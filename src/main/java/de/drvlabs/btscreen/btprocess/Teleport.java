@@ -50,7 +50,9 @@ public class Teleport extends BTProcessHelper {
                     if (nextHome != Home.MINE) {
                         if (lastHome == null) {
                             Home.MINE.setHome();
-                            AutoDrop.teleportIntegration();
+                            if (nextHome.isSame(Home.DROP)) {
+                                AutoDrop.teleportIntegration();
+                            }
                         }
                         lastHome = nextHome;
                     }
@@ -74,7 +76,7 @@ public class Teleport extends BTProcessHelper {
             }
             timeoutTicks++;
         }
-        return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
+        return requestPause();
     }
 
     @Override

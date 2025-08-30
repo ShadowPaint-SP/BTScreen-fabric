@@ -40,7 +40,7 @@ public class AutoEat extends BTProcessWithInitializer {
             return new PathingCommand(null, PathingCommandType.DEFER);
         }
         doItemUse();
-        return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
+        return requestPause();
     }
 
     @Override

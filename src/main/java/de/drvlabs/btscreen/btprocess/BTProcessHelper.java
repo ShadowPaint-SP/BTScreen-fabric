@@ -1,6 +1,8 @@
 package de.drvlabs.btscreen.btprocess;
 
 import baritone.api.process.IBaritoneProcess;
+import baritone.api.process.PathingCommand;
+import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.utils.Utils;
 import fi.dy.masa.malilib.config.IConfigBoolean;
 
@@ -19,6 +21,11 @@ public abstract class BTProcessHelper implements IBaritoneProcess {
      */
     protected static boolean isActive(IConfigBoolean config) {
         return config.getBooleanValue() && Utils.isActive();
+    }
+
+    protected static PathingCommand requestPause() {
+        Utils.BT.getInputOverrideHandler().clearAllKeys();
+        return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
     }
 
     /**

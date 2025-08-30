@@ -3,7 +3,6 @@ package de.drvlabs.btscreen.btprocess;
 import static de.drvlabs.btscreen.config.Configs.Generic.AUTO_HASTE;
 
 import baritone.api.process.PathingCommand;
-import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.LangKeys;
 import net.minecraft.entity.effect.StatusEffects;
@@ -34,7 +33,7 @@ public class AutoHaste extends BTProcessWithInitializer {
             BTScreen.chatMessage(
                     Text.translatable(LangKeys.INFO + ".autoHaste.timeout").formatted(Formatting.RED));
         }
-        return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
+        return requestPause();
     }
 
     @Override

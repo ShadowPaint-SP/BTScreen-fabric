@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import baritone.api.process.PathingCommand;
-import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
@@ -50,7 +49,7 @@ public class AutoDrop extends BTProcessWithInitializer {
         if (!active) {
             checkInventory();
         }
-        return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
+        return requestPause();
     }
 
     @Override

@@ -68,7 +68,7 @@ public class AutoSleep extends BTProcessWithInitializer {
             }
             BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoSleep.finished"));
         }
-        return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
+        return requestPause();
     }
 
     @Override

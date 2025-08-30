@@ -67,7 +67,7 @@ public class AutoTorch extends BTProcessHelper {
             }
             tick++;
         }
-        return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
+        return requestPause();
     }
 
     @Override
