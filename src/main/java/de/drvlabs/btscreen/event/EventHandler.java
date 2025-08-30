@@ -61,8 +61,7 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
 
     @Override
     public void onEndTick(ClientWorld world) {
-        IBaritoneProcess currentProcess = Utils.BT.getPathingControlManager()
-                .mostRecentInControl().orElse(null);
+        IBaritoneProcess currentProcess = Utils.getActiveProcess();
         BTActiveListener.setPauseProcess(currentProcess);
         if (currentProcess != null && lastProcess != currentProcess) {
             BTScreen.debugLog(
