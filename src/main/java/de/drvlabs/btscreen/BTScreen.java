@@ -6,8 +6,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.event.EventHandler;
 import de.drvlabs.btscreen.utils.Utils;
+import fi.dy.masa.malilib.config.ConfigManager;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -34,6 +36,9 @@ public class BTScreen implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         LOGGER.info("Initializing " + MOD_NAME + " " + MOD_VERSION);
+        // Configs
+        ConfigManager.getInstance().registerConfigHandler(BTScreen.MOD_ID, new Configs());
+        // Events
         final EventHandler eventHandler = new EventHandler();
         ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register(eventHandler);
         ClientTickEvents.END_WORLD_TICK.register(eventHandler);

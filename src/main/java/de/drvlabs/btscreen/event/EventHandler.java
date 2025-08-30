@@ -10,18 +10,16 @@ import de.drvlabs.btscreen.btprocess.AutoRepair;
 import de.drvlabs.btscreen.btprocess.AutoSleep;
 import de.drvlabs.btscreen.btprocess.AutoTorch;
 import de.drvlabs.btscreen.btprocess.BTActiveListener;
-import de.drvlabs.btscreen.btprocess.LocationCheck;
 import de.drvlabs.btscreen.btprocess.BTActiveListener.BaritoneStarted;
 import de.drvlabs.btscreen.btprocess.BTActiveListener.BaritoneStopped;
+import de.drvlabs.btscreen.btprocess.LocationCheck;
 import de.drvlabs.btscreen.btprocess.Teleport;
-import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.gui.GuiConfigs;
 import de.drvlabs.btscreen.gui.GuiMainMenu;
 import de.drvlabs.btscreen.utils.RepeatAction;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
-import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.registry.Registry;
 import fi.dy.masa.malilib.util.data.ModInfo;
@@ -36,7 +34,6 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         BaritoneStarted, BaritoneStopped {
     @Override
     public void onClientStarted(MinecraftClient client) {
-        ConfigManager.getInstance().registerConfigHandler(BTScreen.MOD_ID, new Configs());
         Registry.CONFIG_SCREEN.registerConfigScreenFactory(
                 new ModInfo(BTScreen.MOD_ID, BTScreen.MOD_NAME, GuiConfigs::new));
 
