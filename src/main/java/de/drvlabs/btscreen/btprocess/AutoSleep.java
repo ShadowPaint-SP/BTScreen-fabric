@@ -20,6 +20,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.dimension.DimensionType;
 
 public class AutoSleep extends BTProcessWithInitializer {
     private ClientWorld oldWorld = null;
@@ -78,6 +79,10 @@ public class AutoSleep extends BTProcessWithInitializer {
     }
 
     private static boolean isNight() {
+        DimensionType dimension = Utils.MC.world.getDimension();
+        if (dimension.hasFixedTime() || !dimension.bedWorks() || !dimension.hasSkyLight()) {
+            return false;
+        }
         long curTime = Utils.MC.world.getTimeOfDay() % SharedConstants.TICKS_PER_IN_GAME_DAY;
         return (curTime >= 12700 && curTime <= 23000);
     }
