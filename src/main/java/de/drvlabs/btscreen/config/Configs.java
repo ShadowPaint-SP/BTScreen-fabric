@@ -39,6 +39,7 @@ public class Configs implements IConfigHandler {
         public static final ConfigString HASTE_HOME = new ConfigString("hasteHome", "haste");
         public static final ConfigString REPAIR_HOME = new ConfigString("repairHome", "repair");
         public static final ConfigString MINE_HOME = new ConfigString("mineHome", "mine");
+        public static final ConfigString FINISHED_HOME = new ConfigString("finishedHome", "finished");
         public static final ConfigTicks PERIODIC_ATTACK_INTERVAL = new ConfigTicks("periodicAttackInterval", 25, 1,
                 400);
         public static final ConfigInteger ITEM_DURABILITY_THRESHOLD = new ConfigInteger("itemDurabilityThreshold", 40,
@@ -68,6 +69,7 @@ public class Configs implements IConfigHandler {
                 DROP_HOME,
                 HASTE_HOME,
                 REPAIR_HOME,
+                FINISHED_HOME,
                 FOOD_LEVEL,
                 MIN_LIGHT_LEVEL,
                 NO_BREAK_COOLDOWN,
