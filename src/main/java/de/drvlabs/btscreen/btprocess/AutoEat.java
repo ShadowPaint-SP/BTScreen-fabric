@@ -50,7 +50,7 @@ public class AutoEat extends BTProcessWithInitializer {
 
     @Override
     public double priority() {
-        return super.priority() + 0.01;
+        return super.priority() + 0.02;
     }
 
     public static void onSetFoodLevel(int foodLevel) {
