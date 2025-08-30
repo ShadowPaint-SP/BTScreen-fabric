@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Codec;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
@@ -13,6 +12,7 @@ import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
@@ -23,8 +23,6 @@ public enum PresetMode implements StringIdentifiable {
 	FARM("farm", BTScreen.MOD_ID + ".preset_mode.name.farm"),
 	LIQUID("liquid", BTScreen.MOD_ID + ".preset_mode.name.liquid");
 
-	public static final StringIdentifiable.EnumCodec<PresetMode> CODEC = StringIdentifiable
-			.createCodec(PresetMode::values);
 	public static final ImmutableList<PresetMode> VALUES = ImmutableList.copyOf(values());
 	private static final Settings bt = BaritoneAPI.getSettings();
 
@@ -34,10 +32,6 @@ public enum PresetMode implements StringIdentifiable {
 	private PresetMode(String configString, String translationKey) {
 		this.configString = configString;
 		this.translationKey = translationKey;
-	}
-
-	public Codec<PresetMode> codec() {
-		return CODEC;
 	}
 
 	@Override
@@ -95,6 +89,10 @@ public enum PresetMode implements StringIdentifiable {
 					.toList();
 			bt.blocksToDisallowBreaking.value = blocksToDisallowBreaking; // Blocks that cant be mined
 			bt.buildIgnoreBlocks.value = blocksToIgnore; // Blocks that should be ignored in the selection
+			if (Configs.Generic.AUTO_TORCH.getBooleanValue()) {
+				bt.buildIgnoreBlocks.value.add(Blocks.TORCH);
+				bt.buildIgnoreBlocks.value.add(Blocks.WALL_TORCH);
+			}
 			setAcceptableThrowawayItems();
 			BTScreen.debugLog("Updated settings to default");
 		}

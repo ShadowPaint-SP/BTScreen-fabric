@@ -14,14 +14,13 @@ import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 
 public class AutoRepair extends BTProcessWithInitializer {
-    private static boolean active = false;
     private static int slot = -1;
     private int attackIntervalCounter = 0;
     private int swordSlot = -1;
 
     @Override
     public boolean isActive() {
-        return isActive(AUTO_REPAIR) && active;
+        return isActive(AUTO_REPAIR) && slot != -1;
     }
 
     @Override
@@ -62,15 +61,14 @@ public class AutoRepair extends BTProcessWithInitializer {
             return;
         }
         if (newStack.isDamageable() && areEqualIgnoreComponents(newStack, oldStack)) {
-            if (!newStack.isDamaged()) {
+            if (!newStack.isDamaged() && AutoRepair.slot == slot) {
                 // stop
-                active = false;
+                AutoRepair.slot = -1;
                 BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoRepair.finished"));
                 return;
             }
             if ((newStack.getMaxDamage() - newStack.getDamage()) <= ITEM_DURABILITY_THRESHOLD.getIntegerValue()) {
                 // start
-                active = true;
                 AutoRepair.slot = slot;
                 return;
             }
