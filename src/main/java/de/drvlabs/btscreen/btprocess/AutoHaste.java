@@ -33,7 +33,7 @@ public class AutoHaste extends BTProcessWithInitializer {
             BTScreen.chatMessage(
                     Text.translatable(LangKeys.INFO + ".autoHaste.timeout").formatted(Formatting.RED));
         }
-        return requestPause();
+        return REQUEST_PAUSE;
     }
 
     @Override

@@ -22,7 +22,7 @@ public abstract class BTProcessWithInitializer extends BTProcessHelper {
                 return onTick();
             }
         }
-        return requestPause();
+        return REQUEST_PAUSE;
     }
 
     /**

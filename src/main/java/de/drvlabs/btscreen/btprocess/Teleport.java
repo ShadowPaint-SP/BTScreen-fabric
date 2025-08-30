@@ -38,7 +38,7 @@ public class Teleport extends BTProcessHelper {
                 if (nextHome != null) {
                     if (nextHome.isSame(lastHome)) {
                         nextHome = null;
-                        return defer();
+                        return DEFER;
                     }
                     BTScreen.debugLog("Teleporting to " + nextHome + " Home");
                     // Teleport to Home prepare
@@ -75,7 +75,7 @@ public class Teleport extends BTProcessHelper {
             }
             timeoutTicks++;
         }
-        return requestPause();
+        return REQUEST_PAUSE;
     }
 
     @Override

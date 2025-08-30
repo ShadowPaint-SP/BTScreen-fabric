@@ -26,9 +26,9 @@ public class LocationCheck extends BTProcessHelper {
             BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".locationCheck.playerMovedTooFar")
                     .formatted(Formatting.RED));
             Utils.cancel();
-            return requestPause();
+            return REQUEST_PAUSE;
         }
-        return defer();
+        return DEFER;
     }
 
     @Override

@@ -40,7 +40,7 @@ public class AutoTorch extends BTProcessHelper {
                         AUTO_TORCH.setBooleanValue(false);
                         BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoTorch.noTorch")
                                 .formatted(Formatting.RED));
-                        return defer();
+                        return DEFER;
                     }
                     BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoTorch.started"));
                 }
@@ -66,7 +66,7 @@ public class AutoTorch extends BTProcessHelper {
             }
             tick++;
         }
-        return requestPause();
+        return REQUEST_PAUSE;
     }
 
     @Override

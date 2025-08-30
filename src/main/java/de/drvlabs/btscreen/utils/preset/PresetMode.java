@@ -88,10 +88,12 @@ public enum PresetMode implements StringIdentifiable {
 							.toList().stream())
 					.toList();
 			bt.blocksToDisallowBreaking.value = blocksToDisallowBreaking; // Blocks that cant be mined
-			bt.buildIgnoreBlocks.value = blocksToIgnore; // Blocks that should be ignored in the selection
+			// Blocks that should be ignored in the selection
 			if (Configs.Generic.AUTO_TORCH.getBooleanValue()) {
-				bt.buildIgnoreBlocks.value.add(Blocks.TORCH);
-				bt.buildIgnoreBlocks.value.add(Blocks.WALL_TORCH);
+				bt.buildIgnoreBlocks.value = Stream.concat(blocksToIgnore.stream(),
+						Stream.of(Blocks.TORCH, Blocks.WALL_TORCH)).toList();
+			} else {
+				bt.buildIgnoreBlocks.value = blocksToIgnore;
 			}
 			setAcceptableThrowawayItems();
 			BTScreen.debugLog("Updated settings to default");

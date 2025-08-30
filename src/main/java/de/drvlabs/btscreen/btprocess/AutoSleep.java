@@ -40,7 +40,7 @@ public class AutoSleep extends BTProcessWithInitializer {
     @Override
     protected PathingCommand onTick() {
         if (oldWorld == null) {
-            return defer();
+            return DEFER;
         }
         if (oldWorld != Utils.MC.world) {
             AUTO_SLEEP.setBooleanValue(false);
@@ -68,7 +68,7 @@ public class AutoSleep extends BTProcessWithInitializer {
             }
             BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoSleep.finished"));
         }
-        return requestPause();
+        return REQUEST_PAUSE;
     }
 
     @Override

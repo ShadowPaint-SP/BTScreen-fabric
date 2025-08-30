@@ -36,10 +36,10 @@ public class AutoEat extends BTProcessWithInitializer {
     protected PathingCommand onTick() {
         FoodComponent food = Utils.MC.player.getOffHandStack().get(DataComponentTypes.FOOD);
         if (food == null) {
-            return defer();
+            return DEFER;
         }
         doItemUse();
-        return requestPause();
+        return REQUEST_PAUSE;
     }
 
     @Override

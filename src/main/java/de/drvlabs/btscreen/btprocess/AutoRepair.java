@@ -46,7 +46,7 @@ public class AutoRepair extends BTProcessWithInitializer {
             }
             attackIntervalCounter = 0;
         }
-        return requestPause();
+        return REQUEST_PAUSE;
     }
 
     @Override

@@ -49,7 +49,7 @@ public class AutoDrop extends BTProcessWithInitializer {
         if (!active) {
             checkInventory();
         }
-        return requestPause();
+        return REQUEST_PAUSE;
     }
 
     @Override

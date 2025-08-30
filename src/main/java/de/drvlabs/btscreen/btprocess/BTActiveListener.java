@@ -55,7 +55,7 @@ public class BTActiveListener extends BTProcessHelper {
 
     @Override
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
-        return defer();
+        return DEFER;
     }
 
     @Override
