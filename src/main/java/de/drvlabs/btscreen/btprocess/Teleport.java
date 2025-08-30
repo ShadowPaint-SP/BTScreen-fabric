@@ -1,7 +1,6 @@
 package de.drvlabs.btscreen.btprocess;
 
 import baritone.api.process.PathingCommand;
-import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.config.LangKeys;
@@ -39,7 +38,7 @@ public class Teleport extends BTProcessHelper {
                 if (nextHome != null) {
                     if (nextHome.isSame(lastHome)) {
                         nextHome = null;
-                        return new PathingCommand(null, PathingCommandType.DEFER);
+                        return defer();
                     }
                     BTScreen.debugLog("Teleporting to " + nextHome + " Home");
                     // Teleport to Home prepare

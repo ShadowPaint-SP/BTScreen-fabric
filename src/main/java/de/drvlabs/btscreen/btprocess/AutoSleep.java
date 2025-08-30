@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import baritone.api.process.PathingCommand;
-import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
@@ -41,7 +40,7 @@ public class AutoSleep extends BTProcessWithInitializer {
     @Override
     protected PathingCommand onTick() {
         if (oldWorld == null) {
-            return new PathingCommand(null, PathingCommandType.DEFER);
+            return defer();
         }
         if (oldWorld != Utils.MC.world) {
             AUTO_SLEEP.setBooleanValue(false);

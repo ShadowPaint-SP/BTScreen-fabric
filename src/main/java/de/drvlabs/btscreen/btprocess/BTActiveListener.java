@@ -4,7 +4,6 @@ import java.util.List;
 
 import baritone.api.process.IBaritoneProcess;
 import baritone.api.process.PathingCommand;
-import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.gui.GuiMainMenu;
 import de.drvlabs.btscreen.utils.Utils;
 import net.fabricmc.fabric.api.event.Event;
@@ -56,7 +55,7 @@ public class BTActiveListener extends BTProcessHelper {
 
     @Override
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
-        return new PathingCommand(null, PathingCommandType.DEFER);
+        return defer();
     }
 
     @Override

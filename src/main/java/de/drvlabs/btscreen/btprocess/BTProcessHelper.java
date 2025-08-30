@@ -23,9 +23,23 @@ public abstract class BTProcessHelper implements IBaritoneProcess {
         return config.getBooleanValue() && Utils.isActive();
     }
 
+    /**
+     * Has no effect on the current goal or path, just requests a pause
+     * 
+     * @return {@link PathingCommand} with {@link PathingCommandType#REQUEST_PAUSE}
+     */
     protected static PathingCommand requestPause() {
         Utils.BT.getInputOverrideHandler().clearAllKeys();
         return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
+    }
+
+    /**
+     * Go and ask the next process what to do
+     * 
+     * @return {@link PathingCommand} with {@link PathingCommandType#DEFER}
+     */
+    protected static PathingCommand defer() {
+        return new PathingCommand(null, PathingCommandType.DEFER);
     }
 
     /**

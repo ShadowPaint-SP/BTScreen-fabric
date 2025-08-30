@@ -4,7 +4,6 @@ import static de.drvlabs.btscreen.config.Configs.Generic.AUTO_TORCH;
 import static de.drvlabs.btscreen.config.Configs.Generic.MIN_LIGHT_LEVEL;
 
 import baritone.api.process.PathingCommand;
-import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
@@ -41,7 +40,7 @@ public class AutoTorch extends BTProcessHelper {
                         AUTO_TORCH.setBooleanValue(false);
                         BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoTorch.noTorch")
                                 .formatted(Formatting.RED));
-                        return new PathingCommand(null, PathingCommandType.DEFER);
+                        return defer();
                     }
                     BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoTorch.started"));
                 }
