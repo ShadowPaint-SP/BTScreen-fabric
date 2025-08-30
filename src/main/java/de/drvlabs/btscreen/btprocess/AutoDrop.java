@@ -8,6 +8,7 @@ import java.util.Set;
 
 import baritone.api.process.PathingCommand;
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.btprocess.BTActiveListener.BaritoneStarted;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.entity.player.PlayerInventory;
@@ -17,7 +18,7 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-public class AutoDrop extends BTProcessWithInitializer {
+public class AutoDrop extends BTProcessWithInitializer implements BaritoneStarted {
     private static final Set<Identifier> blacklist = new HashSet<>();
     private static final Set<Integer> workingSlots = new HashSet<>();
     private static boolean hasFreeSlot = false;
@@ -62,6 +63,15 @@ public class AutoDrop extends BTProcessWithInitializer {
         return super.priority() + 0.01;
     }
 
+    {
+        BaritoneStarted.EVENT.register(this);
+    }
+
+    @Override
+    public void baritoneStarted() {
+        updateMaxSlots();
+    }
+
     static void teleportIntegration() {
         if (isActive(AUTO_DROP) && !workingSlots.isEmpty()) {
             active = true;
@@ -72,7 +82,7 @@ public class AutoDrop extends BTProcessWithInitializer {
         hasFreeSlot = Utils.MC.player.getInventory().getEmptySlot() != PlayerInventory.NOT_FOUND;
     }
 
-    public static void updateMaxSlots() {
+    private static void updateMaxSlots() {
         PlayerInventory inventory = Utils.MC.player.getInventory();
         workingSlots.clear();
         for (int i = PlayerInventory.HOTBAR_SIZE; i < PlayerInventory.MAIN_SIZE; i++) {
