@@ -42,7 +42,7 @@ public class AutoSleep extends BTProcessWithInitializer {
         if (oldWorld == null) {
             return DEFER;
         }
-        if (oldWorld.equals(Utils.getWorldId())) {
+        if (!oldWorld.equals(Utils.getWorldId())) {
             AUTO_SLEEP.setBooleanValue(false);
             BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoSleep.wrongDimension")
                     .formatted(Formatting.RED));
