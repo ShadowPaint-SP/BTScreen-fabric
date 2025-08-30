@@ -6,9 +6,9 @@ import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
 import fi.dy.masa.malilib.config.options.ConfigString;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 public class Teleport extends BTProcessHelper {
@@ -17,7 +17,7 @@ public class Teleport extends BTProcessHelper {
     private boolean teleporting = false;
     private int timeoutTicks = 0;
     private Vec3d oldPos = null;
-    private ClientWorld oldWorld = null;
+    private Identifier oldWorld = null;
 
     @Override
     public boolean isActive() {
@@ -44,7 +44,7 @@ public class Teleport extends BTProcessHelper {
                     // Teleport to Home prepare
                     teleporting = true;
                     oldPos = Utils.MC.player.getPos();
-                    oldWorld = Utils.MC.world;
+                    oldWorld = Utils.getWorldId();
                     // Set Mine home before teleporting
                     if (nextHome != Home.MINE) {
                         if (lastHome == null) {
@@ -65,7 +65,7 @@ public class Teleport extends BTProcessHelper {
                 nextHome.tpToHome();
                 nextHome = null;
             } else if (oldPos != null
-                    && (!oldPos.isInRange(Utils.MC.player.getPos(), 1) || oldWorld != Utils.MC.world)) {
+                    && (!oldPos.isInRange(Utils.MC.player.getPos(), 1) || !oldWorld.equals(Utils.getWorldId()))) {
                 BTScreen.debugLog("Teleport Finished");
                 // Teleport Finished
                 teleporting = false;

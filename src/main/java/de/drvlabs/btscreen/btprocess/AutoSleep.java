@@ -11,10 +11,10 @@ import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -22,7 +22,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
 
 public class AutoSleep extends BTProcessWithInitializer {
-    private ClientWorld oldWorld = null;
+    private Identifier oldWorld = null;
     private Iterator<BlockPos> bedPositions = null;
 
     @Override
@@ -32,7 +32,7 @@ public class AutoSleep extends BTProcessWithInitializer {
 
     @Override
     protected void onInitialize() {
-        oldWorld = Utils.MC.world;
+        oldWorld = Utils.getWorldId();
         Teleport.requestTeleport(Teleport.Home.SLEEP);
         BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoSleep.started"));
     }
@@ -42,7 +42,7 @@ public class AutoSleep extends BTProcessWithInitializer {
         if (oldWorld == null) {
             return DEFER;
         }
-        if (oldWorld != Utils.MC.world) {
+        if (oldWorld.equals(Utils.getWorldId())) {
             AUTO_SLEEP.setBooleanValue(false);
             BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoSleep.wrongDimension")
                     .formatted(Formatting.RED));

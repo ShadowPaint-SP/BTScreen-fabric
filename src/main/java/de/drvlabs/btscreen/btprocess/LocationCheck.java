@@ -8,12 +8,12 @@ import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 public class LocationCheck extends BTProcessHelper {
     private Vec3d lastLocation = null;
-    private World lastWorld = null;
+    private Identifier lastWorld = null;
 
     @Override
     public boolean isActive() {
@@ -48,10 +48,10 @@ public class LocationCheck extends BTProcessHelper {
 
     private boolean inRange() {
         Vec3d currentLocation = Utils.MC.player.getPos();
-        World currentWorld = Utils.MC.world;
+        Identifier currentWorld = Utils.getWorldId();
         boolean result = true;
         if (lastWorld != null && lastLocation != null) {
-            result = currentWorld == lastWorld && currentLocation.isInRange(lastLocation, 5);
+            result = currentWorld.equals(lastWorld) && currentLocation.isInRange(lastLocation, 5);
         }
         lastLocation = currentLocation;
         lastWorld = currentWorld;
