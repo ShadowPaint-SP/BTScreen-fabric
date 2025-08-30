@@ -4,7 +4,6 @@ import static de.drvlabs.btscreen.config.Configs.Generic.AUTO_EAT;
 import static de.drvlabs.btscreen.config.Configs.Generic.FOOD_LEVEL;
 
 import baritone.api.process.PathingCommand;
-import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
@@ -37,10 +36,10 @@ public class AutoEat extends BTProcessWithInitializer {
     protected PathingCommand onTick() {
         FoodComponent food = Utils.MC.player.getOffHandStack().get(DataComponentTypes.FOOD);
         if (food == null) {
-            return new PathingCommand(null, PathingCommandType.DEFER);
+            return DEFER;
         }
         doItemUse();
-        return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
+        return REQUEST_PAUSE;
     }
 
     @Override

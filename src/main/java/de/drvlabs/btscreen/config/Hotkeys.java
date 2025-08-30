@@ -31,9 +31,8 @@ public enum Hotkeys implements IHotkeyCallback {
 
     @Override
     public boolean onKeyAction(KeyAction action, IKeybind key) {
-        if (Utils.MC.player == null || Utils.MC.world == null) {
+        if (!Utils.isInGame())
             return false;
-        }
         return callback.apply(action, key);
     }
 }

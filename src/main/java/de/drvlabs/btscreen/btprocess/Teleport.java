@@ -1,24 +1,24 @@
 package de.drvlabs.btscreen.btprocess;
 
 import baritone.api.process.PathingCommand;
-import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.btprocess.BTActiveListener.BaritoneStopped;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
 import fi.dy.masa.malilib.config.options.ConfigString;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
-public class Teleport extends BTProcessHelper {
+public class Teleport extends BTProcessHelper implements BaritoneStopped {
     private static Home nextHome = null;
     private Home lastHome = null;
     private boolean teleporting = false;
     private int timeoutTicks = 0;
     private Vec3d oldPos = null;
-    private ClientWorld oldWorld = null;
+    private Identifier oldWorld = null;
 
     @Override
     public boolean isActive() {
@@ -39,20 +39,24 @@ public class Teleport extends BTProcessHelper {
                 if (nextHome != null) {
                     if (nextHome.isSame(lastHome)) {
                         nextHome = null;
-                        return new PathingCommand(null, PathingCommandType.DEFER);
+                        return DEFER;
                     }
                     BTScreen.debugLog("Teleporting to " + nextHome + " Home");
                     // Teleport to Home prepare
                     teleporting = true;
                     oldPos = Utils.MC.player.getPos();
-                    oldWorld = Utils.MC.world;
+                    oldWorld = Utils.getWorldId();
                     // Set Mine home before teleporting
                     if (nextHome != Home.MINE) {
                         if (lastHome == null) {
                             Home.MINE.setHome();
-                            AutoDrop.teleportIntegration();
+                            if (nextHome.isSame(Home.DROP)) {
+                                AutoDrop.teleportIntegration();
+                            }
                         }
-                        lastHome = nextHome;
+                        if (nextHome != Home.FINISHED) {
+                            lastHome = nextHome;
+                        }
                     }
                 } else if (lastHome != null) {
                     // Teleport Back
@@ -64,7 +68,7 @@ public class Teleport extends BTProcessHelper {
                 nextHome.tpToHome();
                 nextHome = null;
             } else if (oldPos != null
-                    && (!oldPos.isInRange(Utils.MC.player.getPos(), 1) || oldWorld != Utils.MC.world)) {
+                    && (!oldPos.isInRange(Utils.MC.player.getPos(), 1) || !oldWorld.equals(Utils.getWorldId()))) {
                 BTScreen.debugLog("Teleport Finished");
                 // Teleport Finished
                 teleporting = false;
@@ -74,7 +78,7 @@ public class Teleport extends BTProcessHelper {
             }
             timeoutTicks++;
         }
-        return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
+        return REQUEST_PAUSE;
     }
 
     @Override
@@ -93,6 +97,17 @@ public class Teleport extends BTProcessHelper {
             return super.priority() + 0.05;
         }
         return super.priority() - 0.01;
+    }
+
+    {
+        BaritoneStopped.EVENT.register(this);
+    }
+
+    @Override
+    public void baritoneStopped(boolean canceled) {
+        if (canceled)
+            return;
+        nextHome = Home.FINISHED;
     }
 
     /**
@@ -116,6 +131,7 @@ public class Teleport extends BTProcessHelper {
         HASTE(Configs.Generic.HASTE_HOME),
         REPAIR(Configs.Generic.REPAIR_HOME),
         MINE(Configs.Generic.MINE_HOME),
+        FINISHED(Configs.Generic.FINISHED_HOME),
         ;
 
         Home(ConfigString config) {
@@ -125,11 +141,21 @@ public class Teleport extends BTProcessHelper {
         private final ConfigString config;
 
         private void tpToHome() {
-            Utils.sendCommand(Configs.Generic.HOME_COMMAND.getStringValue() + " " + config.getStringValue());
+            String home = config.getStringValue();
+            if (home.isEmpty())
+                return;
+            if (home.startsWith("/")) {
+                Utils.sendCommand(home.substring(1));
+            } else {
+                Utils.sendCommand(Configs.Generic.HOME_COMMAND.getStringValue() + " " + home);
+            }
         }
 
         private void setHome() {
-            Utils.sendCommand(Configs.Generic.SETHOME_COMMAND.getStringValue() + " " + config.getStringValue());
+            String home = config.getStringValue();
+            if (home.isEmpty() || home.startsWith("/"))
+                return;
+            Utils.sendCommand(Configs.Generic.SETHOME_COMMAND.getStringValue() + " " + home);
         }
 
         private boolean isSame(Home home) {

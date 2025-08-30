@@ -1,7 +1,6 @@
 package de.drvlabs.btscreen.btprocess;
 
 import baritone.api.process.PathingCommand;
-import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.utils.Waiter;
 
 public abstract class BTProcessWithInitializer extends BTProcessHelper {
@@ -23,7 +22,7 @@ public abstract class BTProcessWithInitializer extends BTProcessHelper {
                 return onTick();
             }
         }
-        return new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
+        return REQUEST_PAUSE;
     }
 
     /**

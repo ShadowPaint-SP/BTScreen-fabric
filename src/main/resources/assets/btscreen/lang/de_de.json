@@ -99,6 +99,8 @@
   "btscreen.config.generic.comment.hasteHome": "Sollte ein Ort in Reichweite eines Leuchtfeuers sein, das dir Eile gibt",
   "btscreen.config.generic.name.repairHome": "Reparatur-Home",
   "btscreen.config.generic.comment.repairHome": "Platziere an einer XP-Farm und schaue in die richtige Richtung, um die Mobs zu treffen",
+  "btscreen.config.generic.name.finishedHome": "Fertig-Home",
+  "btscreen.config.generic.comment.finishedHome": "Nachdem der Bot fertig ist, teleportiert er sich zu diesem Home. Leer lassen, um es zu deaktivieren.",
   "btscreen.config.generic.name.minLightLevel": "Mindest-Lichtlevel",
   "btscreen.config.generic.comment.minLightLevel": "Wenn der Block, auf dem du stehst, dieses Lichtlevel hat, wird eine Fackel platziert",
   "btscreen.config.generic.name.noBreakCooldown": "Keine Abbau-Abklingzeit",

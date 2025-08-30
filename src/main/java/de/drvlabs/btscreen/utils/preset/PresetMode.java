@@ -12,6 +12,7 @@ import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
@@ -87,7 +88,13 @@ public enum PresetMode implements StringIdentifiable {
 							.toList().stream())
 					.toList();
 			bt.blocksToDisallowBreaking.value = blocksToDisallowBreaking; // Blocks that cant be mined
-			bt.buildIgnoreBlocks.value = blocksToIgnore; // Blocks that should be ignored in the selection
+			// Blocks that should be ignored in the selection
+			if (Configs.Generic.AUTO_TORCH.getBooleanValue()) {
+				bt.buildIgnoreBlocks.value = Stream.concat(blocksToIgnore.stream(),
+						Stream.of(Blocks.TORCH, Blocks.WALL_TORCH)).toList();
+			} else {
+				bt.buildIgnoreBlocks.value = blocksToIgnore;
+			}
 			setAcceptableThrowawayItems();
 			BTScreen.debugLog("Updated settings to default");
 		}

@@ -1,14 +1,24 @@
 package de.drvlabs.btscreen.btprocess;
 
 import baritone.api.process.IBaritoneProcess;
+import baritone.api.process.PathingCommand;
+import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.utils.Utils;
 import fi.dy.masa.malilib.config.IConfigBoolean;
 
 public abstract class BTProcessHelper implements IBaritoneProcess {
-    @Override
-    public String displayName0() {
-        return this.getClass().getSimpleName();
-    }
+    /**
+     * Has no effect on the current goal or path, just requests a pause
+     * 
+     * @see {@link PathingCommand} with {@link PathingCommandType#REQUEST_PAUSE}
+     */
+    protected static final PathingCommand REQUEST_PAUSE = new PathingCommand(null, PathingCommandType.REQUEST_PAUSE);
+    /**
+     * Go and ask the next process what to do
+     * 
+     * @see {@link PathingCommand} with {@link PathingCommandType#DEFER}
+     */
+    protected static final PathingCommand DEFER = new PathingCommand(null, PathingCommandType.DEFER);
 
     /**
      * Helper function for configuration options.
@@ -19,6 +29,11 @@ public abstract class BTProcessHelper implements IBaritoneProcess {
      */
     protected static boolean isActive(IConfigBoolean config) {
         return config.getBooleanValue() && Utils.isActive();
+    }
+
+    @Override
+    public String displayName0() {
+        return this.getClass().getSimpleName();
     }
 
     /**

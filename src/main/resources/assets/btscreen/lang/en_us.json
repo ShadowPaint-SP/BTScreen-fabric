@@ -99,6 +99,8 @@
   "btscreen.config.generic.comment.hasteHome": "Should be a place in range of a beacon that gives u haste",
   "btscreen.config.generic.name.repairHome": "Repair Home",
   "btscreen.config.generic.comment.repairHome": "Place at a XP farm and look in the right direction to hit the mobs",
+  "btscreen.config.generic.name.finishedHome": "Finished Home",
+  "btscreen.config.generic.comment.finishedHome": "After the bot has finished, it will teleport to this home. Leave empty to disable.",
   "btscreen.config.generic.name.minLightLevel": "Minimum Light Level",
   "btscreen.config.generic.comment.minLightLevel": "When the block you are standing on has this light level then places a torch",
   "btscreen.config.generic.name.noBreakCooldown": "No Block Break Cooldown",

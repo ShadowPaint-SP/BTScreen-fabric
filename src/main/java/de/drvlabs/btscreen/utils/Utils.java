@@ -7,6 +7,7 @@ import de.drvlabs.btscreen.btprocess.BTActiveListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 public class Utils {
     public static final MinecraftClient MC = MinecraftClient.getInstance();
@@ -18,6 +19,12 @@ public class Utils {
 
     public static IBaritoneProcess getActiveProcess() {
         return BT.getPathingControlManager().mostRecentInControl().orElse(null);
+    }
+
+    public static Identifier getWorldId() {
+        if (!isInGame())
+            return null;
+        return MC.world.getRegistryKey().getValue();
     }
 
     public static void execute(String command) {

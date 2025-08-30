@@ -3,18 +3,19 @@ package de.drvlabs.btscreen.btprocess;
 import static de.drvlabs.btscreen.config.Configs.Generic.SAFETY;
 
 import baritone.api.process.PathingCommand;
-import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.btprocess.BTActiveListener.BaritonePaused;
+import de.drvlabs.btscreen.btprocess.BTActiveListener.BaritoneStopped;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
-public class LocationCheck extends BTProcessHelper {
+public class LocationCheck extends BTProcessHelper implements BaritoneStopped, BaritonePaused {
     private Vec3d lastLocation = null;
-    private World lastWorld = null;
+    private Identifier lastWorld = null;
 
     @Override
     public boolean isActive() {
@@ -27,8 +28,9 @@ public class LocationCheck extends BTProcessHelper {
             BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".locationCheck.playerMovedTooFar")
                     .formatted(Formatting.RED));
             Utils.cancel();
+            return REQUEST_PAUSE;
         }
-        return new PathingCommand(null, PathingCommandType.DEFER);
+        return DEFER;
     }
 
     @Override
@@ -37,8 +39,20 @@ public class LocationCheck extends BTProcessHelper {
         lastWorld = null;
     }
 
+    @Override
+    public void baritonePaused() {
+        onLostControl();
+    }
+
+    @Override
+    public void baritoneStopped(boolean canceled) {
+        onLostControl();
+    }
+
     {
         SAFETY.setValueChangeCallback(c -> onLostControl());
+        BaritoneStopped.EVENT.register(this);
+        BaritonePaused.EVENT.register(this);
     }
 
     @Override
@@ -48,10 +62,10 @@ public class LocationCheck extends BTProcessHelper {
 
     private boolean inRange() {
         Vec3d currentLocation = Utils.MC.player.getPos();
-        World currentWorld = Utils.MC.world;
+        Identifier currentWorld = Utils.getWorldId();
         boolean result = true;
         if (lastWorld != null && lastLocation != null) {
-            result = currentWorld == lastWorld && currentLocation.isInRange(lastLocation, 5);
+            result = currentWorld.equals(lastWorld) && currentLocation.isInRange(lastLocation, 5);
         }
         lastLocation = currentLocation;
         lastWorld = currentWorld;

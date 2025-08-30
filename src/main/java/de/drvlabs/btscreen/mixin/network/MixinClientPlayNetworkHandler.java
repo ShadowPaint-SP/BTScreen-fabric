@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
+import net.minecraft.screen.slot.Slot;
 
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class MixinClientPlayNetworkHandler {
@@ -27,10 +28,9 @@ public abstract class MixinClientPlayNetworkHandler {
     // Runs before the change is applied to the inventory
     @Inject(method = "onScreenHandlerSlotUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/PlayerScreenHandler;setStackInSlot(IILnet/minecraft/item/ItemStack;)V", shift = At.Shift.BEFORE, ordinal = 0))
     private void onPlayerInventorySlotUpdatePre(ScreenHandlerSlotUpdateS2CPacket packet, CallbackInfo ci) {
-        int slot = packet.getSlot();
+        Slot slot = Utils.MC.player.playerScreenHandler.getSlot(packet.getSlot());
         ItemStack newStack = packet.getStack();
-        ItemStack oldStack = Utils.MC.player.getInventory().getStack(slot);
-        AutoRepair.onPlayerInventorySlotUpdatePre(slot, newStack, oldStack);
+        AutoRepair.onPlayerInventorySlotUpdatePre(slot.getIndex(), newStack, slot.getStack());
     }
 
     // Runs after the change is applied to the inventory

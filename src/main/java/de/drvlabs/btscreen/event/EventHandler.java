@@ -17,6 +17,7 @@ import de.drvlabs.btscreen.btprocess.Teleport;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.gui.GuiConfigs;
+import de.drvlabs.btscreen.gui.GuiMainMenu;
 import de.drvlabs.btscreen.utils.RepeatAction;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
@@ -28,6 +29,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents.C
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.EndWorldTick;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents.AfterClientWorldChange;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.world.ClientWorld;
 
 public final class EventHandler implements EndWorldTick, AfterClientWorldChange, ClientStarted,
@@ -40,8 +42,8 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
 
         InputEventHandler.getKeybindManager().registerKeybindProvider(InputHandler.INSTANCE);
 
-        BTActiveListener.STARTED.register(this);
-        BTActiveListener.STOPPED.register(this);
+        BaritoneStarted.EVENT.register(this);
+        BaritoneStopped.EVENT.register(this);
 
         final IPathingControlManager controlManager = Utils.BT.getPathingControlManager();
         controlManager.registerProcess(new BTActiveListener());
@@ -64,14 +66,13 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         BTActiveListener.setPauseProcess(currentProcess);
         if (currentProcess != null && lastProcess != currentProcess) {
             BTScreen.debugLog(
-                    "Current Process: displayName: {}, displayName0: {}, isActive: {}, isTemporary: {}, priority: {}, toString: {}, className: {}",
-                    currentProcess.displayName(), currentProcess.displayName0(), currentProcess.isActive(),
-                    currentProcess.isTemporary(), currentProcess.priority(), currentProcess.toString(),
-                    currentProcess.getClass().getName());
+                    "Current Process: displayName0: {}, isTemporary: {}, priority: {}, toString: {}, className: {}",
+                    currentProcess.displayName0(), currentProcess.isTemporary(), currentProcess.priority(),
+                    currentProcess.toString(), currentProcess.getClass().getName());
         }
         lastProcess = currentProcess;
         Waiter.tickAll();
-        BTActiveListener.updateBaritoneIsActive();
+        BTActiveListener.updateBaritoneStatus();
     }
 
     @Override
@@ -88,7 +89,11 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
     @Override
     public void baritoneStarted() {
         BTScreen.debugLog("Baritone is active");
-        AutoDrop.updateMaxSlots();
+        // reinit screen if set
+        Screen screen = Utils.MC.currentScreen;
+        if (screen instanceof GuiMainMenu) {
+            screen.init(Utils.MC, screen.width, screen.height);
+        }
     }
 
     @Override

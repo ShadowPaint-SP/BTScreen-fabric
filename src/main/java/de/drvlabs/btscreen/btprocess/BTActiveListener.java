@@ -4,7 +4,6 @@ import java.util.List;
 
 import baritone.api.process.IBaritoneProcess;
 import baritone.api.process.PathingCommand;
-import baritone.api.process.PathingCommandType;
 import de.drvlabs.btscreen.gui.GuiMainMenu;
 import de.drvlabs.btscreen.utils.Utils;
 import net.fabricmc.fabric.api.event.Event;
@@ -12,27 +11,52 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.gui.screen.Screen;
 
 public class BTActiveListener extends BTProcessHelper {
-    public static final Event<BaritoneStarted> STARTED = EventFactory
-            .createArrayBacked(BaritoneStarted.class, callbacks -> () -> {
-                for (BaritoneStarted callback : callbacks) {
-                    callback.baritoneStarted();
-                }
-            });
-    public static final Event<BaritoneStopped> STOPPED = EventFactory
-            .createArrayBacked(BaritoneStopped.class, callbacks -> canceled -> {
-                for (BaritoneStopped callback : callbacks) {
-                    callback.baritoneStopped(canceled);
-                }
-            });
-
     @FunctionalInterface
     public interface BaritoneStarted {
+        public static final Event<BaritoneStarted> EVENT = EventFactory
+                .createArrayBacked(BaritoneStarted.class, callbacks -> () -> {
+                    for (BaritoneStarted callback : callbacks) {
+                        callback.baritoneStarted();
+                    }
+                });
+
         void baritoneStarted();
     }
 
     @FunctionalInterface
     public interface BaritoneStopped {
+        public static final Event<BaritoneStopped> EVENT = EventFactory
+                .createArrayBacked(BaritoneStopped.class, callbacks -> canceled -> {
+                    for (BaritoneStopped callback : callbacks) {
+                        callback.baritoneStopped(canceled);
+                    }
+                });
+
         void baritoneStopped(boolean canceled);
+    }
+
+    @FunctionalInterface
+    public interface BaritonePaused {
+        public static final Event<BaritonePaused> EVENT = EventFactory
+                .createArrayBacked(BaritonePaused.class, callbacks -> () -> {
+                    for (BaritonePaused callback : callbacks) {
+                        callback.baritonePaused();
+                    }
+                });
+
+        void baritonePaused();
+    }
+
+    @FunctionalInterface
+    public interface BaritoneResumed {
+        public static final Event<BaritoneResumed> EVENT = EventFactory
+                .createArrayBacked(BaritoneResumed.class, callbacks -> () -> {
+                    for (BaritoneResumed callback : callbacks) {
+                        callback.baritoneResumed();
+                    }
+                });
+
+        void baritoneResumed();
     }
 
     private static final List<IBaritoneProcess> IS_ACTIVE_LIST = List.of(
@@ -44,37 +68,14 @@ public class BTActiveListener extends BTProcessHelper {
             Utils.BT.getGetToBlockProcess());
 
     private static boolean baritoneIsActive = false;
-
-    public static void updateBaritoneIsActive() {
-        setBaritoneActive(IS_ACTIVE_LIST.stream().anyMatch(IBaritoneProcess::isActive), false);
-    }
-
-    @Override
-    public boolean isActive() {
-        return false;
-    }
-
-    @Override
-    public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
-        return new PathingCommand(null, PathingCommandType.DEFER);
-    }
-
-    @Override
-    public void onLostControl() {
-        setBaritoneActive(false, true);
-    }
-
-    private static void setBaritoneActive(boolean newBaritoneIsActive, boolean canceled) {
-        if (newBaritoneIsActive && !baritoneIsActive) {
-            STARTED.invoker().baritoneStarted();
-        }
-        if (!newBaritoneIsActive && baritoneIsActive) {
-            STOPPED.invoker().baritoneStopped(canceled);
-        }
-        baritoneIsActive = newBaritoneIsActive;
-    }
+    private static boolean baritoneIsPaused = false;
 
     private static IBaritoneProcess pauseProcess;
+
+    public static void updateBaritoneStatus() {
+        setBaritoneActive(IS_ACTIVE_LIST.stream().anyMatch(IBaritoneProcess::isActive), false);
+        setBaritonePaused(isBaritonePaused());
+    }
 
     public static void setPauseProcess(IBaritoneProcess process) {
         if (pauseProcess != null || process == null
@@ -89,11 +90,48 @@ public class BTActiveListener extends BTProcessHelper {
         }
     }
 
+    public static boolean isBaritoneActive() {
+        return baritoneIsActive;
+    }
+
     public static boolean isBaritonePaused() {
         return pauseProcess != null && pauseProcess.isActive();
     }
 
-    public static boolean isBaritoneActive() {
-        return baritoneIsActive;
+    private static void setBaritoneActive(boolean newBaritoneIsActive, boolean canceled) {
+        boolean oldBaritoneIsActive = baritoneIsActive;
+        baritoneIsActive = newBaritoneIsActive;
+        if (newBaritoneIsActive && !oldBaritoneIsActive) {
+            BaritoneStarted.EVENT.invoker().baritoneStarted();
+        }
+        if (!newBaritoneIsActive && oldBaritoneIsActive) {
+            BaritoneStopped.EVENT.invoker().baritoneStopped(canceled);
+        }
+    }
+
+    private static void setBaritonePaused(boolean newBaritoneIsPaused) {
+        boolean oldBaritoneIsPaused = baritoneIsPaused;
+        baritoneIsPaused = newBaritoneIsPaused;
+        if (baritoneIsActive && newBaritoneIsPaused && !oldBaritoneIsPaused) {
+            BaritonePaused.EVENT.invoker().baritonePaused();
+        }
+        if (baritoneIsActive && !newBaritoneIsPaused && oldBaritoneIsPaused) {
+            BaritoneResumed.EVENT.invoker().baritoneResumed();
+        }
+    }
+
+    @Override
+    public boolean isActive() {
+        return false;
+    }
+
+    @Override
+    public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
+        return DEFER;
+    }
+
+    @Override
+    public void onLostControl() {
+        setBaritoneActive(false, true);
     }
 }
