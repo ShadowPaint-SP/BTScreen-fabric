@@ -58,6 +58,11 @@ public class AutoDrop extends BTProcessWithInitializer {
         active = false;
     }
 
+    @Override
+    public double priority() {
+        return super.priority() + 0.01;
+    }
+
     static void teleportIntegration() {
         if (isActive(AUTO_DROP) && !workingSlots.isEmpty()) {
             active = true;
