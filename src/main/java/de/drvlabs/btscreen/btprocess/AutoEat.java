@@ -29,7 +29,6 @@ public class AutoEat extends BTProcessWithInitializer {
 
     @Override
     protected void onInitialize() {
-        BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoEat.started"));
     }
 
     @Override
@@ -65,7 +64,6 @@ public class AutoEat extends BTProcessWithInitializer {
         }
         if (isActive(AUTO_EAT) && !shouldEat && oldShouldEat) {
             Utils.MC.options.useKey.setPressed(false);
-            BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoEat.finished"));
         }
     }
 

@@ -5,13 +5,10 @@ import static de.drvlabs.btscreen.config.Configs.Generic.ITEM_DURABILITY_THRESHO
 import static de.drvlabs.btscreen.config.Configs.Generic.PERIODIC_ATTACK_INTERVAL;
 
 import baritone.api.process.PathingCommand;
-import de.drvlabs.btscreen.BTScreen;
-import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.text.Text;
 
 public class AutoRepair extends BTProcessWithInitializer {
     private static int slot = -1;
@@ -27,7 +24,6 @@ public class AutoRepair extends BTProcessWithInitializer {
     protected void onInitialize() {
         swordSlot = getSwordSlotInHotbar();
         Teleport.requestTeleport(Teleport.Home.REPAIR);
-        BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoRepair.started"));
     }
 
     @Override
@@ -64,7 +60,6 @@ public class AutoRepair extends BTProcessWithInitializer {
             if (!newStack.isDamaged() && AutoRepair.slot == slot) {
                 // stop
                 AutoRepair.slot = -1;
-                BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoRepair.finished"));
                 return;
             }
             if ((newStack.getMaxDamage() - newStack.getDamage()) <= ITEM_DURABILITY_THRESHOLD.getIntegerValue()) {

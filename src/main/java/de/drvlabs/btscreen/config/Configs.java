@@ -26,6 +26,7 @@ public class Configs implements IConfigHandler {
 
     public static class Generic {
         public static final ConfigBoolean DEBUG_LOGGING = new ConfigBoolean("debugLogging", true);
+        public static final ConfigBoolean SHOW_PROCESS_CHANGES = new ConfigBoolean("showProcessChanges", false);
         public static final ConfigBoolean AUTO_SLEEP = new ConfigBoolean("autoSleep", false);
         public static final ConfigBoolean AUTO_REPAIR = new ConfigBoolean("autoRepair", false);
         public static final ConfigBoolean AUTO_EAT = new ConfigBoolean("autoEat", false);
@@ -76,6 +77,7 @@ public class Configs implements IConfigHandler {
                 REPEAT_ACTION,
                 REPEAT_ACTION_INTERVAL,
                 SAFETY,
+                SHOW_PROCESS_CHANGES,
                 DEBUG_LOGGING);
 
         static {
@@ -88,6 +90,7 @@ public class Configs implements IConfigHandler {
     }
 
     public static class Lists {
+        public static final ConfigStringList PROCESS_CHANGES_BLACKLIST = new ConfigStringList("processChangesBlacklist", ImmutableList.of("Teleport"));
         public static final ConfigStringList INV_PRESERVE_ITEM_BLACKLIST = new ConfigStringList(
                 "invPreserveItemBlackList", ImmutableList.of());
         public static final ConfigStringList BLOCKS_TO_GET_REPLACED = new ConfigStringList("blocksToGetReplaced",
@@ -106,6 +109,7 @@ public class Configs implements IConfigHandler {
                 "acceptableThrowawayItems", PresetMode.getAcceptableThrowawayItems());
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
+                PROCESS_CHANGES_BLACKLIST,
                 INV_PRESERVE_ITEM_BLACKLIST,
                 BLOCKS_TO_GET_REPLACED,
                 BLOCK_TO_REPLACE_WITH,

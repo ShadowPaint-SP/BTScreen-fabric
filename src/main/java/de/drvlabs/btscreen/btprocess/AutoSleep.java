@@ -34,7 +34,6 @@ public class AutoSleep extends BTProcessWithInitializer {
     protected void onInitialize() {
         oldWorld = Utils.getWorldId();
         Teleport.requestTeleport(Teleport.Home.SLEEP);
-        BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoSleep.started"));
     }
 
     @Override
@@ -66,7 +65,6 @@ public class AutoSleep extends BTProcessWithInitializer {
             if (screen != null) {
                 screen.close();
             }
-            BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoSleep.finished"));
         }
         return REQUEST_PAUSE;
     }

@@ -4,16 +4,15 @@ import static de.drvlabs.btscreen.config.Configs.Generic.SAFETY;
 
 import baritone.api.process.PathingCommand;
 import de.drvlabs.btscreen.BTScreen;
-import de.drvlabs.btscreen.btprocess.BTActiveListener.BaritonePaused;
-import de.drvlabs.btscreen.btprocess.BTActiveListener.BaritoneStopped;
 import de.drvlabs.btscreen.config.LangKeys;
+import de.drvlabs.btscreen.event.BaritoneEvents;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
-public class LocationCheck extends BTProcessHelper implements BaritoneStopped, BaritonePaused {
+public class LocationCheck extends BTProcessHelper implements BaritoneEvents.Stopped, BaritoneEvents.Paused {
     private Vec3d lastLocation = null;
     private Identifier lastWorld = null;
 
@@ -51,8 +50,8 @@ public class LocationCheck extends BTProcessHelper implements BaritoneStopped, B
 
     {
         SAFETY.setValueChangeCallback(c -> onLostControl());
-        BaritoneStopped.EVENT.register(this);
-        BaritonePaused.EVENT.register(this);
+        BaritoneEvents.STOPPED.register(this);
+        BaritoneEvents.PAUSED.register(this);
     }
 
     @Override

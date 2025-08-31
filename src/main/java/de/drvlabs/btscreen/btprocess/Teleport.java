@@ -2,9 +2,9 @@ package de.drvlabs.btscreen.btprocess;
 
 import baritone.api.process.PathingCommand;
 import de.drvlabs.btscreen.BTScreen;
-import de.drvlabs.btscreen.btprocess.BTActiveListener.BaritoneStopped;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.config.LangKeys;
+import de.drvlabs.btscreen.event.BaritoneEvents;
 import de.drvlabs.btscreen.utils.Utils;
 import fi.dy.masa.malilib.config.options.ConfigString;
 import net.minecraft.text.Text;
@@ -12,7 +12,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
-public class Teleport extends BTProcessHelper implements BaritoneStopped {
+public class Teleport extends BTProcessHelper implements BaritoneEvents.Stopped {
     private static Home nextHome = null;
     private Home lastHome = null;
     private boolean teleporting = false;
@@ -100,7 +100,7 @@ public class Teleport extends BTProcessHelper implements BaritoneStopped {
     }
 
     {
-        BaritoneStopped.EVENT.register(this);
+        BaritoneEvents.STOPPED.register(this);
     }
 
     @Override
