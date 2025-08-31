@@ -25,8 +25,8 @@ public class Configs implements IConfigHandler {
     private static final String CONFIG_FILE_NAME = BTScreen.MOD_ID + ".json";
 
     public static class Generic {
-        public static final ConfigBoolean DEBUG_LOGGING = new ConfigBoolean("debugLogging", true);
-        public static final ConfigBoolean SHOW_PROCESS_CHANGES = new ConfigBoolean("showProcessChanges", false);
+        public static final ConfigBoolean DEBUG_LOGGING = new ConfigBoolean("debugLogging", false);
+        public static final ConfigBoolean SHOW_PROCESS_CHANGES = new ConfigBoolean("showProcessChanges", true);
         public static final ConfigBoolean AUTO_SLEEP = new ConfigBoolean("autoSleep", false);
         public static final ConfigBoolean AUTO_REPAIR = new ConfigBoolean("autoRepair", false);
         public static final ConfigBoolean AUTO_EAT = new ConfigBoolean("autoEat", false);
