@@ -67,6 +67,8 @@
 
   "btscreen.config.generic.name.debugLogging": "Debug-Protokollierung",
   "btscreen.config.generic.comment.debugLogging": "Debug-Protokollierung",
+  "btscreen.config.generic.name.showProcessChanges": "Prozessänderungen anzeigen",
+  "btscreen.config.generic.comment.showProcessChanges": "Zeigt eine Nachricht im Chat an, wenn sich der aktuelle Baritone Prozess ändert",
   "btscreen.config.generic.name.autoSleep": "Auto-Schlaf",
   "btscreen.config.generic.comment.autoSleep": "Auto-Schlaf",
   "btscreen.config.generic.name.autoEat": "Auto-Essen",
@@ -114,6 +116,8 @@
 
   "btscreen.config.lists.name.invPreserveItemBlackList": "Abwurf verbieten",
   "btscreen.config.lists.comment.invPreserveItemBlackList": "Gegenstände, die nicht abgeworfen werden sollen",
+  "btscreen.config.lists.name.processChangesBlacklist": "Prozessnachrichten-Blacklist",
+  "btscreen.config.lists.comment.processChangesBlacklist": "Eine Liste von Prozessnamen, die nicht im Chat angezeigt werden sollen",
   "btscreen.config.lists.name.blocksToGetReplaced": "Zu ersetzende Blöcke",
   "btscreen.config.lists.comment.blocksToGetReplaced": "Blöcke, die entfernt werden sollen",
   "btscreen.config.lists.name.blockToReplaceWith": "Block zum Ersetzen",
@@ -138,21 +142,12 @@
   "btscreen.config.hotkeys.name.pauseResume": "Pause/Fortsetzen",
   "btscreen.config.hotkeys.comment.pauseResume": "Bot schnell pausieren und fortsetzen",
 
+  "btscreen.info.processChanged": "Prozess: %s => %s",
   "btscreen.info.locationCheck.playerMovedTooFar": "Fehler: Spieler hat sich zu weit vom letzten aufgezeichneten Ort entfernt.",
   "btscreen.info.teleport.timeout": "Fehler: Zu lange auf Teleport gewartet!",
   "btscreen.info.autoTorch.noTorch": "Fehler: Keine Fackel in der Hotbar! AutoTorch deaktiviert.",
-  "btscreen.info.autoTorch.started": "Beginne mit dem Platzieren einer Fackel.",
-  "btscreen.info.autoTorch.finished": "Platzieren einer Fackel abgeschlossen.",
-  "btscreen.info.autoSleep.started": "Beginne mit dem Schlafen.",
   "btscreen.info.autoSleep.wrongDimension": "Fehler: Falsche Dimension nach dem Teleport! AutoSleep deaktiviert.",
   "btscreen.info.autoSleep.noBed": "Fehler: Kein benutzbares Bett gefunden!",
-  "btscreen.info.autoSleep.finished": "Schlafen beendet.",
-  "btscreen.info.autoRepair.started": "Beginne mit dem Reparieren.",
-  "btscreen.info.autoRepair.finished": "Reparieren beendet.",
-  "btscreen.info.autoHaste.waiting": "Warte auf Eile.",
   "btscreen.info.autoHaste.timeout": "Fehler: Zu lange auf Eile gewartet! Auto-Eile deaktiviert.",
-  "btscreen.info.autoEat.started": "Beginne mit dem Essen.",
-  "btscreen.info.autoEat.noFood": "Fehler: Kein Essen in der Nebenhand!",
-  "btscreen.info.autoEat.finished": "Essen beendet.",
-  "btscreen.info.autoDrop.started": "Beginne mit dem Ablegen von Gegenständen."
+  "btscreen.info.autoEat.noFood": "Fehler: Kein Essen in der Nebenhand!"
 }

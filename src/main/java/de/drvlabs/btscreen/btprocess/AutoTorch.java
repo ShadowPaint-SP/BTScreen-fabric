@@ -42,7 +42,6 @@ public class AutoTorch extends BTProcessHelper {
                                 .formatted(Formatting.RED));
                         return DEFER;
                     }
-                    BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoTorch.started"));
                 }
                 case 1 -> Utils.MC.player.getInventory().setSelectedSlot(torchSlot);
                 case 2 -> Utils.MC.player.setPitch(90);
@@ -61,7 +60,6 @@ public class AutoTorch extends BTProcessHelper {
                 case 6 -> Utils.MC.player.setPitch(0);
                 default -> {
                     tick = -1;
-                    BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoTorch.finished"));
                 }
             }
             tick++;

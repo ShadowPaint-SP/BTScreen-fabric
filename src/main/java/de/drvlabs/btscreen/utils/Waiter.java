@@ -76,4 +76,14 @@ public final class Waiter {
         activeWaiter.addAll(pendingWaiter);
         pendingWaiter.clear();
     }
+
+    /**
+     * Cancels all active waiter tasks.
+     */
+    public static void cancelAll() {
+        activeWaiter.forEach(Waiter::cancel);
+        activeWaiter.clear();
+        pendingWaiter.forEach(Waiter::cancel);
+        pendingWaiter.clear();
+    }
 }

@@ -4,61 +4,12 @@ import java.util.List;
 
 import baritone.api.process.IBaritoneProcess;
 import baritone.api.process.PathingCommand;
+import de.drvlabs.btscreen.event.BaritoneEvents;
 import de.drvlabs.btscreen.gui.GuiMainMenu;
 import de.drvlabs.btscreen.utils.Utils;
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.gui.screen.Screen;
 
 public class BTActiveListener extends BTProcessHelper {
-    @FunctionalInterface
-    public interface BaritoneStarted {
-        public static final Event<BaritoneStarted> EVENT = EventFactory
-                .createArrayBacked(BaritoneStarted.class, callbacks -> () -> {
-                    for (BaritoneStarted callback : callbacks) {
-                        callback.baritoneStarted();
-                    }
-                });
-
-        void baritoneStarted();
-    }
-
-    @FunctionalInterface
-    public interface BaritoneStopped {
-        public static final Event<BaritoneStopped> EVENT = EventFactory
-                .createArrayBacked(BaritoneStopped.class, callbacks -> canceled -> {
-                    for (BaritoneStopped callback : callbacks) {
-                        callback.baritoneStopped(canceled);
-                    }
-                });
-
-        void baritoneStopped(boolean canceled);
-    }
-
-    @FunctionalInterface
-    public interface BaritonePaused {
-        public static final Event<BaritonePaused> EVENT = EventFactory
-                .createArrayBacked(BaritonePaused.class, callbacks -> () -> {
-                    for (BaritonePaused callback : callbacks) {
-                        callback.baritonePaused();
-                    }
-                });
-
-        void baritonePaused();
-    }
-
-    @FunctionalInterface
-    public interface BaritoneResumed {
-        public static final Event<BaritoneResumed> EVENT = EventFactory
-                .createArrayBacked(BaritoneResumed.class, callbacks -> () -> {
-                    for (BaritoneResumed callback : callbacks) {
-                        callback.baritoneResumed();
-                    }
-                });
-
-        void baritoneResumed();
-    }
-
     private static final List<IBaritoneProcess> IS_ACTIVE_LIST = List.of(
             Utils.BT.getFarmProcess(),
             Utils.BT.getMineProcess(),
@@ -102,10 +53,10 @@ public class BTActiveListener extends BTProcessHelper {
         boolean oldBaritoneIsActive = baritoneIsActive;
         baritoneIsActive = newBaritoneIsActive;
         if (newBaritoneIsActive && !oldBaritoneIsActive) {
-            BaritoneStarted.EVENT.invoker().baritoneStarted();
+            BaritoneEvents.STARTED.invoker().baritoneStarted();
         }
         if (!newBaritoneIsActive && oldBaritoneIsActive) {
-            BaritoneStopped.EVENT.invoker().baritoneStopped(canceled);
+            BaritoneEvents.STOPPED.invoker().baritoneStopped(canceled);
         }
     }
 
@@ -113,10 +64,10 @@ public class BTActiveListener extends BTProcessHelper {
         boolean oldBaritoneIsPaused = baritoneIsPaused;
         baritoneIsPaused = newBaritoneIsPaused;
         if (baritoneIsActive && newBaritoneIsPaused && !oldBaritoneIsPaused) {
-            BaritonePaused.EVENT.invoker().baritonePaused();
+            BaritoneEvents.PAUSED.invoker().baritonePaused();
         }
         if (baritoneIsActive && !newBaritoneIsPaused && oldBaritoneIsPaused) {
-            BaritoneResumed.EVENT.invoker().baritoneResumed();
+            BaritoneEvents.RESUMED.invoker().baritoneResumed();
         }
     }
 

@@ -8,17 +8,15 @@ import java.util.Set;
 
 import baritone.api.process.PathingCommand;
 import de.drvlabs.btscreen.BTScreen;
-import de.drvlabs.btscreen.btprocess.BTActiveListener.BaritoneStarted;
-import de.drvlabs.btscreen.config.LangKeys;
+import de.drvlabs.btscreen.event.BaritoneEvents;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-public class AutoDrop extends BTProcessWithInitializer implements BaritoneStarted {
+public class AutoDrop extends BTProcessWithInitializer implements BaritoneEvents.Started {
     private static final Set<Identifier> blacklist = new HashSet<>();
     private static final Set<Integer> workingSlots = new HashSet<>();
     private static boolean hasFreeSlot = false;
@@ -33,7 +31,6 @@ public class AutoDrop extends BTProcessWithInitializer implements BaritoneStarte
     protected void onInitialize() {
         active = true;
         Teleport.requestTeleport(Teleport.Home.DROP);
-        BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoDrop.started"));
     }
 
     @Override
@@ -64,7 +61,7 @@ public class AutoDrop extends BTProcessWithInitializer implements BaritoneStarte
     }
 
     {
-        BaritoneStarted.EVENT.register(this);
+        BaritoneEvents.STARTED.register(this);
     }
 
     @Override

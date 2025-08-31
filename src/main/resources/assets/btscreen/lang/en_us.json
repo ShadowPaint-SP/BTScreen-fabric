@@ -67,6 +67,8 @@
 
   "btscreen.config.generic.name.debugLogging": "Debug Logging",
   "btscreen.config.generic.comment.debugLogging": "Debug Logging",
+  "btscreen.config.generic.name.showProcessChanges": "Show Process Changes",
+  "btscreen.config.generic.comment.showProcessChanges": "Shows a message in chat when the current Baritone process changes",
   "btscreen.config.generic.name.autoSleep": "Auto Sleep",
   "btscreen.config.generic.comment.autoSleep": "Auto Sleep",
   "btscreen.config.generic.name.autoEat": "Auto Eat",
@@ -114,6 +116,8 @@
 
   "btscreen.config.lists.name.invPreserveItemBlackList": "Disallow Dropping",
   "btscreen.config.lists.comment.invPreserveItemBlackList": "Items that should not be dropped",
+  "btscreen.config.lists.name.processChangesBlacklist": "Process Message Blacklist",
+  "btscreen.config.lists.comment.processChangesBlacklist": "A list of process names that should not be displayed in chat",
   "btscreen.config.lists.name.blocksToGetReplaced": "Blocks to get replaced",
   "btscreen.config.lists.comment.blocksToGetReplaced": "Blocks that should be removed",
   "btscreen.config.lists.name.blockToReplaceWith": "Block to replace with",
@@ -138,21 +142,12 @@
   "btscreen.config.hotkeys.name.pauseResume": "Pause/Resume",
   "btscreen.config.hotkeys.comment.pauseResume": "Quickly pause and resume the bot",
 
+  "btscreen.info.processChanged": "Process: %s => %s",
   "btscreen.info.locationCheck.playerMovedTooFar": "Error: Player has moved too far from the last recorded location.",
   "btscreen.info.teleport.timeout": "Error: Waited too long for Teleport!",
   "btscreen.info.autoTorch.noTorch": "Error: No Torch in Hotbar! Disabled AutoTorch.",
-  "btscreen.info.autoTorch.started": "Started placing a Torch",
-  "btscreen.info.autoTorch.finished": "Finished placing a Torch",
-  "btscreen.info.autoSleep.started": "Started Sleeping",
   "btscreen.info.autoSleep.wrongDimension": "Error: Dimention not the same after teleport! Disabled AutoSleep.",
   "btscreen.info.autoSleep.noBed": "Error: No usable Bed found!",
-  "btscreen.info.autoSleep.finished": "Finished Sleeping",
-  "btscreen.info.autoRepair.started": "Started Repairing",
-  "btscreen.info.autoRepair.finished": "Finished Repairing",
-  "btscreen.info.autoHaste.waiting": "Waiting for Haste",
   "btscreen.info.autoHaste.timeout": "Error: Waited too long for Haste! Disabled AutoHaste.",
-  "btscreen.info.autoEat.started": "Started Eating",
-  "btscreen.info.autoEat.noFood": "Error: No food in offhand!",
-  "btscreen.info.autoEat.finished": "Finished Eating",
-  "btscreen.info.autoDrop.started": "Started dropping Items"
+  "btscreen.info.autoEat.noFood": "Error: No food in offhand!"
 }

@@ -23,7 +23,6 @@ public class AutoHaste extends BTProcessWithInitializer {
     @Override
     protected void onInitialize() {
         Teleport.requestTeleport(Teleport.Home.HASTE);
-        BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoHaste.waiting"));
     }
 
     @Override
