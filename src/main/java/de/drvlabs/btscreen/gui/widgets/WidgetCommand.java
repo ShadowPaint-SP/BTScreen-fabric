@@ -1,8 +1,8 @@
 package de.drvlabs.btscreen.gui.widgets;
 
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.config.LangKeys;
-import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.gui.GuiConfigureCommand;
 import de.drvlabs.btscreen.utils.customcommands.Commands;
 import de.drvlabs.btscreen.utils.customcommands.CommandsManager;
@@ -29,7 +29,7 @@ public class WidgetCommand extends WidgetListEntryBase<Commands> {
 		this.parent = parent;
 		this.command = command;
 		this.isOdd = isOdd;
-		this.manager = DataManager.getCommandsManager();
+		this.manager = DataManager.SERVER.getCommandsManager();
 
 		int posX = x + width - 2;
 		int posY = y + 1;

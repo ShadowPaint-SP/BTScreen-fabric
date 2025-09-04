@@ -8,11 +8,10 @@ import org.jetbrains.annotations.Nullable;
 
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
+import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.config.LangKeys;
-import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.customcommands.Commands;
-import de.drvlabs.btscreen.utils.customcommands.CommandsManager;
 import de.drvlabs.btscreen.utils.preset.PresetMode;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
@@ -31,8 +30,7 @@ public class GuiMainMenu extends GuiBase {
 
 	public GuiMainMenu() {
 		this.title = StringUtils.translate(LangKeys.GUI_TITLE + ".btscreen_main_menu",
-				BTScreen.MOD_NAME,
-				BTScreen.MOD_VERSION);
+				BTScreen.MOD_NAME, BTScreen.MOD_VERSION);
 	}
 
 	@Override
@@ -150,7 +148,7 @@ public class GuiMainMenu extends GuiBase {
 		y = 30;
 		x = this.getScreenWidth() - 217;
 		if (x >= maxX) {
-			for (Commands command : CommandsManager.getAllCommands()) {
+			for (Commands command : DataManager.SERVER.getCommandsManager().getAllCommands()) {
 				y += this.createCommandButton(x, y, 100, ButtonListener.Type.COMMAND, command);
 				if (y >= this.getScreenHeight() - 26) {
 					y = 30;
@@ -166,7 +164,8 @@ public class GuiMainMenu extends GuiBase {
 		x = 12;
 		y = this.getScreenHeight() - 26;
 		x += this.createButton(x, y, -1, ButtonListener.Type.CONFIGURATION, true);
-		label = StringUtils.translate(LangKeys.GUI_BUTTON + ".preset_mode", DataManager.getPresetMode().getName());
+		label = StringUtils.translate(LangKeys.GUI_BUTTON + ".preset_mode",
+				DataManager.DIMENSION.getPresetMode().getDisplayName());
 		width = this.getStringWidth(label) + 10;
 		button = new ButtonGeneric(x, y, width, 20, label);
 		x += this.addButton(button, new ButtonListenerCyclePresetMode(this)).getWidth();
@@ -280,8 +279,7 @@ public class GuiMainMenu extends GuiBase {
 					GuiBase.openGui(new GuiConfigs());
 					return;
 				case Type.START:
-					Utils.execute("sel cleararea");
-					DataManager.getPresetMode().setSettings();
+					Utils.executeBuild("sel cleararea");
 					this.gui.initGui();
 					this.gui.addMessage(MessageType.ERROR, 1000, LangKeys.INFO + ".main_menu.startBot");
 					return;
@@ -344,26 +342,20 @@ public class GuiMainMenu extends GuiBase {
 					this.gui.initGui();
 					return;
 				case Type.SEL_SET:
-					PresetMode.setBuildingAbility();
 					updateBlocksToReplace();
 					Utils.executeBuild("sel set "
 							+ String.join(" ", Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings()));
 					return;
 				case Type.SEL_WALLS:
-					PresetMode.setBuildingAbility();
 					updateBlocksToReplace();
 					Utils.executeBuild("sel walls "
 							+ Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 					return;
 				case Type.SEL_SHELL:
-					PresetMode.setBuildingAbility();
 					updateBlocksToReplace();
 					Utils.executeBuild("sel shell " + Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 					return;
 				case Type.SEL_REPLACE:
-					if (DataManager.getPresetMode() != PresetMode.LIQUID) {
-						PresetMode.setBuildingAbility();
-					}
 					updateBlocksToReplace();
 					updateBlockToPlace();
 					Utils.executeBuild("sel replace "
@@ -374,8 +366,7 @@ public class GuiMainMenu extends GuiBase {
 					Utils.execute("sel copy");
 					return;
 				case Type.SEL_PASTE:
-					PresetMode.setBuildingAbility();
-					Utils.execute("sel paste");
+					Utils.executeBuild("sel paste");
 					return;
 				default:
 					break;
@@ -480,12 +471,8 @@ public class GuiMainMenu extends GuiBase {
 				this.icon = icon;
 			}
 
-			public String getLabelKey() {
-				return this.labelKey;
-			}
-
 			public String getDisplayName() {
-				return StringUtils.translate(this.getLabelKey(), BTScreen.MOD_NAME, BTScreen.MOD_VERSION);
+				return StringUtils.translate(this.labelKey, BTScreen.MOD_NAME, BTScreen.MOD_VERSION);
 			}
 
 			public ButtonIcons getIcon() {
@@ -503,8 +490,8 @@ public class GuiMainMenu extends GuiBase {
 
 		@Override
 		public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
-			PresetMode mode = DataManager.getPresetMode().cycle(Utils.MC.player, mouseButton == 0);
-			DataManager.setPresetMode(mode);
+			PresetMode mode = DataManager.DIMENSION.getPresetMode().cycle(mouseButton == 0);
+			DataManager.DIMENSION.setPresetMode(mode);
 			mode.setSettings();
 			this.gui.initGui();
 		}

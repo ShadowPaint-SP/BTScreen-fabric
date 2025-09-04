@@ -17,8 +17,8 @@ import de.drvlabs.btscreen.btprocess.AutoTorch;
 import de.drvlabs.btscreen.btprocess.BTActiveListener;
 import de.drvlabs.btscreen.btprocess.LocationCheck;
 import de.drvlabs.btscreen.btprocess.Teleport;
+import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.config.LangKeys;
-import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.gui.GuiConfigs;
 import de.drvlabs.btscreen.gui.GuiMainMenu;
 import de.drvlabs.btscreen.utils.RepeatAction;
@@ -31,6 +31,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents.C
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.EndWorldTick;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents.AfterClientWorldChange;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -39,7 +40,7 @@ import net.minecraft.text.Text;
 
 public final class EventHandler implements EndWorldTick, AfterClientWorldChange, ClientStarted,
         BaritoneEvents.Started, BaritoneEvents.Stopped, BaritoneEvents.ProcessChanged,
-        ClientPlayConnectionEvents.Disconnect {
+        ClientPlayConnectionEvents.Join, ClientPlayConnectionEvents.Disconnect {
     @Override
     public void onClientStarted(MinecraftClient client) {
         Registry.CONFIG_SCREEN.registerConfigScreenFactory(
@@ -64,8 +65,22 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
     }
 
     @Override
+    public void onPlayReady(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
+        DataManager.SERVER.load();
+        DataManager.DIMENSION.load();
+    }
+
+    @Override
     public void onPlayDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
+        DataManager.SERVER.unload();
+        DataManager.DIMENSION.unload();
         Waiter.cancelAll();
+    }
+
+    @Override
+    public void afterWorldChange(MinecraftClient client, ClientWorld world) {
+        DataManager.DIMENSION.save();
+        DataManager.DIMENSION.load();
     }
 
     private IBaritoneProcess lastProcess = null;
@@ -80,17 +95,6 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         lastProcess = currentProcess;
         Waiter.tickAll();
         BTActiveListener.updateBaritoneStatus();
-    }
-
-    @Override
-    public void afterWorldChange(MinecraftClient client, ClientWorld world) {
-        DataManager.save();
-        if (world != null) {
-            DataManager.load();
-            BTScreen.debugLog("Loaded settings");
-        } else {
-            DataManager.clear();
-        }
     }
 
     @Override
@@ -119,7 +123,6 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
             if (strings.contains(processName)) {
                 return false;
             }
-            ;
         }
         return true;
     }

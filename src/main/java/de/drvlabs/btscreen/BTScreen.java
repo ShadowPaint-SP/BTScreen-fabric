@@ -14,22 +14,19 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class BTScreen implements ClientModInitializer {
     public static final String MOD_ID = "btscreen";
-    public static final ModMetadata MOD_META;
-    public static final String MOD_NAME;
-    public static final String MOD_VERSION;
-
-    static {
-        MOD_META = FabricLoader.getInstance().getModContainer(MOD_ID).get().getMetadata();
-        MOD_NAME = MOD_META.getName();
-        MOD_VERSION = MOD_META.getVersion().getFriendlyString();
-    }
+    public static final ModContainer MOD_CONTAINER = FabricLoader.getInstance().getModContainer(MOD_ID).get();
+    public static final ModMetadata MOD_META = MOD_CONTAINER.getMetadata();
+    public static final String MOD_NAME = MOD_META.getName();
+    public static final String MOD_VERSION = MOD_META.getVersion().getFriendlyString();
 
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
@@ -43,6 +40,8 @@ public class BTScreen implements ClientModInitializer {
         ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register(eventHandler);
         ClientTickEvents.END_WORLD_TICK.register(eventHandler);
         ClientLifecycleEvents.CLIENT_STARTED.register(eventHandler);
+        ClientPlayConnectionEvents.JOIN.register(eventHandler);
+        ClientPlayConnectionEvents.DISCONNECT.register(eventHandler);
     }
 
     public static void debugLog(String msg, Object... args) {

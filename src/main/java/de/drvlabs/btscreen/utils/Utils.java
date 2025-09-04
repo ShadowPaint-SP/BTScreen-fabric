@@ -3,7 +3,10 @@ package de.drvlabs.btscreen.utils;
 import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
 import baritone.api.process.IBaritoneProcess;
+import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.btprocess.BTActiveListener;
+import de.drvlabs.btscreen.config.DataManager;
+import de.drvlabs.btscreen.utils.preset.PresetMode;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -32,6 +35,9 @@ public class Utils {
     }
 
     public static void executeBuild(String command) {
+        PresetMode presetMode = DataManager.DIMENSION.getPresetMode();
+        presetMode.setSettings();
+        BTScreen.debugLog("Updated settings to: " + presetMode.name());
         RepeatAction.trackCommand(command);
         execute(command);
     }

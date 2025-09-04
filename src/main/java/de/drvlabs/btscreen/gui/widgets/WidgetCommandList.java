@@ -2,13 +2,13 @@ package de.drvlabs.btscreen.gui.widgets;
 
 import java.util.Collection;
 import java.util.List;
+
 import com.google.common.collect.ImmutableList;
 
-import de.drvlabs.btscreen.data.DataManager;
+import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.gui.ButtonIcons;
 import de.drvlabs.btscreen.gui.GuiCommandList;
 import de.drvlabs.btscreen.utils.customcommands.Commands;
-import de.drvlabs.btscreen.utils.customcommands.CommandsManager;
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetSearchBar;
@@ -32,8 +32,7 @@ public class WidgetCommandList extends WidgetListBase<Commands, WidgetCommand> {
 
 	@Override
 	protected Collection<Commands> getAllEntries() {
-		DataManager.getCommandsManager();
-		return CommandsManager.getAllCommands();
+		return DataManager.SERVER.getCommandsManager().getAllCommands();
 	}
 
 	@Override

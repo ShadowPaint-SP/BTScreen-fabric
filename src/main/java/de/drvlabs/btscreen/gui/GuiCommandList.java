@@ -1,7 +1,7 @@
 package de.drvlabs.btscreen.gui;
 
+import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.config.LangKeys;
-import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.gui.GuiMainMenu.ButtonListenerChangeMenu;
 import de.drvlabs.btscreen.gui.widgets.WidgetCommand;
 import de.drvlabs.btscreen.gui.widgets.WidgetCommandList;
@@ -18,7 +18,7 @@ public class GuiCommandList extends GuiListBase<Commands, WidgetCommand, WidgetC
 		super(12, 30);
 
 		this.title = StringUtils.translate(LangKeys.GUI_TITLE + ".manage_command_list");
-		this.manager = DataManager.getCommandsManager();
+		this.manager = DataManager.SERVER.getCommandsManager();
 	}
 
 	@Override
@@ -42,13 +42,13 @@ public class GuiCommandList extends GuiListBase<Commands, WidgetCommand, WidgetC
 		ButtonGeneric button;
 
 		ButtonListenerChangeMenu.ButtonType type = ButtonListenerChangeMenu.ButtonType.MAIN_MENU;
-		label = StringUtils.translate(type.getLabelKey());
+		label = type.getDisplayName();
 		buttonWidth = this.getStringWidth(label) + 30;
 		button = new ButtonGeneric(x, y, buttonWidth, 20, label, type.getIcon());
 		this.addButton(button, new ButtonListenerChangeMenu(type, this.getParent()));
 
 		type = ButtonListenerChangeMenu.ButtonType.CREATE_COMMAND;
-		label = StringUtils.translate(type.getLabelKey());
+		label = type.getDisplayName();
 		buttonWidth = this.getStringWidth(label) + 20;
 		x = this.getScreenWidth() - buttonWidth - 10;
 		button = new ButtonGeneric(x, y, buttonWidth, 20, label);

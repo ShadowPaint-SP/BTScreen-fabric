@@ -3,8 +3,8 @@ package de.drvlabs.btscreen.gui;
 import org.jetbrains.annotations.Nullable;
 
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.config.LangKeys;
-import de.drvlabs.btscreen.data.DataManager;
 import de.drvlabs.btscreen.utils.customcommands.Commands;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
@@ -42,12 +42,20 @@ public class GuiConfigureCommand extends GuiBase {
 		int x = 12;
 		int y = 22;
 
+		this.addLabel(x, y, width, 16, 0xCCCCCC, StringUtils.translate(LangKeys.GUI + ".configure_command.label.name"));
+
+		y += 16;
+
 		this.textFieldName = new GuiTextFieldGeneric(x, y + 2, width, 16, this.textRenderer);
 		this.textFieldName.setMaxLengthWrapper(256);
 		this.textFieldName.setTextWrapper(this.command.getName());
 		this.addTextField(this.textFieldName, null);
 
-		y += 20;
+		y += 30;
+
+		this.addLabel(x, y, width, 16, 0xCCCCCC, StringUtils.translate(LangKeys.GUI + ".configure_command.label.command"));
+
+		y += 16;
 
 		this.textFieldCommand = new GuiTextFieldGeneric(x, y + 2, width, 16, this.textRenderer);
 		this.textFieldCommand.setMaxLengthWrapper(256);
@@ -97,8 +105,8 @@ public class GuiConfigureCommand extends GuiBase {
 					BTScreen.debugLog("Command: " + this.parent.textFieldCommand.getTextWrapper());
 					this.command.setCommand(this.parent.textFieldCommand.getTextWrapper());
 					if (newCommand) {
-						DataManager.getCommandsManager().addCommand(this.command);
-						DataManager.save(true);
+						DataManager.SERVER.getCommandsManager().addCommand(this.command);
+						DataManager.SERVER.save();
 					}
 					break;
 			}
