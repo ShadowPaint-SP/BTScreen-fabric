@@ -4,6 +4,9 @@
   "btscreen.gui.title.manage_command_list": "Benutzerdefinierte Befehle verwalten",
   "btscreen.gui.title.configure_command": "Befehl konfigurieren",
 
+  "btscreen.gui.configure_command.label.name": "Name:",
+  "btscreen.gui.configure_command.label.command": "Befehl:",
+
   "btscreen.gui.button.config_gui.generic": "Allgemein",
   "btscreen.gui.button.config_gui.lists": "Listen",
   "btscreen.gui.button.config_gui.hotkeys": "Hotkeys",
@@ -149,5 +152,6 @@
   "btscreen.info.autoSleep.wrongDimension": "Fehler: Falsche Dimension nach dem Teleport! AutoSleep deaktiviert.",
   "btscreen.info.autoSleep.noBed": "Fehler: Kein benutzbares Bett gefunden!",
   "btscreen.info.autoHaste.timeout": "Fehler: Zu lange auf Eile gewartet! Auto-Eile deaktiviert.",
-  "btscreen.info.autoEat.noFood": "Fehler: Kein Essen in der Nebenhand!"
+  "btscreen.info.autoEat.noFood": "Fehler: Kein Essen in der Nebenhand!",
+  "btscreen.info.guiConfigureCommand.saveError": "Fehler beim Speichern des Befehls."
 }

@@ -4,6 +4,9 @@
   "btscreen.gui.title.manage_command_list": "Manage Custom Commands",
   "btscreen.gui.title.configure_command": "Configure Command",
 
+  "btscreen.gui.configure_command.label.name": "Name:",
+  "btscreen.gui.configure_command.label.command": "Command:",
+
   "btscreen.gui.button.config_gui.generic": "Generic",
   "btscreen.gui.button.config_gui.lists": "Lists",
   "btscreen.gui.button.config_gui.hotkeys": "Hotkeys",
@@ -149,5 +152,6 @@
   "btscreen.info.autoSleep.wrongDimension": "Error: Dimention not the same after teleport! Disabled AutoSleep.",
   "btscreen.info.autoSleep.noBed": "Error: No usable Bed found!",
   "btscreen.info.autoHaste.timeout": "Error: Waited too long for Haste! Disabled AutoHaste.",
-  "btscreen.info.autoEat.noFood": "Error: No food in offhand!"
+  "btscreen.info.autoEat.noFood": "Error: No food in offhand!",
+  "btscreen.info.guiConfigureCommand.saveError": "Error while saving the command."
 }

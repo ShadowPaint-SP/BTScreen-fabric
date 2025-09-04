@@ -98,15 +98,15 @@ public class Configs implements IConfigHandler {
                         "amethyst_cluster"));
         public static final ConfigString BLOCK_TO_REPLACE_WITH = new ConfigString("blockToReplaceWith", "air");
         public static final ConfigStringList DEFAULT_BLOCKS_TO_DISALLOW_BREAKING = new ConfigStringList(
-                "defaultBlocksToDisallowBreaking", PresetMode.getGlobalDisallowBreakingList());
+                "defaultBlocksToDisallowBreaking", PresetMode.DEFAULT_BLOCKS_TO_DISALLOW_BREAKING);
         public static final ConfigStringList DEFAULT_BLOCKS_TO_IGNORE = new ConfigStringList("defaultBlocksToIgnore",
-                PresetMode.getDefaultIgnoreList());
+                PresetMode.DEFAULT_BLOCKS_TO_IGNORE);
         public static final ConfigStringList FARM_BLOCKS_TO_DISALLOW_BREAKING = new ConfigStringList(
-                "farmBlocksToDisallowBreaking", PresetMode.getGlobalDisallowBreakingList());
+                "farmBlocksToDisallowBreaking", PresetMode.DEFAULT_BLOCKS_TO_DISALLOW_BREAKING);
         public static final ConfigStringList FARM_BLOCKS_TO_IGNORE = new ConfigStringList("farmBlocksToIgnore",
-                PresetMode.getFarmIgnoreList());
+                PresetMode.FARM_BLOCKS_TO_IGNORE);
         public static final ConfigStringList ACCEPTABLE_THROWAWAY_ITEMS = new ConfigStringList(
-                "acceptableThrowawayItems", PresetMode.getAcceptableThrowawayItems());
+                "acceptableThrowawayItems", PresetMode.DEFAULT_ACCEPTABLE_THROWAWAY_ITEMS);
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 PROCESS_CHANGES_BLACKLIST,

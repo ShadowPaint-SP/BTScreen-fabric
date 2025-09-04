@@ -11,9 +11,9 @@ import de.drvlabs.btscreen.utils.Utils;
 import fi.dy.masa.malilib.util.JsonUtils;
 
 public class CommandsManager {
-	protected final static List<Commands> commands = new ArrayList<>();
+	protected final List<Commands> commands = new ArrayList<>();
 
-	public static List<Commands> getAllCommands() {
+	public List<Commands> getAllCommands() {
 		return commands;
 	}
 
@@ -70,7 +70,6 @@ public class CommandsManager {
 
 					if (command != null) {
 						this.addCommand(command);
-						;
 					}
 				}
 			}
