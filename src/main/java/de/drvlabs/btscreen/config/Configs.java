@@ -39,6 +39,7 @@ public class Configs implements IConfigHandler {
         public static final ConfigString DROP_HOME = new ConfigString("dropHome", "drop");
         public static final ConfigString HASTE_HOME = new ConfigString("hasteHome", "haste");
         public static final ConfigString REPAIR_HOME = new ConfigString("repairHome", "repair");
+        public static final ConfigString SAFETY_HOME = new ConfigString("safetyHome", "");
         public static final ConfigString MINE_HOME = new ConfigString("mineHome", "mine");
         public static final ConfigString FINISHED_HOME = new ConfigString("finishedHome", "");
         public static final ConfigTicks PERIODIC_ATTACK_INTERVAL = new ConfigTicks("periodicAttackInterval", 25, 1,
@@ -52,7 +53,8 @@ public class Configs implements IConfigHandler {
         public static final ConfigBoolean REPEAT_ACTION = new ConfigBoolean("repeatAction", false);
         public static final ConfigTicks REPEAT_ACTION_INTERVAL = new ConfigTicks("repeatActionInterval", 100, 0,
                 1000000);
-        public static final ConfigBoolean SAFETY = new ConfigBoolean("safety", false);
+        public static final ConfigBoolean SAFETY_LOCATION = new ConfigBoolean("safetyLocation", true);
+        public static final ConfigInteger SAFETY_MIN_HEALTH = new ConfigInteger("safetyMinHealth", 5, 0, 20);
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 AUTO_SLEEP,
@@ -70,13 +72,15 @@ public class Configs implements IConfigHandler {
                 DROP_HOME,
                 HASTE_HOME,
                 REPAIR_HOME,
+                SAFETY_HOME,
                 FINISHED_HOME,
                 FOOD_LEVEL,
                 MIN_LIGHT_LEVEL,
                 NO_BREAK_COOLDOWN,
                 REPEAT_ACTION,
                 REPEAT_ACTION_INTERVAL,
-                SAFETY,
+                SAFETY_LOCATION,
+                SAFETY_MIN_HEALTH,
                 SHOW_PROCESS_CHANGES,
                 DEBUG_LOGGING);
 

@@ -4,8 +4,7 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "network.MixinClientPlayNetworkHandler",
-    "network.MixinClientPlayerInteractionManager",
-    "player.MixinHungerManager"
+    "network.MixinClientPlayerInteractionManager"
   ],
   "injectors": {
     "defaultRequire": 1
