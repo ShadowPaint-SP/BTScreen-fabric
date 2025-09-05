@@ -54,7 +54,7 @@ public class Configs implements IConfigHandler {
         public static final ConfigTicks REPEAT_ACTION_INTERVAL = new ConfigTicks("repeatActionInterval", 100, 0,
                 1000000);
         public static final ConfigBoolean SAFETY_LOCATION = new ConfigBoolean("safetyLocation", true);
-        public static final ConfigInteger SAFETY_MIN_HEALTH = new ConfigInteger("safetyMinHealth", 5, 1, 20);
+        public static final ConfigInteger SAFETY_MIN_HEALTH = new ConfigInteger("safetyMinHealth", 5, 0, 20);
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 AUTO_SLEEP,
