@@ -1,6 +1,6 @@
 package de.drvlabs.btscreen.btprocess;
 
-import static de.drvlabs.btscreen.config.Configs.Generic.SAFETY;
+import static de.drvlabs.btscreen.config.Configs.Generic.SAFETY_LOCATION;
 
 import baritone.api.process.PathingCommand;
 import de.drvlabs.btscreen.BTScreen;
@@ -18,15 +18,16 @@ public class LocationCheck extends BTProcessHelper implements BaritoneEvents.Sto
 
     @Override
     public boolean isActive() {
-        return isActive(SAFETY);
+        return isActive(SAFETY_LOCATION);
     }
 
     @Override
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         if (!inRange()) {
-            BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".locationCheck.playerMovedTooFar")
+            BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".safety.movedTooFar")
                     .formatted(Formatting.RED));
             Utils.cancel();
+            Teleport.Home.SAFETY.tpToHome();
             return REQUEST_PAUSE;
         }
         return DEFER;
@@ -49,7 +50,7 @@ public class LocationCheck extends BTProcessHelper implements BaritoneEvents.Sto
     }
 
     {
-        SAFETY.setValueChangeCallback(c -> onLostControl());
+        SAFETY_LOCATION.setValueChangeCallback(c -> onLostControl());
         BaritoneEvents.STOPPED.register(this);
         BaritoneEvents.PAUSED.register(this);
     }

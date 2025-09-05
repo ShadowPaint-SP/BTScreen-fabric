@@ -126,11 +126,25 @@ public class Teleport extends BTProcessHelper implements BaritoneEvents.Stopped 
     }
 
     public static enum Home {
+        MINE(Configs.Generic.MINE_HOME),
         SLEEP(Configs.Generic.SLEEP_HOME),
         DROP(Configs.Generic.DROP_HOME),
         HASTE(Configs.Generic.HASTE_HOME),
         REPAIR(Configs.Generic.REPAIR_HOME),
-        MINE(Configs.Generic.MINE_HOME),
+        SAFETY(Configs.Generic.SAFETY_HOME) {
+            @Override
+            public void tpToHome() {
+                if (isConfigured()) {
+                    super.tpToHome();
+                } else if (FINISHED.isConfigured()) {
+                    FINISHED.tpToHome();
+                } else if (SLEEP.isConfigured()) {
+                    SLEEP.tpToHome();
+                } else {
+                    Utils.MC.disconnect();
+                }
+            }
+        },
         FINISHED(Configs.Generic.FINISHED_HOME),
         ;
 
@@ -140,10 +154,14 @@ public class Teleport extends BTProcessHelper implements BaritoneEvents.Stopped 
 
         private final ConfigString config;
 
-        private void tpToHome() {
-            String home = config.getStringValue();
-            if (home.isEmpty())
+        public boolean isConfigured() {
+            return !config.getStringValue().isEmpty();
+        }
+
+        public void tpToHome() {
+            if (!isConfigured())
                 return;
+            String home = config.getStringValue();
             if (home.startsWith("/")) {
                 Utils.sendCommand(home.substring(1));
             } else {
@@ -151,14 +169,14 @@ public class Teleport extends BTProcessHelper implements BaritoneEvents.Stopped 
             }
         }
 
-        private void setHome() {
+        public void setHome() {
             String home = config.getStringValue();
             if (home.isEmpty() || home.startsWith("/"))
                 return;
             Utils.sendCommand(Configs.Generic.SETHOME_COMMAND.getStringValue() + " " + home);
         }
 
-        private boolean isSame(Home home) {
+        public boolean isSame(Home home) {
             return home != null && (this == home || config.getStringValue().equals(home.config.getStringValue()));
         }
     }
