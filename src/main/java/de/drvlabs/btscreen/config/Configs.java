@@ -39,7 +39,7 @@ public class Configs implements IConfigHandler {
         public static final ConfigString DROP_HOME = new ConfigString("dropHome", "drop");
         public static final ConfigString HASTE_HOME = new ConfigString("hasteHome", "haste");
         public static final ConfigString REPAIR_HOME = new ConfigString("repairHome", "repair");
-        public static final ConfigString SAFETY_HOME = new ConfigString("mineHome", "");
+        public static final ConfigString SAFETY_HOME = new ConfigString("safetyHome", "");
         public static final ConfigString MINE_HOME = new ConfigString("mineHome", "mine");
         public static final ConfigString FINISHED_HOME = new ConfigString("finishedHome", "");
         public static final ConfigTicks PERIODIC_ATTACK_INTERVAL = new ConfigTicks("periodicAttackInterval", 25, 1,
