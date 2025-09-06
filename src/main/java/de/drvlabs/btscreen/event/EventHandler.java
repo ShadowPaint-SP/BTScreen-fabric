@@ -74,6 +74,8 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
     public void onPlayDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
         DataManager.SERVER.unload();
         DataManager.DIMENSION.unload();
+        AutoTorch.onTeleport();
+        RepeatAction.cancel();
         Waiter.cancelAll();
     }
 
@@ -81,6 +83,7 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
     public void afterWorldChange(MinecraftClient client, ClientWorld world) {
         DataManager.DIMENSION.save();
         DataManager.DIMENSION.load();
+        AutoTorch.onTeleport();
     }
 
     private IBaritoneProcess lastProcess = null;
@@ -111,6 +114,9 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
     public void baritoneStopped(boolean canceled) {
         BTScreen.debugLog("Baritone is inactive. canceled: " + canceled);
         RepeatAction.baritoneStopped(canceled);
+        if (!canceled) {
+            Teleport.Home.FINISHED.tpToHome();
+        }
     }
 
     private static boolean shouldDisplayProcesses(IBaritoneProcess... processes) {

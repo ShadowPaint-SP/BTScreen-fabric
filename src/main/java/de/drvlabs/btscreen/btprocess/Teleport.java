@@ -4,7 +4,6 @@ import baritone.api.process.PathingCommand;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.config.LangKeys;
-import de.drvlabs.btscreen.event.BaritoneEvents;
 import de.drvlabs.btscreen.utils.Utils;
 import fi.dy.masa.malilib.config.options.ConfigString;
 import net.minecraft.text.Text;
@@ -12,7 +11,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
-public class Teleport extends BTProcessHelper implements BaritoneEvents.Stopped {
+public class Teleport extends BTProcessHelper {
     private static Home nextHome = null;
     private Home lastHome = null;
     private boolean teleporting = false;
@@ -54,9 +53,7 @@ public class Teleport extends BTProcessHelper implements BaritoneEvents.Stopped 
                                 AutoDrop.teleportIntegration();
                             }
                         }
-                        if (nextHome != Home.FINISHED) {
-                            lastHome = nextHome;
-                        }
+                        lastHome = nextHome;
                     }
                 } else if (lastHome != null) {
                     // Teleport Back
@@ -75,6 +72,9 @@ public class Teleport extends BTProcessHelper implements BaritoneEvents.Stopped 
                 timeoutTicks = 0;
                 oldPos = null;
                 oldWorld = null;
+                if (lastHome != null) {
+                    lastHome.lastWorld = Utils.getWorldId();
+                }
             }
             timeoutTicks++;
         }
@@ -97,17 +97,6 @@ public class Teleport extends BTProcessHelper implements BaritoneEvents.Stopped 
             return super.priority() + 0.05;
         }
         return super.priority() - 0.01;
-    }
-
-    {
-        BaritoneEvents.STOPPED.register(this);
-    }
-
-    @Override
-    public void baritoneStopped(boolean canceled) {
-        if (canceled)
-            return;
-        nextHome = Home.FINISHED;
     }
 
     /**
@@ -153,31 +142,39 @@ public class Teleport extends BTProcessHelper implements BaritoneEvents.Stopped 
         }
 
         private final ConfigString config;
+        private Identifier lastWorld = null;
 
         public boolean isConfigured() {
-            return !config.getStringValue().isEmpty();
+            return !this.config.getStringValue().isEmpty();
+        }
+
+        public Identifier getWorld() {
+            return this.lastWorld;
         }
 
         public void tpToHome() {
             if (!isConfigured())
                 return;
-            String home = config.getStringValue();
+            Utils.BT.getInputOverrideHandler().clearAllKeys();
+            String home = this.config.getStringValue();
             if (home.startsWith("/")) {
                 Utils.sendCommand(home.substring(1));
             } else {
                 Utils.sendCommand(Configs.Generic.HOME_COMMAND.getStringValue() + " " + home);
             }
+            AutoTorch.onTeleport();
         }
 
         public void setHome() {
-            String home = config.getStringValue();
+            this.lastWorld = Utils.getWorldId();
+            String home = this.config.getStringValue();
             if (home.isEmpty() || home.startsWith("/"))
                 return;
             Utils.sendCommand(Configs.Generic.SETHOME_COMMAND.getStringValue() + " " + home);
         }
 
         public boolean isSame(Home home) {
-            return home != null && (this == home || config.getStringValue().equals(home.config.getStringValue()));
+            return home != null && (this == home || this.config.getStringValue().equals(home.config.getStringValue()));
         }
     }
 }

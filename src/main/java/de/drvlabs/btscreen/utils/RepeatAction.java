@@ -21,7 +21,7 @@ public class RepeatAction {
         }
     }
 
-    private static void cancel() {
+    public static void cancel() {
         if (waiter == null) {
             return;
         }

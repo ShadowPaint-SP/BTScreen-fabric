@@ -22,26 +22,29 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
 
 public class AutoSleep extends BTProcessWithInitializer {
-    private Identifier oldWorld = null;
+    private boolean finishedThisDay = false;
     private Iterator<BlockPos> bedPositions = null;
 
     @Override
     public boolean isActive() {
-        return isActive(AUTO_SLEEP) && (isNight() || oldWorld != null);
+        return isActive(AUTO_SLEEP) && (finishedThisDay || isNight());
     }
 
     @Override
     protected void onInitialize() {
-        oldWorld = Utils.getWorldId();
         Teleport.requestTeleport(Teleport.Home.SLEEP);
     }
 
     @Override
     protected PathingCommand onTick() {
-        if (oldWorld == null) {
+        Identifier mineWorld = Teleport.Home.MINE.getWorld();
+        if (finishedThisDay) {
+            if (mineWorld.equals(Utils.getWorldId()) && !isNight()) {
+                finishedThisDay = false;
+            }
             return DEFER;
         }
-        if (!oldWorld.equals(Utils.getWorldId())) {
+        if (!mineWorld.equals(Utils.getWorldId())) {
             AUTO_SLEEP.setBooleanValue(false);
             BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoSleep.wrongDimension")
                     .formatted(Formatting.RED));
@@ -54,13 +57,13 @@ public class AutoSleep extends BTProcessWithInitializer {
                     BlockPos pos = bedPositions.next();
                     hitBed(pos);
                 } else {
-                    oldWorld = null;
+                    finishedThisDay = true;
                     BTScreen.chatMessage(
                             Text.translatable(LangKeys.INFO + ".autoSleep.noBed").formatted(Formatting.RED));
                 }
             }
         } else if (Utils.MC.player.canResetTimeBySleeping()) {
-            oldWorld = null;
+            finishedThisDay = true;
             Screen screen = Utils.MC.currentScreen;
             if (screen != null) {
                 screen.close();
@@ -71,7 +74,7 @@ public class AutoSleep extends BTProcessWithInitializer {
 
     @Override
     protected void onReset() {
-        oldWorld = null;
+        finishedThisDay = false;
         bedPositions = null;
     }
 
