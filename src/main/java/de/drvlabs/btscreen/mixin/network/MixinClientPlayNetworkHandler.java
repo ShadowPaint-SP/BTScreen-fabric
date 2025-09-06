@@ -53,7 +53,7 @@ public abstract class MixinClientPlayNetworkHandler {
     @Inject(method = "onHealthUpdate", at = @At("TAIL"))
     private void onHealthUpdate(HealthUpdateS2CPacket packet, CallbackInfo ci) {
         AutoEat.onSetFoodLevel(packet.getFood());
-        if (packet.getHealth() <= SAFETY_MIN_HEALTH.getIntegerValue()) {
+        if (packet.getHealth() <= SAFETY_MIN_HEALTH.getIntegerValue() && Utils.isActive()) {
             BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".safety.lowHealth").formatted(Formatting.RED));
             Utils.cancel();
             Teleport.Home.SAFETY.tpToHome();
