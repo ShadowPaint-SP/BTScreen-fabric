@@ -44,6 +44,7 @@ public class AutoTorch extends BTProcessHelper {
                                 .formatted(Formatting.RED));
                         return DEFER;
                     }
+                    Utils.BT.getInputOverrideHandler().clearAllKeys();
                 }
                 case 1 -> Utils.MC.player.getInventory().setSelectedSlot(torchSlot);
                 case 2 -> Utils.MC.player.setPitch(90);

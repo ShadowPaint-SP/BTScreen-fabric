@@ -1,6 +1,7 @@
 package de.drvlabs.btscreen.btprocess;
 
 import baritone.api.process.PathingCommand;
+import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
 
 public abstract class BTProcessWithInitializer extends BTProcessHelper {
@@ -17,6 +18,7 @@ public abstract class BTProcessWithInitializer extends BTProcessHelper {
         if (isSafeToCancel) {
             if (RESET_WAITER.isCompleted()) {
                 RESET_WAITER.start(1);
+                Utils.BT.getInputOverrideHandler().clearAllKeys();
                 onInitialize();
             } else {
                 return onTick();

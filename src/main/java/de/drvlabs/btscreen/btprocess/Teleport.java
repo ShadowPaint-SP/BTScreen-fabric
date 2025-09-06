@@ -155,6 +155,7 @@ public class Teleport extends BTProcessHelper {
         public void tpToHome() {
             if (!isConfigured())
                 return;
+            Utils.BT.getInputOverrideHandler().clearAllKeys();
             String home = this.config.getStringValue();
             if (home.startsWith("/")) {
                 Utils.sendCommand(home.substring(1));
