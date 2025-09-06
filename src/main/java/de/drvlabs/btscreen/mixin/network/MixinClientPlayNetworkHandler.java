@@ -14,6 +14,7 @@ import de.drvlabs.btscreen.btprocess.AutoDrop;
 import de.drvlabs.btscreen.btprocess.AutoEat;
 import de.drvlabs.btscreen.btprocess.AutoHaste;
 import de.drvlabs.btscreen.btprocess.AutoRepair;
+import de.drvlabs.btscreen.btprocess.AutoTorch;
 import de.drvlabs.btscreen.btprocess.Teleport;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
@@ -22,6 +23,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.LightData;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.screen.slot.Slot;
@@ -72,5 +74,10 @@ public abstract class MixinClientPlayNetworkHandler {
             return;
         }
         AutoHaste.onRemoveEffect(packet);
+    }
+
+    @Inject(method = "readLightData", at = @At("TAIL"))
+    private void readLightData(int x, int z, LightData data, boolean bl, CallbackInfo ci) {
+        AutoTorch.onLightData(x, z);
     }
 }

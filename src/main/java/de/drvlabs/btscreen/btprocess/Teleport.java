@@ -167,6 +167,7 @@ public class Teleport extends BTProcessHelper implements BaritoneEvents.Stopped 
             } else {
                 Utils.sendCommand(Configs.Generic.HOME_COMMAND.getStringValue() + " " + home);
             }
+            AutoTorch.onTeleport();
         }
 
         public void setHome() {

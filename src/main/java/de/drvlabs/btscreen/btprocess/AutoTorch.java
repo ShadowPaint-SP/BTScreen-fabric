@@ -18,16 +18,18 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.LightType;
 
 public class AutoTorch extends BTProcessHelper {
+    private static boolean hasLightData = false;
     private int tick = 0;
     private int torchSlot;
 
     @Override
     public boolean isActive() {
-        return isActive(AUTO_TORCH) && (tick > 0 || isValid());
+        return isActive(AUTO_TORCH) && hasLightData && (tick > 0 || isValid());
     }
 
     @Override
@@ -58,9 +60,7 @@ public class AutoTorch extends BTProcessHelper {
                 }
                 case 5 -> Utils.MC.player.setSneaking(false);
                 case 6 -> Utils.MC.player.setPitch(0);
-                default -> {
-                    tick = -1;
-                }
+                default -> tick = -1;
             }
             tick++;
         }
@@ -78,6 +78,17 @@ public class AutoTorch extends BTProcessHelper {
             return super.priority() + 0.06;
         }
         return super.priority() - 0.02;
+    }
+
+    public static void onLightData(int x, int z) {
+        ChunkPos chunkPos = Utils.MC.player.getChunkPos();
+        if (chunkPos.x == x && chunkPos.z == z) {
+            hasLightData = true;
+        }
+    }
+
+    public static void onTeleport() {
+        hasLightData = false;
     }
 
     private static boolean isValid() {
