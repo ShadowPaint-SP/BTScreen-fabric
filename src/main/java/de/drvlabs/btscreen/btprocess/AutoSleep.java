@@ -40,7 +40,7 @@ public class AutoSleep extends BTProcessWithInitializer {
         Identifier mineWorld = Teleport.Home.MINE.getWorld();
         if (finishedThisDay) {
             if (mineWorld.equals(Utils.getWorldId()) && !isNight()) {
-                finishedThisDay = false;
+                onLostControl();
             }
             return DEFER;
         }
@@ -48,6 +48,7 @@ public class AutoSleep extends BTProcessWithInitializer {
             AUTO_SLEEP.setBooleanValue(false);
             BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoSleep.wrongDimension")
                     .formatted(Formatting.RED));
+            return DEFER;
         }
         if (!Utils.MC.player.isSleeping()) {
             if (bedPositions == null) {
