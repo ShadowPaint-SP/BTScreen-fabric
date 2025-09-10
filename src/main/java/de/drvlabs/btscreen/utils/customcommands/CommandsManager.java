@@ -1,15 +1,12 @@
 package de.drvlabs.btscreen.utils.customcommands;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import de.drvlabs.btscreen.utils.Utils;
-import de.drvlabs.btscreen.utils.Waiter;
 import fi.dy.masa.malilib.util.JsonUtils;
 
 public class CommandsManager {
@@ -25,20 +22,6 @@ public class CommandsManager {
 
 	public void removeCommand(Commands command) {
 		commands.remove(command);
-	}
-
-	public boolean executeCommand(Commands command) {
-		if (command != null) {
-			final Iterator<String> iterator = List.of(command.getCommand().split(";")).iterator();
-			Waiter.wait(1, w -> {
-				if (iterator.hasNext()) {
-					Utils.sendCommand(iterator.next());
-					w.start(1);
-				}
-			});
-			return true;
-		}
-		return false;
 	}
 
 	public void clear() {

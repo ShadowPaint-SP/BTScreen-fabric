@@ -92,7 +92,7 @@ public class WidgetCommand extends WidgetListEntryBase<Commands> {
 		public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
 			switch (this.type) {
 				case ButtonType.EXECUTE:
-					this.widget.manager.executeCommand(this.widget.command);
+					this.widget.command.executeCommand();
 					GuiBase.openGui(null);
 					break;
 				case ButtonType.CONFIGURE:

@@ -330,7 +330,7 @@ public class GuiMainMenu extends GuiBase {
 					return;
 				case Type.COMMAND:
 					if (this.command != null) {
-						Utils.sendCommand(this.command.getCommand());
+						this.command.executeCommand();
 					}
 					return;
 				case Type.PAUSE_RESUME:
