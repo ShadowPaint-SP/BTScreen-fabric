@@ -1,5 +1,7 @@
 package de.drvlabs.btscreen.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import baritone.api.BaritoneAPI;
 import baritone.api.IBaritone;
 import baritone.api.process.IBaritoneProcess;
@@ -81,6 +83,9 @@ public class Utils {
     public static void sendCommand(String command) {
         if (!isInGame())
             return;
-        MC.getNetworkHandler().sendChatCommand(command);
+        String normalizeCommand = StringUtils.normalizeSpace(command.trim());
+        if (normalizeCommand.isEmpty())
+            return;
+        MC.getNetworkHandler().sendChatCommand(normalizeCommand);
     }
 }
