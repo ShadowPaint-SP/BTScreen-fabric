@@ -1,5 +1,7 @@
 package de.drvlabs.btscreen.utils.customcommands;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
@@ -7,6 +9,8 @@ import org.jetbrains.annotations.Nullable;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import de.drvlabs.btscreen.utils.Utils;
+import de.drvlabs.btscreen.utils.Waiter;
 import fi.dy.masa.malilib.util.JsonUtils;
 
 public class Commands {
@@ -36,6 +40,17 @@ public class Commands {
 		this.command = command;
 	}
 
+	public boolean executeCommand() {
+		final Iterator<String> iterator = List.of(getCommand().split(";")).iterator();
+		Waiter.wait(1, w -> {
+			if (iterator.hasNext()) {
+				Utils.sendCommand(iterator.next());
+				w.start(1);
+			}
+		});
+		return true;
+	}
+
 	@Nullable
 	public JsonObject toJson() {
 		JsonObject obj = new JsonObject();
@@ -53,7 +68,8 @@ public class Commands {
 		if (JsonUtils.hasString(obj, "name") &&
 				JsonUtils.hasString(obj, "command")) {
 
-			UUID hashCode = JsonUtils.hasString(obj, "hash_code") ? UUID.fromString(JsonUtils.getString(obj, "hash_code"))
+			UUID hashCode = JsonUtils.hasString(obj, "hash_code")
+					? UUID.fromString(JsonUtils.getString(obj, "hash_code"))
 					: null;
 			String name = obj.get("name").getAsString();
 			String command = obj.get("command").getAsString();
