@@ -14,6 +14,7 @@ public class BTActiveListener extends BTProcessHelper {
             Utils.BT.getFarmProcess(),
             Utils.BT.getMineProcess(),
             Utils.BT.getBuilderProcess(),
+            Utils.BT.getFollowProcess(),
             Utils.BT.getExploreProcess(),
             Utils.BT.getCustomGoalProcess(),
             Utils.BT.getGetToBlockProcess());
