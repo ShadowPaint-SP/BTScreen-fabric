@@ -22,6 +22,7 @@
   "btscreen.gui.button.selDelete": "Sel Clear",
   "btscreen.gui.button.hover.selDeleteInfoText": "Deletes all existing selections",
   "btscreen.gui.button.selUndo": "Sel Undo",
+  "btscreen.gui.button.selchunk": "Sel Chunk",
   "btscreen.gui.button.up": "Up",
   "btscreen.gui.button.down": "Down",
   "btscreen.gui.button.north": "North",

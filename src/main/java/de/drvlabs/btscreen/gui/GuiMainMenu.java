@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
+import baritone.api.selection.ISelectionManager;
+import baritone.api.utils.BetterBlockPos;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.config.DataManager;
@@ -22,6 +24,7 @@ import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.ChunkPos;
 
 public class GuiMainMenu extends GuiBase {
 	private final int textColor = 0xFEFEFEFE;
@@ -46,11 +49,12 @@ public class GuiMainMenu extends GuiBase {
 		this.addLabel(x, y, width, 20, textColor, LangKeys.GUI_SECTION + ".label.selManagement");
 		y += 22;
 		x += 5;
+		this.createButton(x, y + 22, -1, ButtonListener.Type.SELCHUNK, false);
 		x += this.createButton(x, y, -1, ButtonListener.Type.SELPOSONE, false);
 		x += this.createButton(x, y, -1, ButtonListener.Type.SELPOSTWO, false);
 		x += this.createButton(x, y, -1, ButtonListener.Type.SELDELETE, false);
 		x += this.createButton(x, y, -1, ButtonListener.Type.SELUNDO, false);
-
+		y += 22;
 		////////////////////////////////////////////////// Bot Control
 		y += 30;
 		x = 12;
@@ -301,6 +305,9 @@ public class GuiMainMenu extends GuiBase {
 				case Type.SELUNDO:
 					Utils.execute("sel undo");
 					return;
+				case Type.SELCHUNK:
+					selectCurrentChunk();
+					return;
 				case Type.SHIFTX:
 					Utils.execute("sel shift all east " + amount);
 					return;
@@ -374,6 +381,15 @@ public class GuiMainMenu extends GuiBase {
 
 		}
 
+		private void selectCurrentChunk() {
+			ISelectionManager selectionManager = Utils.BT.getSelectionManager();
+			ChunkPos chunkPos = Utils.MC.player.getChunkPos();
+			BetterBlockPos corner1 = new BetterBlockPos(chunkPos.getStartPos().down(59));
+			BetterBlockPos corner2 = new BetterBlockPos(
+					chunkPos.getStartPos().add(15, Utils.MC.world.getChunk(corner1).getHighestNonEmptySection() * 16 - 48, 15));
+			selectionManager.addSelection(corner1, corner2);
+		}
+
 		public enum Type {
 			CONFIGURATION(LangKeys.GUI_BUTTON + ".configuration_menu", ButtonIcons.CONFIGURATION),
 			START(LangKeys.GUI_BUTTON + ".startBot", ButtonIcons.RUNNER),
@@ -398,7 +414,8 @@ public class GuiMainMenu extends GuiBase {
 			SEL_SHELL(LangKeys.GUI_BUTTON + ".sel_shell", null),
 			SEL_REPLACE(LangKeys.GUI_BUTTON + ".sel_replace", null),
 			SEL_COPY(LangKeys.GUI_BUTTON + ".sel_copy", null),
-			SEL_PASTE(LangKeys.GUI_BUTTON + ".sel_paste", null);
+			SEL_PASTE(LangKeys.GUI_BUTTON + ".sel_paste", null),
+			SELCHUNK(LangKeys.GUI_BUTTON + ".selchunk", null);
 
 			private final String translationKey;
 			private final ButtonIcons icon;
