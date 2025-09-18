@@ -3,6 +3,7 @@
   "package": "de.drvlabs.btscreen.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "baritone.MixinSetCommand",
     "network.MixinClientPlayNetworkHandler",
     "network.MixinClientPlayerInteractionManager"
   ],

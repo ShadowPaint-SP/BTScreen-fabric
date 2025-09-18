@@ -8,57 +8,133 @@ import com.google.common.collect.ImmutableList;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
+import baritone.api.utils.SettingsUtil;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
+import de.drvlabs.btscreen.config.LangKeys;
+import de.drvlabs.btscreen.utils.Utils;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
+import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 
 public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
-    DEFAULT {
+    NONE(true) {
         @Override
-        public void setSettings() {
-            bt.allowBreak.value = true;
-            bt.allowPlace.value = true;
-            bt.buildInLayers.value = true;
-            bt.blockBreakSpeed.value = 0;
-            bt.layerHeight.value = 5;
-            bt.layerOrder.value = true;
-            bt.itemSaver.value = true;
-            bt.itemSaverThreshold.value = 10;
-            bt.randomLooking.value = (double) 0;
-            bt.randomLooking113.value = (double) 0;
-            List<Block> blocksToDisallowBreaking = Configs.Lists.DEFAULT_BLOCKS_TO_DISALLOW_BREAKING
+        public boolean setSettings() {
+            return true;
+        }
+
+        @Override
+        public String getCommand(GuiBase gui) {
+            return "sel cleararea";
+        }
+    },
+    CLEAR_AREA(false) {
+        @Override
+        public boolean setSettings() {
+            resetSettings();
+            SETTINGS.allowBreak.value = true;
+            SETTINGS.allowPlace.value = true;
+            SETTINGS.buildInLayers.value = true;
+            SETTINGS.buildRepeatCount.value = 0;
+            SETTINGS.blockBreakSpeed.value = 0;
+            SETTINGS.layerHeight.value = 5;
+            SETTINGS.layerOrder.value = true;
+            SETTINGS.itemSaver.value = true;
+            SETTINGS.itemSaverThreshold.value = 10;
+            SETTINGS.randomLooking.value = (double) 0;
+            SETTINGS.randomLooking113.value = (double) 0;
+            List<Block> blocksToDisallowBreaking = Configs.Lists.CLEAR_AREA_BLOCKS_TO_DISALLOW_BREAKING
                     .getStrings().stream().map(string -> Registries.BLOCK.get(Identifier.tryParse(string)))
                     .filter(Objects::nonNull).toList();
             List<Block> blocksToIgnore = Stream.concat(blocksToDisallowBreaking.stream(),
-                    Configs.Lists.DEFAULT_BLOCKS_TO_IGNORE.getStrings().stream()
+                    Configs.Lists.CLEAR_AREA_BLOCKS_TO_IGNORE.getStrings().stream()
                             .map(string -> Registries.BLOCK.get(Identifier.tryParse(string))).filter(Objects::nonNull)
                             .toList().stream())
                     .toList();
-            bt.blocksToDisallowBreaking.value = blocksToDisallowBreaking; // Blocks that cant be mined
+            SETTINGS.blocksToDisallowBreaking.value = blocksToDisallowBreaking; // Blocks that cant be mined
             // Blocks that should be ignored in the selection
             if (Configs.Generic.AUTO_TORCH.getBooleanValue()) {
-                bt.buildIgnoreBlocks.value = Stream.concat(blocksToIgnore.stream(),
+                SETTINGS.buildIgnoreBlocks.value = Stream.concat(blocksToIgnore.stream(),
                         Stream.of(Blocks.TORCH, Blocks.WALL_TORCH)).toList();
             } else {
-                bt.buildIgnoreBlocks.value = blocksToIgnore;
+                SETTINGS.buildIgnoreBlocks.value = blocksToIgnore;
             }
             setAcceptableThrowawayItems();
+            return true;
+        }
+
+        @Override
+        public String getCommand(GuiBase gui) {
+            return "sel cleararea";
         }
     },
-    FARM {
+    REMOVE_LIQUID(false) {
         @Override
-        public void setSettings() {
-            bt.allowBreak.value = false;
-            bt.allowPlace.value = false;
-            bt.buildInLayers.value = false;
-            bt.randomLooking.value = (double) 0;
-            bt.randomLooking113.value = (double) 0;
+        public boolean setSettings() {
+            resetSettings();
+            // SETTINGS.buildInLayers.value = true;
+            SETTINGS.blockBreakSpeed.value = 0;
+            // SETTINGS.layerHeight.value = 1;
+            // SETTINGS.layerOrder.value = true;
+            SETTINGS.itemSaver.value = true;
+            SETTINGS.itemSaverThreshold.value = 10;
+            SETTINGS.randomLooking.value = (double) 0;
+            SETTINGS.randomLooking113.value = (double) 0;
+            // SETTINGS.buildRepeatSneaky.value = false;
+            // SETTINGS.buildRepeat.value = Vec3i.ZERO.down();
+            // SETTINGS.buildRepeatCount.value = y - Utils.MC.world.getBottomY() - 3; // Ignore 4 layers of bedrock
+            return true;
+        }
+
+        private final Item[] possibleBlocks = {
+                Items.NETHERRACK,
+                Items.RESIN_BLOCK,
+                Items.MOSS_BLOCK,
+                Items.DIRT,
+                Items.STONE,
+        };
+
+        @Override
+        public String getCommand(GuiBase gui) {
+            Item bestItem = null;
+            int maxCount = 0;
+
+            for (Item item : possibleBlocks) {
+                int count = Utils.MC.player.getInventory().count(item);
+                if (count > maxCount) {
+                    maxCount = count;
+                    bestItem = item;
+                }
+            }
+
+            if (bestItem != null) {
+                Identifier id = Registries.ITEM.getId(bestItem);
+                return "sel replace lava water " + id;
+            } else {
+                gui.addMessage(MessageType.ERROR, 1000, LangKeys.INFO + ".removeLiquid.noUsableItem");
+                return null;
+            }
+        }
+    },
+    FARMING(true) {
+        @Override
+        public boolean setSettings() {
+            resetSettings();
+            SETTINGS.allowBreak.value = false;
+            SETTINGS.allowPlace.value = false;
+            SETTINGS.buildInLayers.value = false;
+            SETTINGS.buildRepeatCount.value = 0;
+            SETTINGS.randomLooking.value = (double) 0;
+            SETTINGS.randomLooking113.value = (double) 0;
             List<Block> blocksToDisallowBreaking = Configs.Lists.FARM_BLOCKS_TO_DISALLOW_BREAKING
                     .getStrings().stream().map(string -> Registries.BLOCK.get(Identifier.tryParse(string)))
                     .filter(Objects::nonNull).toList();
@@ -67,37 +143,43 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
                             .map(string -> Registries.BLOCK.get(Identifier.tryParse(string))).filter(Objects::nonNull)
                             .toList().stream())
                     .toList();
-            bt.blocksToDisallowBreaking.value = blocksToDisallowBreaking; // Blocks that cant be mined
-            bt.buildIgnoreBlocks.value = blocksToIgnore; // Blocks that should be ignored in the selection
+            SETTINGS.blocksToDisallowBreaking.value = blocksToDisallowBreaking; // Blocks that cant be mined
+            SETTINGS.buildIgnoreBlocks.value = blocksToIgnore; // Blocks that should be ignored in the selection
             setAcceptableThrowawayItems();
+            return true;
+        }
+
+        @Override
+        public String getCommand(GuiBase gui) {
+            return "farm";
         }
     },
-    LIQUID {
+    BUILDING(false) {
         @Override
-        public void setSettings() {
-            bt.allowBreak.value = true;
-            bt.okIfWater.value = false;
-            bt.allowPlace.value = true;
-            bt.buildInLayers.value = true;
-            bt.layerOrder.value = true;
-            bt.layerHeight.value = 1;
+        public boolean setSettings() {
+            resetSettings();
+            SETTINGS.buildInLayers.value = true;
+            SETTINGS.buildRepeatCount.value = 0;
+            SETTINGS.layerOrder.value = false;
+            SETTINGS.layerHeight.value = 1;
+            return true;
         }
-    },
-    BUILDING {
+
         @Override
-        public void setSettings() {
-            bt.buildInLayers.value = true;
-            bt.layerOrder.value = false;
-            bt.layerHeight.value = 1;
+        public String getCommand(GuiBase gui) {
+            // TODO: Pass number of selected
+            return "litematica";
         }
     };
 
-    private static final Settings bt = BaritoneAPI.getSettings();
+    private static final Settings SETTINGS = BaritoneAPI.getSettings();
 
     private final String configString;
+    public final boolean additionalControls;
 
-    PresetMode() {
+    PresetMode(boolean additionalControls) {
         this.configString = this.name().toLowerCase();
+        this.additionalControls = additionalControls;
     }
 
     @Override
@@ -137,18 +219,39 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
                 return mode;
             }
         }
-        return DEFAULT;
+        return NONE;
     }
 
-    public abstract void setSettings();
+    public abstract boolean setSettings();
+
+    public abstract String getCommand(GuiBase gui);
+
+    private static boolean shouldLoadPreviousSettings = false;
+
+    public static boolean overwroteSettings() {
+        return shouldLoadPreviousSettings;
+    }
+
+    private static void resetSettings() {
+        shouldLoadPreviousSettings = true;
+        SettingsUtil.modifiedSettings(SETTINGS).forEach(Settings.Setting::reset);
+    }
+
+    public static void loadPreviousSettings() {
+        if (!shouldLoadPreviousSettings)
+            return;
+        resetSettings();
+        shouldLoadPreviousSettings = false;
+        SettingsUtil.readAndApply(SETTINGS, SettingsUtil.SETTINGS_DEFAULT_NAME);
+    }
 
     private static void setAcceptableThrowawayItems() {
-        bt.acceptableThrowawayItems.value = Configs.Lists.ACCEPTABLE_THROWAWAY_ITEMS
+        SETTINGS.acceptableThrowawayItems.value = Configs.Lists.ACCEPTABLE_THROWAWAY_ITEMS
                 .getStrings().stream().map(string -> Registries.ITEM.get(Identifier.tryParse(string)))
                 .filter(Objects::nonNull).toList();
     }
 
-    public static final ImmutableList<String> DEFAULT_BLOCKS_TO_IGNORE = ImmutableList.of(
+    public static final ImmutableList<String> CLEAR_AREA_BLOCKS_TO_IGNORE = ImmutableList.of(
             "torch",
             "wall_torch",
             "vine",
@@ -175,7 +278,7 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
             "amethyst_cluster",
             "dragon_egg");
 
-    public static final ImmutableList<String> DEFAULT_ACCEPTABLE_THROWAWAY_ITEMS = ImmutableList.of("grass_block",
+    public static final ImmutableList<String> CLEAR_AREA_ACCEPTABLE_THROWAWAY_ITEMS = ImmutableList.of("grass_block",
             "dirt",
             "cobblestone",
             "stone",
@@ -186,7 +289,7 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
             "soul_soil",
             "basalt");
 
-    public static final ImmutableList<String> DEFAULT_BLOCKS_TO_DISALLOW_BREAKING = ImmutableList.of(
+    public static final ImmutableList<String> CLEAR_AREA_BLOCKS_TO_DISALLOW_BREAKING = ImmutableList.of(
             // other
             "vault",
             "trial_spawner",
@@ -240,8 +343,7 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
             "jigsaw",
             "barrier");
 
-    public static final ImmutableList<String> FARM_BLOCKS_TO_IGNORE = ImmutableList.of(
+    public static final ImmutableList<String> FARMING_BLOCKS_TO_IGNORE = ImmutableList.of(
             "budding_amethyst",
             "dragon_egg");
-
 }

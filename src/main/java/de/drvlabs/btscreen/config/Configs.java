@@ -101,24 +101,24 @@ public class Configs implements IConfigHandler {
                 ImmutableList.of("small_amethyst_bud", " medium_amethyst_bud", "large_amethyst_bud",
                         "amethyst_cluster"));
         public static final ConfigString BLOCK_TO_REPLACE_WITH = new ConfigString("blockToReplaceWith", "air");
-        public static final ConfigStringList DEFAULT_BLOCKS_TO_DISALLOW_BREAKING = new ConfigStringList(
-                "defaultBlocksToDisallowBreaking", PresetMode.DEFAULT_BLOCKS_TO_DISALLOW_BREAKING);
-        public static final ConfigStringList DEFAULT_BLOCKS_TO_IGNORE = new ConfigStringList("defaultBlocksToIgnore",
-                PresetMode.DEFAULT_BLOCKS_TO_IGNORE);
+        public static final ConfigStringList CLEAR_AREA_BLOCKS_TO_DISALLOW_BREAKING = new ConfigStringList(
+                "clearAreaBlocksToDisallowBreaking", PresetMode.CLEAR_AREA_BLOCKS_TO_DISALLOW_BREAKING);
+        public static final ConfigStringList CLEAR_AREA_BLOCKS_TO_IGNORE = new ConfigStringList("clearAreaBlocksToIgnore",
+                PresetMode.CLEAR_AREA_BLOCKS_TO_IGNORE);
         public static final ConfigStringList FARM_BLOCKS_TO_DISALLOW_BREAKING = new ConfigStringList(
-                "farmBlocksToDisallowBreaking", PresetMode.DEFAULT_BLOCKS_TO_DISALLOW_BREAKING);
+                "farmBlocksToDisallowBreaking", PresetMode.CLEAR_AREA_BLOCKS_TO_DISALLOW_BREAKING);
         public static final ConfigStringList FARM_BLOCKS_TO_IGNORE = new ConfigStringList("farmBlocksToIgnore",
-                PresetMode.FARM_BLOCKS_TO_IGNORE);
+                PresetMode.FARMING_BLOCKS_TO_IGNORE);
         public static final ConfigStringList ACCEPTABLE_THROWAWAY_ITEMS = new ConfigStringList(
-                "acceptableThrowawayItems", PresetMode.DEFAULT_ACCEPTABLE_THROWAWAY_ITEMS);
+                "acceptableThrowawayItems", PresetMode.CLEAR_AREA_ACCEPTABLE_THROWAWAY_ITEMS);
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 PROCESS_CHANGES_BLACKLIST,
                 INV_PRESERVE_ITEM_BLACKLIST,
                 BLOCKS_TO_GET_REPLACED,
                 BLOCK_TO_REPLACE_WITH,
-                DEFAULT_BLOCKS_TO_DISALLOW_BREAKING,
-                DEFAULT_BLOCKS_TO_IGNORE,
+                CLEAR_AREA_BLOCKS_TO_DISALLOW_BREAKING,
+                CLEAR_AREA_BLOCKS_TO_IGNORE,
                 FARM_BLOCKS_TO_DISALLOW_BREAKING,
                 FARM_BLOCKS_TO_IGNORE,
                 ACCEPTABLE_THROWAWAY_ITEMS);
