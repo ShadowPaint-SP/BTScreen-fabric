@@ -12,6 +12,7 @@ import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.config.LangKeys;
+import de.drvlabs.btscreen.utils.LayeredSelection;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.customcommands.Commands;
 import de.drvlabs.btscreen.utils.preset.PresetMode;
@@ -370,9 +371,14 @@ public class GuiMainMenu extends GuiBase {
 				case Type.SEL_REPLACE:
 					updateBlocksToReplace();
 					updateBlockToPlace();
-					Utils.executeBuild("sel replace "
+					String replaceCmd = "sel replace "
 							+ String.join(" ", Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings()) + " "
-							+ Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
+							+ Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue();
+					if (DataManager.DIMENSION.getPresetMode().equals(PresetMode.LIQUID)) {
+						LayeredSelection.startFromCurrentSelection(replaceCmd);
+					} else {
+						Utils.executeBuild(replaceCmd);
+					}
 					return;
 				case Type.SEL_COPY:
 					Utils.execute("sel copy");
@@ -384,15 +390,6 @@ public class GuiMainMenu extends GuiBase {
 					break;
 			}
 
-		}
-
-		private void selectCurrentChunk() {
-			ISelectionManager selectionManager = Utils.BT.getSelectionManager();
-			ChunkPos chunkPos = Utils.MC.player.getChunkPos();
-			BetterBlockPos corner1 = new BetterBlockPos(chunkPos.getStartPos().down(59));
-			BetterBlockPos corner2 = new BetterBlockPos(
-					chunkPos.getStartPos().add(15, Utils.MC.world.getChunk(corner1).getHighestNonEmptySection() * 16 - 48, 15));
-			selectionManager.addSelection(corner1, corner2);
 		}
 
 		public enum Type {
@@ -438,6 +435,15 @@ public class GuiMainMenu extends GuiBase {
 				return this.icon;
 			}
 		}
+	}
+
+	public static void selectCurrentChunk() {
+		ISelectionManager selectionManager = Utils.BT.getSelectionManager();
+		ChunkPos chunkPos = Utils.MC.player.getChunkPos();
+		BetterBlockPos corner1 = new BetterBlockPos(chunkPos.getStartPos().down(59));
+		BetterBlockPos corner2 = new BetterBlockPos(
+				chunkPos.getStartPos().add(15, Utils.MC.world.getChunk(corner1).getHighestNonEmptySection() * 16 - 48, 15));
+		selectionManager.addSelection(corner1, corner2);
 	}
 
 	public static class ButtonListenerChangeMenu implements IButtonActionListener {
