@@ -374,7 +374,7 @@ public class GuiMainMenu extends GuiBase {
 					String replaceCmd = "sel replace "
 							+ String.join(" ", Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings()) + " "
 							+ Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue();
-					if (DataManager.DIMENSION.getPresetMode().equals(PresetMode.LIQUID)) {
+					if (DataManager.DIMENSION.getPresetMode().equals(PresetMode.REMOVE_LIQUID)) {
 						LayeredSelection.startFromCurrentSelection(replaceCmd);
 					} else {
 						Utils.executeBuild(replaceCmd);

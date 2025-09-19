@@ -188,7 +188,11 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
     private static void resetSettings() {
         shouldLoadPreviousSettings = true;
         SettingsUtil.modifiedSettings(SETTINGS).forEach(Settings.Setting::reset);
-        Waiter.wait(2, w -> loadPreviousSettings());
+        Waiter.wait(2, w -> {
+            if (!Utils.isActive()) {
+                loadPreviousSettings();
+            }
+        });
     }
 
     public static void loadPreviousSettings() {

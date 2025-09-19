@@ -118,7 +118,7 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
 		BTScreen.debugLog("Baritone is inactive. canceled: " + canceled);
 		RepeatAction.baritoneStopped(canceled);
 		LayeredSelection.onBaritoneStopped(canceled);
-    PresetMode.loadPreviousSettings();
+		PresetMode.loadPreviousSettings();
 		if (!canceled) {
 			Teleport.Home.FINISHED.tpToHome();
 		}
