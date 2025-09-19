@@ -1,6 +1,5 @@
 package de.drvlabs.btscreen.utils.preset;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -13,7 +12,9 @@ import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
+import de.drvlabs.btscreen.utils.Waiter;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
+import fi.dy.masa.malilib.config.options.ConfigStringList;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -22,6 +23,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 
@@ -40,35 +43,11 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
     CLEAR_AREA(false) {
         @Override
         public boolean setSettings() {
-            resetSettings();
-            SETTINGS.allowBreak.value = true;
-            SETTINGS.allowPlace.value = true;
+            setCommonMiningSettings();
             SETTINGS.buildInLayers.value = true;
             SETTINGS.buildRepeatCount.value = 0;
-            SETTINGS.blockBreakSpeed.value = 0;
             SETTINGS.layerHeight.value = 5;
             SETTINGS.layerOrder.value = true;
-            SETTINGS.itemSaver.value = true;
-            SETTINGS.itemSaverThreshold.value = 10;
-            SETTINGS.randomLooking.value = (double) 0;
-            SETTINGS.randomLooking113.value = (double) 0;
-            List<Block> blocksToDisallowBreaking = Configs.Lists.CLEAR_AREA_BLOCKS_TO_DISALLOW_BREAKING
-                    .getStrings().stream().map(string -> Registries.BLOCK.get(Identifier.tryParse(string)))
-                    .filter(Objects::nonNull).toList();
-            List<Block> blocksToIgnore = Stream.concat(blocksToDisallowBreaking.stream(),
-                    Configs.Lists.CLEAR_AREA_BLOCKS_TO_IGNORE.getStrings().stream()
-                            .map(string -> Registries.BLOCK.get(Identifier.tryParse(string))).filter(Objects::nonNull)
-                            .toList().stream())
-                    .toList();
-            SETTINGS.blocksToDisallowBreaking.value = blocksToDisallowBreaking; // Blocks that cant be mined
-            // Blocks that should be ignored in the selection
-            if (Configs.Generic.AUTO_TORCH.getBooleanValue()) {
-                SETTINGS.buildIgnoreBlocks.value = Stream.concat(blocksToIgnore.stream(),
-                        Stream.of(Blocks.TORCH, Blocks.WALL_TORCH)).toList();
-            } else {
-                SETTINGS.buildIgnoreBlocks.value = blocksToIgnore;
-            }
-            setAcceptableThrowawayItems();
             return true;
         }
 
@@ -80,18 +59,8 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
     REMOVE_LIQUID(false) {
         @Override
         public boolean setSettings() {
-            resetSettings();
-            // SETTINGS.buildInLayers.value = true;
-            SETTINGS.blockBreakSpeed.value = 0;
-            // SETTINGS.layerHeight.value = 1;
-            // SETTINGS.layerOrder.value = true;
-            SETTINGS.itemSaver.value = true;
-            SETTINGS.itemSaverThreshold.value = 10;
-            SETTINGS.randomLooking.value = (double) 0;
-            SETTINGS.randomLooking113.value = (double) 0;
-            // SETTINGS.buildRepeatSneaky.value = false;
-            // SETTINGS.buildRepeat.value = Vec3i.ZERO.down();
-            // SETTINGS.buildRepeatCount.value = y - Utils.MC.world.getBottomY() - 3; // Ignore 4 layers of bedrock
+            setCommonMiningSettings();
+            SETTINGS.allowInventory.value = true;
             return true;
         }
 
@@ -120,7 +89,7 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
                 Identifier id = Registries.ITEM.getId(bestItem);
                 return "sel replace lava water " + id;
             } else {
-                gui.addMessage(MessageType.ERROR, 1000, LangKeys.INFO + ".removeLiquid.noUsableItem");
+                sendMessage(gui, MessageType.ERROR, LangKeys.INFO + ".removeLiquid.noUsableItem");
                 return null;
             }
         }
@@ -128,24 +97,9 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
     FARMING(true) {
         @Override
         public boolean setSettings() {
-            resetSettings();
+            setCommonSettings();
             SETTINGS.allowBreak.value = false;
             SETTINGS.allowPlace.value = false;
-            SETTINGS.buildInLayers.value = false;
-            SETTINGS.buildRepeatCount.value = 0;
-            SETTINGS.randomLooking.value = (double) 0;
-            SETTINGS.randomLooking113.value = (double) 0;
-            List<Block> blocksToDisallowBreaking = Configs.Lists.FARM_BLOCKS_TO_DISALLOW_BREAKING
-                    .getStrings().stream().map(string -> Registries.BLOCK.get(Identifier.tryParse(string)))
-                    .filter(Objects::nonNull).toList();
-            List<Block> blocksToIgnore = Stream.concat(blocksToDisallowBreaking.stream(),
-                    Configs.Lists.FARM_BLOCKS_TO_IGNORE.getStrings().stream()
-                            .map(string -> Registries.BLOCK.get(Identifier.tryParse(string))).filter(Objects::nonNull)
-                            .toList().stream())
-                    .toList();
-            SETTINGS.blocksToDisallowBreaking.value = blocksToDisallowBreaking; // Blocks that cant be mined
-            SETTINGS.buildIgnoreBlocks.value = blocksToIgnore; // Blocks that should be ignored in the selection
-            setAcceptableThrowawayItems();
             return true;
         }
 
@@ -157,9 +111,8 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
     BUILDING(false) {
         @Override
         public boolean setSettings() {
-            resetSettings();
+            setCommonSettings();
             SETTINGS.buildInLayers.value = true;
-            SETTINGS.buildRepeatCount.value = 0;
             SETTINGS.layerOrder.value = false;
             SETTINGS.layerHeight.value = 1;
             return true;
@@ -235,6 +188,7 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
     private static void resetSettings() {
         shouldLoadPreviousSettings = true;
         SettingsUtil.modifiedSettings(SETTINGS).forEach(Settings.Setting::reset);
+        Waiter.wait(2, w -> loadPreviousSettings());
     }
 
     public static void loadPreviousSettings() {
@@ -245,13 +199,49 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
         SettingsUtil.readAndApply(SETTINGS, SettingsUtil.SETTINGS_DEFAULT_NAME);
     }
 
-    private static void setAcceptableThrowawayItems() {
+    private static void setCommonSettings() {
+        resetSettings();
+        SETTINGS.blockBreakSpeed.value = 0;
+        SETTINGS.itemSaver.value = true;
+        SETTINGS.itemSaverThreshold.value = 10;
+        SETTINGS.randomLooking.value = (double) 0;
+        SETTINGS.randomLooking113.value = (double) 0;
         SETTINGS.acceptableThrowawayItems.value = Configs.Lists.ACCEPTABLE_THROWAWAY_ITEMS
                 .getStrings().stream().map(string -> Registries.ITEM.get(Identifier.tryParse(string)))
                 .filter(Objects::nonNull).toList();
     }
 
-    public static final ImmutableList<String> CLEAR_AREA_BLOCKS_TO_IGNORE = ImmutableList.of(
+    private static void setCommonMiningSettings() {
+        setCommonSettings();
+        SETTINGS.blocksToDisallowBreaking.value = getBlockStream(Configs.Lists.BLOCKS_TO_DISALLOW_BREAKING).toList();
+        SETTINGS.buildIgnoreBlocks.value = Stream.concat(SETTINGS.blocksToDisallowBreaking.value.stream(),
+                getBlockStream(Configs.Lists.BLOCKS_TO_IGNORE)).distinct().toList();
+        if (Configs.Generic.AUTO_TORCH.getBooleanValue()) {
+            SETTINGS.buildIgnoreBlocks.value = Stream.concat(SETTINGS.buildIgnoreBlocks.value.stream(),
+                    Stream.of(Blocks.TORCH, Blocks.WALL_TORCH))
+                    .distinct().toList();
+        }
+    }
+
+    private static Stream<Block> getBlockStream(ConfigStringList config) {
+        return config.getStrings().stream().map(string -> Registries.BLOCK.get(Identifier.tryParse(string)))
+                .filter(Objects::nonNull).distinct();
+    }
+
+    private static void sendMessage(GuiBase gui, MessageType type, String messageKey, Object... args) {
+        if (gui != null) {
+            gui.addMessage(type, 1000, messageKey, args);
+        } else {
+            BTScreen.chatMessage(Text.translatable(messageKey, args).formatted(switch (type) {
+                case ERROR -> Formatting.RED;
+                case INFO -> Formatting.WHITE;
+                case SUCCESS -> Formatting.GREEN;
+                case WARNING -> Formatting.GOLD;
+            }));
+        }
+    }
+
+    public static final ImmutableList<String> BLOCKS_TO_IGNORE = ImmutableList.of(
             "torch",
             "wall_torch",
             "vine",
@@ -278,7 +268,7 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
             "amethyst_cluster",
             "dragon_egg");
 
-    public static final ImmutableList<String> CLEAR_AREA_ACCEPTABLE_THROWAWAY_ITEMS = ImmutableList.of("grass_block",
+    public static final ImmutableList<String> ACCEPTABLE_THROWAWAY_ITEMS = ImmutableList.of("grass_block",
             "dirt",
             "cobblestone",
             "stone",
@@ -289,7 +279,7 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
             "soul_soil",
             "basalt");
 
-    public static final ImmutableList<String> CLEAR_AREA_BLOCKS_TO_DISALLOW_BREAKING = ImmutableList.of(
+    public static final ImmutableList<String> BLOCKS_TO_DISALLOW_BREAKING = ImmutableList.of(
             // other
             "vault",
             "trial_spawner",
@@ -342,8 +332,4 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
             "structure_void",
             "jigsaw",
             "barrier");
-
-    public static final ImmutableList<String> FARMING_BLOCKS_TO_IGNORE = ImmutableList.of(
-            "budding_amethyst",
-            "dragon_egg");
 }
