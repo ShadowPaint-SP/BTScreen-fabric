@@ -24,11 +24,14 @@ public class SelectionOrchestrator extends BTProcessHelper {
 
     @Override
     public boolean isActive() {
-        return layerCommands != null && !Utils.BT.getBuilderProcess().isActive();
+        return layerCommands != null;
     }
 
     @Override
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
+        if (Utils.BT.getBuilderProcess().isActive()) {
+            return REQUEST_PAUSE;
+        }
         if (isSafeToCancel) {
             if (currentY == Integer.MAX_VALUE) {
                 selections = SEL_MGR.getSelections();
