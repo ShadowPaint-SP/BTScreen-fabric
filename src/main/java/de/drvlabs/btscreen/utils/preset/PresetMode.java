@@ -9,6 +9,7 @@ import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
 import baritone.api.utils.SettingsUtil;
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.btprocess.SelectionOrchestrator;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
@@ -20,6 +21,9 @@ import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FluidDrainable;
+import net.minecraft.block.FluidFillable;
+import net.minecraft.block.Waterloggable;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
@@ -84,14 +88,23 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
                     bestItem = item;
                 }
             }
-
-            if (bestItem != null) {
-                Identifier id = Registries.ITEM.getId(bestItem);
-                return "sel replace lava water " + id;
-            } else {
+            if (bestItem == null) {
                 sendMessage(gui, MessageType.ERROR, LangKeys.INFO + ".removeLiquid.noUsableItem");
-                return null;
             }
+            Identifier id = Registries.ITEM.getId(bestItem);
+            StringBuilder builder = new StringBuilder();
+            builder.append("sel replace");
+            Registries.BLOCK.stream().filter(b -> b instanceof FluidDrainable || b instanceof FluidFillable)
+                    .forEach(b -> {
+                        builder.append(" " + Registries.BLOCK.getId(b));
+                        if (b instanceof Waterloggable) {
+                            builder.append("[waterlogged=true]");
+                        }
+                    });
+            builder.append(" " + id);
+            SelectionOrchestrator.activate(-1, builder.toString());
+            setSettings();
+            return null;
         }
     },
     FARMING(true) {

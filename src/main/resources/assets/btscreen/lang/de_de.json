@@ -158,5 +158,7 @@
   "btscreen.info.autoHaste.timeout": "Fehler: Zu lange auf Eile gewartet! Auto-Eile deaktiviert.",
   "btscreen.info.autoEat.noFood": "Fehler: Kein Essen in der Nebenhand!",
   "btscreen.info.guiConfigureCommand.saveError": "Fehler beim Speichern des Befehls.",
-  "btscreen.info.removeLiquid.noUsableItem": "Fehler: Kein nutzbarer Gegenstand zum Entfernen von Flüssigkeiten gefunden."
+  "btscreen.info.removeLiquid.noUsableItem": "Fehler: Kein nutzbarer Gegenstand zum Entfernen von Flüssigkeiten gefunden.",
+  "btscreen.info.selectionOrchestrator.noSelection": "Fehler: Keine Auswahl gefunden!",
+  "btscreen.info.selectionOrchestrator.finished": "Fertig!"
 }
