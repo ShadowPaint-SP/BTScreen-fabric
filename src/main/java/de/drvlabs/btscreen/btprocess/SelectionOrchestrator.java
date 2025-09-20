@@ -81,7 +81,7 @@ public class SelectionOrchestrator extends BTProcessHelper {
             }
             commandIterator = Stream.of(layerCommands).iterator();
             Utils.execute(commandIterator.next());
-            currentY += (currentY > 0 ? -1 : 1);
+            currentY += layerHeight;
         }
         return REQUEST_PAUSE;
     }
