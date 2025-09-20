@@ -33,12 +33,14 @@ public class Utils {
     }
 
     public static void execute(String command) {
+        BTScreen.debugLog("Executing command: " + command);
         BT.getCommandManager().execute(command);
     }
 
     public static void executeBuild(String command) {
         PresetMode presetMode = DataManager.DIMENSION.getPresetMode();
-        presetMode.setSettings();
+        if (!presetMode.setSettings())
+            return;
         BTScreen.debugLog("Updated settings to: " + presetMode.name());
         RepeatAction.trackCommand(command);
         execute(command);

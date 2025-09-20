@@ -16,6 +16,7 @@ import de.drvlabs.btscreen.btprocess.AutoSleep;
 import de.drvlabs.btscreen.btprocess.AutoTorch;
 import de.drvlabs.btscreen.btprocess.BTActiveListener;
 import de.drvlabs.btscreen.btprocess.LocationCheck;
+import de.drvlabs.btscreen.btprocess.SelectionOrchestrator;
 import de.drvlabs.btscreen.btprocess.Teleport;
 import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.config.LangKeys;
@@ -24,6 +25,7 @@ import de.drvlabs.btscreen.gui.GuiMainMenu;
 import de.drvlabs.btscreen.utils.RepeatAction;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
+import de.drvlabs.btscreen.utils.preset.PresetMode;
 import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.registry.Registry;
 import fi.dy.masa.malilib.util.data.ModInfo;
@@ -52,17 +54,18 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         BaritoneEvents.STOPPED.register(this);
         BaritoneEvents.PROCESS_CHANGED.register(this);
 
-        final IPathingControlManager controlManager = Utils.BT.getPathingControlManager();
-        controlManager.registerProcess(new BTActiveListener());
-        controlManager.registerProcess(new Teleport());
-        controlManager.registerProcess(new AutoDrop());
-        controlManager.registerProcess(new AutoEat());
-        controlManager.registerProcess(new AutoHaste());
-        controlManager.registerProcess(new AutoRepair());
-        controlManager.registerProcess(new AutoSleep());
-        controlManager.registerProcess(new AutoTorch());
-        controlManager.registerProcess(new LocationCheck());
-    }
+		final IPathingControlManager controlManager = Utils.BT.getPathingControlManager();
+		controlManager.registerProcess(new BTActiveListener());
+		controlManager.registerProcess(new Teleport());
+		controlManager.registerProcess(new AutoDrop());
+		controlManager.registerProcess(new AutoEat());
+		controlManager.registerProcess(new AutoHaste());
+		controlManager.registerProcess(new AutoRepair());
+		controlManager.registerProcess(new AutoSleep());
+		controlManager.registerProcess(new AutoTorch());
+		controlManager.registerProcess(new LocationCheck());
+		controlManager.registerProcess(new SelectionOrchestrator());
+	}
 
     @Override
     public void onPlayReady(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
@@ -110,14 +113,15 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         }
     }
 
-    @Override
-    public void baritoneStopped(boolean canceled) {
-        BTScreen.debugLog("Baritone is inactive. canceled: " + canceled);
-        RepeatAction.baritoneStopped(canceled);
-        if (!canceled) {
-            Teleport.Home.FINISHED.tpToHome();
-        }
-    }
+	@Override
+	public void baritoneStopped(boolean canceled) {
+		BTScreen.debugLog("Baritone is inactive. canceled: " + canceled);
+		RepeatAction.baritoneStopped(canceled);
+		PresetMode.loadPreviousSettings();
+		if (!canceled) {
+			Teleport.Home.FINISHED.tpToHome();
+		}
+	}
 
     private static boolean shouldDisplayProcesses(IBaritoneProcess... processes) {
         if (!SHOW_PROCESS_CHANGES.getBooleanValue()) {

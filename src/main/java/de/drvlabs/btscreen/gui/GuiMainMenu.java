@@ -93,7 +93,6 @@ public class GuiMainMenu extends GuiBase {
 				textBlocksToReplace.setTextWrapper(
 						String.join(", ", Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings()));
 			}
-			this.addTextField(textBlocksToReplace, null);
 
 			textBlocksToPlace = new GuiTextFieldGeneric(x + width * 2, y, width, 20, this.textRenderer);
 			textBlocksToPlace.setPlaceholder(
@@ -102,22 +101,25 @@ public class GuiMainMenu extends GuiBase {
 			if (!Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue().isEmpty()) {
 				textBlocksToPlace.setTextWrapper(Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 			}
-			this.addTextField(textBlocksToPlace, null);
 
 			int labelWidth = this.getStringWidth(StringUtils.translate(LangKeys.GUI + ".label.repeatAction"));
 			this.addLabel(x + (width * 3) - labelWidth, y - 22, labelWidth, 20,
 					Configs.Generic.REPEAT_ACTION.getBooleanValue() ? 0x00FF00 : 0xFF0000,
 					LangKeys.GUI + ".label.repeatAction");
 
-			y += 22;
-			x += this.createButton(x, y, width, ButtonListener.Type.SEL_COPY, false);
-			x += this.createButton(x, y, width, ButtonListener.Type.SEL_PASTE, false);
-			x += this.createButton(x, y, width, ButtonListener.Type.SEL_REPLACE, false);
-			y += 22;
-			x = 17;
-			x += this.createButton(x, y, width, ButtonListener.Type.SEL_SET, false);
-			x += this.createButton(x, y, width, ButtonListener.Type.SEL_SHELL, false);
-			x += this.createButton(x, y, width, ButtonListener.Type.SEL_WALLS, false);
+			if (DataManager.DIMENSION.getPresetMode().additionalControls) {
+				this.addTextField(textBlocksToReplace, null);
+				this.addTextField(textBlocksToPlace, null);
+				y += 22;
+				x += this.createButton(x, y, width, ButtonListener.Type.SEL_COPY, false);
+				x += this.createButton(x, y, width, ButtonListener.Type.SEL_PASTE, false);
+				x += this.createButton(x, y, width, ButtonListener.Type.SEL_REPLACE, false);
+				y += 22;
+				x = 17;
+				x += this.createButton(x, y, width, ButtonListener.Type.SEL_SET, false);
+				x += this.createButton(x, y, width, ButtonListener.Type.SEL_SHELL, false);
+				x += this.createButton(x, y, width, ButtonListener.Type.SEL_WALLS, false);
+			}
 		}
 
 		////////////////////////////////////////////////// Box Resizing
@@ -283,7 +285,10 @@ public class GuiMainMenu extends GuiBase {
 					GuiBase.openGui(new GuiConfigs());
 					return;
 				case Type.START:
-					Utils.executeBuild("sel cleararea");
+					String command = DataManager.DIMENSION.getPresetMode().getCommand(this.gui);
+					if (command == null || command.isEmpty())
+						return;
+					Utils.executeBuild(command);
 					this.gui.initGui();
 					this.gui.addMessage(MessageType.ERROR, 1000, LangKeys.INFO + ".main_menu.startBot");
 					return;
@@ -381,15 +386,6 @@ public class GuiMainMenu extends GuiBase {
 
 		}
 
-		private void selectCurrentChunk() {
-			ISelectionManager selectionManager = Utils.BT.getSelectionManager();
-			ChunkPos chunkPos = Utils.MC.player.getChunkPos();
-			BetterBlockPos corner1 = new BetterBlockPos(chunkPos.getStartPos().down(59));
-			BetterBlockPos corner2 = new BetterBlockPos(
-					chunkPos.getStartPos().add(15, Utils.MC.world.getChunk(corner1).getHighestNonEmptySection() * 16 - 48, 15));
-			selectionManager.addSelection(corner1, corner2);
-		}
-
 		public enum Type {
 			CONFIGURATION(LangKeys.GUI_BUTTON + ".configuration_menu", ButtonIcons.CONFIGURATION),
 			START(LangKeys.GUI_BUTTON + ".startBot", ButtonIcons.RUNNER),
@@ -433,6 +429,15 @@ public class GuiMainMenu extends GuiBase {
 				return this.icon;
 			}
 		}
+	}
+
+	public static void selectCurrentChunk() {
+		ISelectionManager selectionManager = Utils.BT.getSelectionManager();
+		ChunkPos chunkPos = Utils.MC.player.getChunkPos();
+		BetterBlockPos corner1 = new BetterBlockPos(chunkPos.getStartPos().down(59));
+		BetterBlockPos corner2 = new BetterBlockPos(
+				chunkPos.getStartPos().add(15, Utils.MC.world.getChunk(corner1).getHighestNonEmptySection() * 16 - 48, 15));
+		selectionManager.addSelection(corner1, corner2);
 	}
 
 	public static class ButtonListenerChangeMenu implements IButtonActionListener {
@@ -509,7 +514,6 @@ public class GuiMainMenu extends GuiBase {
 		public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
 			PresetMode mode = DataManager.DIMENSION.getPresetMode().cycle(mouseButton == 0);
 			DataManager.DIMENSION.setPresetMode(mode);
-			mode.setSettings();
 			this.gui.initGui();
 		}
 	}
