@@ -16,6 +16,7 @@ import de.drvlabs.btscreen.btprocess.AutoSleep;
 import de.drvlabs.btscreen.btprocess.AutoTorch;
 import de.drvlabs.btscreen.btprocess.BTActiveListener;
 import de.drvlabs.btscreen.btprocess.LocationCheck;
+import de.drvlabs.btscreen.btprocess.SelectionOrchestrator;
 import de.drvlabs.btscreen.btprocess.Teleport;
 import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.config.LangKeys;
@@ -64,6 +65,7 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
 		controlManager.registerProcess(new AutoSleep());
 		controlManager.registerProcess(new AutoTorch());
 		controlManager.registerProcess(new LocationCheck());
+		controlManager.registerProcess(new SelectionOrchestrator());
 	}
 
 	@Override

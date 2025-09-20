@@ -158,5 +158,7 @@
   "btscreen.info.autoHaste.timeout": "Error: Waited too long for Haste! Disabled AutoHaste.",
   "btscreen.info.autoEat.noFood": "Error: No food in offhand!",
   "btscreen.info.guiConfigureCommand.saveError": "Error while saving the command.",
-  "btscreen.info.removeLiquid.noUsableItem": "Error: No usable item found to remove liquids."
+  "btscreen.info.removeLiquid.noUsableItem": "Error: No usable item found to remove liquids.",
+  "btscreen.info.selectionOrchestrator.noSelection": "Error: No selection found!",
+  "btscreen.info.selectionOrchestrator.finished": "Finished!"
 }
