@@ -51,9 +51,11 @@
   "btscreen.gui.textfieldContent.placeholder.blocksToReplace": "blöcke, ...",
   "btscreen.gui.textfieldContent.placeholder.blockToPlace": "block",
 
-  "btscreen.preset_mode.name.farm": "Farm",
-  "btscreen.preset_mode.name.default": "Standard",
-  "btscreen.preset_mode.name.liquid": "Flüssigkeit",
+  "btscreen.preset_mode.name.none": "Keine",
+  "btscreen.preset_mode.name.clear_area": "Bereich leeren",
+  "btscreen.preset_mode.name.remove_liquid": "Flüssigkeit entfernen",
+  "btscreen.preset_mode.name.farming": "Farmen",
+  "btscreen.preset_mode.name.building": "Bauen",
 
   "btscreen.info.main_menu.startBot": "Bot läuft jetzt.\n§8Stelle sicher, dass dich niemand dabei sieht ;)",
   "btscreen.info.main_menu.stopBot": "DU BIST JETZT SICHER",
@@ -130,14 +132,10 @@
   "btscreen.config.lists.comment.blocksToGetReplaced": "Blöcke, die entfernt werden sollen",
   "btscreen.config.lists.name.blockToReplaceWith": "Block zum Ersetzen",
   "btscreen.config.lists.comment.blockToReplaceWith": "Block, der stattdessen dort sein sollte",
-  "btscreen.config.lists.name.defaultBlocksToDisallowBreaking": "Standard: Block-Abbau-Blacklist",
-  "btscreen.config.lists.comment.defaultBlocksToDisallowBreaking": "Blöcke, die nicht abgebaut werden können",
-  "btscreen.config.lists.name.defaultBlocksToIgnore": "Standard: Zu ignorierende Blöcke beim Abbau",
-  "btscreen.config.lists.comment.defaultBlocksToIgnore": "Blöcke, die ignoriert werden sollen\nWenn sie den Weg der Pfadfindung versperren, können sie abgebaut werden",
-  "btscreen.config.lists.name.farmBlocksToDisallowBreaking": "Farm: Block-Abbau-Blacklist",
-  "btscreen.config.lists.comment.farmBlocksToDisallowBreaking": "Blöcke, die nicht abgebaut werden können",
-  "btscreen.config.lists.name.farmBlocksToIgnore": "Farm: Zu ignorierende Blöcke beim Abbau",
-  "btscreen.config.lists.comment.farmBlocksToIgnore": "Blöcke, die ignoriert werden sollen\nWenn sie den Weg der Pfadfindung versperren, können sie abgebaut werden",
+  "btscreen.config.lists.name.blocksToDisallowBreaking": "Block-Abbau-Blacklist",
+  "btscreen.config.lists.comment.blocksToDisallowBreaking": "Blöcke, die nicht abgebaut werden können",
+  "btscreen.config.lists.name.blocksToIgnore": "Zu ignorierende Blöcke beim Abbau",
+  "btscreen.config.lists.comment.blocksToIgnore": "Blöcke, die ignoriert werden sollen\nWenn sie den Weg der Pfadfindung versperren, können sie abgebaut werden",
   "btscreen.config.lists.name.acceptableThrowawayItems": "Blöcke für Pfadfindung",
   "btscreen.config.lists.comment.acceptableThrowawayItems": "Blöcke, die von Bariton zum Bau eines Pfades verwendet werden können",
 
@@ -159,5 +157,6 @@
   "btscreen.info.autoSleep.noBed": "Fehler: Kein benutzbares Bett gefunden!",
   "btscreen.info.autoHaste.timeout": "Fehler: Zu lange auf Eile gewartet! Auto-Eile deaktiviert.",
   "btscreen.info.autoEat.noFood": "Fehler: Kein Essen in der Nebenhand!",
-  "btscreen.info.guiConfigureCommand.saveError": "Fehler beim Speichern des Befehls."
+  "btscreen.info.guiConfigureCommand.saveError": "Fehler beim Speichern des Befehls.",
+  "btscreen.info.removeLiquid.noUsableItem": "Fehler: Kein nutzbarer Gegenstand zum Entfernen von Flüssigkeiten gefunden."
 }

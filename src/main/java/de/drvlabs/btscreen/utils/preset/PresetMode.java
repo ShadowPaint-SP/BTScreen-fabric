@@ -1,6 +1,5 @@
 package de.drvlabs.btscreen.utils.preset;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -8,96 +7,132 @@ import com.google.common.collect.ImmutableList;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
+import baritone.api.utils.SettingsUtil;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
+import de.drvlabs.btscreen.config.LangKeys;
+import de.drvlabs.btscreen.utils.Utils;
+import de.drvlabs.btscreen.utils.Waiter;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
+import fi.dy.masa.malilib.config.options.ConfigStringList;
+import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 
 public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
-    DEFAULT {
+    NONE(true) {
         @Override
-        public void setSettings() {
-            bt.allowBreak.value = true;
-            bt.allowPlace.value = true;
-            bt.buildInLayers.value = true;
-            bt.blockBreakSpeed.value = 0;
-            bt.layerHeight.value = 5;
-            bt.layerOrder.value = true;
-            bt.itemSaver.value = true;
-            bt.itemSaverThreshold.value = 10;
-            bt.randomLooking.value = (double) 0;
-            bt.randomLooking113.value = (double) 0;
-            List<Block> blocksToDisallowBreaking = Configs.Lists.DEFAULT_BLOCKS_TO_DISALLOW_BREAKING
-                    .getStrings().stream().map(string -> Registries.BLOCK.get(Identifier.tryParse(string)))
-                    .filter(Objects::nonNull).toList();
-            List<Block> blocksToIgnore = Stream.concat(blocksToDisallowBreaking.stream(),
-                    Configs.Lists.DEFAULT_BLOCKS_TO_IGNORE.getStrings().stream()
-                            .map(string -> Registries.BLOCK.get(Identifier.tryParse(string))).filter(Objects::nonNull)
-                            .toList().stream())
-                    .toList();
-            bt.blocksToDisallowBreaking.value = blocksToDisallowBreaking; // Blocks that cant be mined
-            // Blocks that should be ignored in the selection
-            if (Configs.Generic.AUTO_TORCH.getBooleanValue()) {
-                bt.buildIgnoreBlocks.value = Stream.concat(blocksToIgnore.stream(),
-                        Stream.of(Blocks.TORCH, Blocks.WALL_TORCH)).toList();
-            } else {
-                bt.buildIgnoreBlocks.value = blocksToIgnore;
+        public boolean setSettings() {
+            return true;
+        }
+
+        @Override
+        public String getCommand(GuiBase gui) {
+            return "sel cleararea";
+        }
+    },
+    CLEAR_AREA(false) {
+        @Override
+        public boolean setSettings() {
+            setCommonMiningSettings();
+            SETTINGS.buildInLayers.value = true;
+            SETTINGS.buildRepeatCount.value = 0;
+            SETTINGS.layerHeight.value = 5;
+            SETTINGS.layerOrder.value = true;
+            return true;
+        }
+
+        @Override
+        public String getCommand(GuiBase gui) {
+            return "sel cleararea";
+        }
+    },
+    REMOVE_LIQUID(false) {
+        @Override
+        public boolean setSettings() {
+            setCommonMiningSettings();
+            SETTINGS.allowInventory.value = true;
+            return true;
+        }
+
+        private final Item[] possibleBlocks = {
+                Items.NETHERRACK,
+                Items.RESIN_BLOCK,
+                Items.MOSS_BLOCK,
+                Items.DIRT,
+                Items.STONE,
+        };
+
+        @Override
+        public String getCommand(GuiBase gui) {
+            Item bestItem = null;
+            int maxCount = 0;
+
+            for (Item item : possibleBlocks) {
+                int count = Utils.MC.player.getInventory().count(item);
+                if (count > maxCount) {
+                    maxCount = count;
+                    bestItem = item;
+                }
             }
-            setAcceptableThrowawayItems();
+
+            if (bestItem != null) {
+                Identifier id = Registries.ITEM.getId(bestItem);
+                return "sel replace lava water " + id;
+            } else {
+                sendMessage(gui, MessageType.ERROR, LangKeys.INFO + ".removeLiquid.noUsableItem");
+                return null;
+            }
         }
     },
-    FARM {
+    FARMING(true) {
         @Override
-        public void setSettings() {
-            bt.allowBreak.value = false;
-            bt.allowPlace.value = false;
-            bt.buildInLayers.value = false;
-            bt.randomLooking.value = (double) 0;
-            bt.randomLooking113.value = (double) 0;
-            List<Block> blocksToDisallowBreaking = Configs.Lists.FARM_BLOCKS_TO_DISALLOW_BREAKING
-                    .getStrings().stream().map(string -> Registries.BLOCK.get(Identifier.tryParse(string)))
-                    .filter(Objects::nonNull).toList();
-            List<Block> blocksToIgnore = Stream.concat(blocksToDisallowBreaking.stream(),
-                    Configs.Lists.FARM_BLOCKS_TO_IGNORE.getStrings().stream()
-                            .map(string -> Registries.BLOCK.get(Identifier.tryParse(string))).filter(Objects::nonNull)
-                            .toList().stream())
-                    .toList();
-            bt.blocksToDisallowBreaking.value = blocksToDisallowBreaking; // Blocks that cant be mined
-            bt.buildIgnoreBlocks.value = blocksToIgnore; // Blocks that should be ignored in the selection
-            setAcceptableThrowawayItems();
+        public boolean setSettings() {
+            setCommonSettings();
+            SETTINGS.allowBreak.value = false;
+            SETTINGS.allowPlace.value = false;
+            return true;
+        }
+
+        @Override
+        public String getCommand(GuiBase gui) {
+            return "farm";
         }
     },
-    LIQUID {
+    BUILDING(false) {
         @Override
-        public void setSettings() {
-            bt.allowBreak.value = true;
-            bt.okIfWater.value = false;
-            bt.allowPlace.value = true;
-            bt.buildInLayers.value = true;
-            bt.layerOrder.value = true;
-            bt.layerHeight.value = 1;
+        public boolean setSettings() {
+            setCommonSettings();
+            SETTINGS.buildInLayers.value = true;
+            SETTINGS.layerOrder.value = false;
+            SETTINGS.layerHeight.value = 1;
+            return true;
         }
-    },
-    BUILDING {
+
         @Override
-        public void setSettings() {
-            bt.buildInLayers.value = true;
-            bt.layerOrder.value = false;
-            bt.layerHeight.value = 1;
+        public String getCommand(GuiBase gui) {
+            // TODO: Pass number of selected
+            return "litematica";
         }
     };
 
-    private static final Settings bt = BaritoneAPI.getSettings();
+    private static final Settings SETTINGS = BaritoneAPI.getSettings();
 
     private final String configString;
+    public final boolean additionalControls;
 
-    PresetMode() {
+    PresetMode(boolean additionalControls) {
         this.configString = this.name().toLowerCase();
+        this.additionalControls = additionalControls;
     }
 
     @Override
@@ -137,18 +172,80 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
                 return mode;
             }
         }
-        return DEFAULT;
+        return NONE;
     }
 
-    public abstract void setSettings();
+    public abstract boolean setSettings();
 
-    private static void setAcceptableThrowawayItems() {
-        bt.acceptableThrowawayItems.value = Configs.Lists.ACCEPTABLE_THROWAWAY_ITEMS
+    public abstract String getCommand(GuiBase gui);
+
+    private static boolean shouldLoadPreviousSettings = false;
+
+    public static boolean overwroteSettings() {
+        return shouldLoadPreviousSettings;
+    }
+
+    private static void resetSettings() {
+        shouldLoadPreviousSettings = true;
+        SettingsUtil.modifiedSettings(SETTINGS).forEach(Settings.Setting::reset);
+        Waiter.wait(2, w -> {
+            if (!Utils.isActive()) {
+                loadPreviousSettings();
+            }
+        });
+    }
+
+    public static void loadPreviousSettings() {
+        if (!shouldLoadPreviousSettings)
+            return;
+        resetSettings();
+        shouldLoadPreviousSettings = false;
+        SettingsUtil.readAndApply(SETTINGS, SettingsUtil.SETTINGS_DEFAULT_NAME);
+    }
+
+    private static void setCommonSettings() {
+        resetSettings();
+        SETTINGS.blockBreakSpeed.value = 0;
+        SETTINGS.itemSaver.value = true;
+        SETTINGS.itemSaverThreshold.value = 10;
+        SETTINGS.randomLooking.value = (double) 0;
+        SETTINGS.randomLooking113.value = (double) 0;
+        SETTINGS.acceptableThrowawayItems.value = Configs.Lists.ACCEPTABLE_THROWAWAY_ITEMS
                 .getStrings().stream().map(string -> Registries.ITEM.get(Identifier.tryParse(string)))
                 .filter(Objects::nonNull).toList();
     }
 
-    public static final ImmutableList<String> DEFAULT_BLOCKS_TO_IGNORE = ImmutableList.of(
+    private static void setCommonMiningSettings() {
+        setCommonSettings();
+        SETTINGS.blocksToDisallowBreaking.value = getBlockStream(Configs.Lists.BLOCKS_TO_DISALLOW_BREAKING).toList();
+        SETTINGS.buildIgnoreBlocks.value = Stream.concat(SETTINGS.blocksToDisallowBreaking.value.stream(),
+                getBlockStream(Configs.Lists.BLOCKS_TO_IGNORE)).distinct().toList();
+        if (Configs.Generic.AUTO_TORCH.getBooleanValue()) {
+            SETTINGS.buildIgnoreBlocks.value = Stream.concat(SETTINGS.buildIgnoreBlocks.value.stream(),
+                    Stream.of(Blocks.TORCH, Blocks.WALL_TORCH))
+                    .distinct().toList();
+        }
+    }
+
+    private static Stream<Block> getBlockStream(ConfigStringList config) {
+        return config.getStrings().stream().map(string -> Registries.BLOCK.get(Identifier.tryParse(string)))
+                .filter(Objects::nonNull).distinct();
+    }
+
+    private static void sendMessage(GuiBase gui, MessageType type, String messageKey, Object... args) {
+        if (gui != null) {
+            gui.addMessage(type, 1000, messageKey, args);
+        } else {
+            BTScreen.chatMessage(Text.translatable(messageKey, args).formatted(switch (type) {
+                case ERROR -> Formatting.RED;
+                case INFO -> Formatting.WHITE;
+                case SUCCESS -> Formatting.GREEN;
+                case WARNING -> Formatting.GOLD;
+            }));
+        }
+    }
+
+    public static final ImmutableList<String> BLOCKS_TO_IGNORE = ImmutableList.of(
             "torch",
             "wall_torch",
             "vine",
@@ -175,7 +272,7 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
             "amethyst_cluster",
             "dragon_egg");
 
-    public static final ImmutableList<String> DEFAULT_ACCEPTABLE_THROWAWAY_ITEMS = ImmutableList.of("grass_block",
+    public static final ImmutableList<String> ACCEPTABLE_THROWAWAY_ITEMS = ImmutableList.of("grass_block",
             "dirt",
             "cobblestone",
             "stone",
@@ -186,7 +283,7 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
             "soul_soil",
             "basalt");
 
-    public static final ImmutableList<String> DEFAULT_BLOCKS_TO_DISALLOW_BREAKING = ImmutableList.of(
+    public static final ImmutableList<String> BLOCKS_TO_DISALLOW_BREAKING = ImmutableList.of(
             // other
             "vault",
             "trial_spawner",
@@ -239,9 +336,4 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
             "structure_void",
             "jigsaw",
             "barrier");
-
-    public static final ImmutableList<String> FARM_BLOCKS_TO_IGNORE = ImmutableList.of(
-            "budding_amethyst",
-            "dragon_egg");
-
 }

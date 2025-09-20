@@ -51,9 +51,11 @@
   "btscreen.gui.textfieldContent.placeholder.blocksToReplace": "blocks, ...",
   "btscreen.gui.textfieldContent.placeholder.blockToPlace": "block",
 
-  "btscreen.preset_mode.name.farm": "Farm",
-  "btscreen.preset_mode.name.default": "Default",
-  "btscreen.preset_mode.name.liquid": "Liquid",
+  "btscreen.preset_mode.name.none": "None",
+  "btscreen.preset_mode.name.clear_area": "Clear Area",
+  "btscreen.preset_mode.name.remove_liquid": "Remove Liquid",
+  "btscreen.preset_mode.name.farming": "Farming",
+  "btscreen.preset_mode.name.building": "Building",
 
   "btscreen.info.main_menu.startBot": "Bot is running now.\n§8Make sure no one sees u using this ;)",
   "btscreen.info.main_menu.stopBot": "U ARE SAFE NOW",
@@ -130,14 +132,10 @@
   "btscreen.config.lists.comment.blocksToGetReplaced": "Blocks that should be removed",
   "btscreen.config.lists.name.blockToReplaceWith": "Block to replace with",
   "btscreen.config.lists.comment.blockToReplaceWith": "Block that should be there instead",
-  "btscreen.config.lists.name.defaultBlocksToDisallowBreaking": "Default: Block Break Blacklist",
-  "btscreen.config.lists.comment.defaultBlocksToDisallowBreaking": "Blocks that cant be broken",
-  "btscreen.config.lists.name.defaultBlocksToIgnore": "Default: Blocks to ignore breaking",
-  "btscreen.config.lists.comment.defaultBlocksToIgnore": "Blocks that should be ignored\nwhen in the way of pathfinding they can be broken",
-  "btscreen.config.lists.name.farmBlocksToDisallowBreaking": "Farm: Block Break Blacklist",
-  "btscreen.config.lists.comment.farmBlocksToDisallowBreaking": "Blocks that cant be broken",
-  "btscreen.config.lists.name.farmBlocksToIgnore": "Farm: Blocks to ignore breaking",
-  "btscreen.config.lists.comment.farmBlocksToIgnore": "Blocks that should be ignored\nwhen in the way of pathfinding they can be broken",
+  "btscreen.config.lists.name.blocksToDisallowBreaking": "Block Break Blacklist",
+  "btscreen.config.lists.comment.blocksToDisallowBreaking": "Blocks that cant be broken",
+  "btscreen.config.lists.name.blocksToIgnore": "Blocks to ignore breaking",
+  "btscreen.config.lists.comment.blocksToIgnore": "Blocks that should be ignored\nwhen in the way of pathfinding they can be broken",
   "btscreen.config.lists.name.acceptableThrowawayItems": "Blocks used for pathfinding",
   "btscreen.config.lists.comment.acceptableThrowawayItems": "Blocks that can be used by Bariton to build a path",
 
@@ -159,5 +157,6 @@
   "btscreen.info.autoSleep.noBed": "Error: No usable Bed found!",
   "btscreen.info.autoHaste.timeout": "Error: Waited too long for Haste! Disabled AutoHaste.",
   "btscreen.info.autoEat.noFood": "Error: No food in offhand!",
-  "btscreen.info.guiConfigureCommand.saveError": "Error while saving the command."
+  "btscreen.info.guiConfigureCommand.saveError": "Error while saving the command.",
+  "btscreen.info.removeLiquid.noUsableItem": "Error: No usable item found to remove liquids."
 }

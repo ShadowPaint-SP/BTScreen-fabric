@@ -25,6 +25,7 @@ import de.drvlabs.btscreen.utils.LayeredSelection;
 import de.drvlabs.btscreen.utils.RepeatAction;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
+import de.drvlabs.btscreen.utils.preset.PresetMode;
 import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.registry.Registry;
 import fi.dy.masa.malilib.util.data.ModInfo;
@@ -117,6 +118,7 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
 		BTScreen.debugLog("Baritone is inactive. canceled: " + canceled);
 		RepeatAction.baritoneStopped(canceled);
 		LayeredSelection.onBaritoneStopped(canceled);
+		PresetMode.loadPreviousSettings();
 		if (!canceled) {
 			Teleport.Home.FINISHED.tpToHome();
 		}
