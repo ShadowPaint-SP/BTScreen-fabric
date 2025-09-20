@@ -22,7 +22,6 @@ import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.gui.GuiConfigs;
 import de.drvlabs.btscreen.gui.GuiMainMenu;
-import de.drvlabs.btscreen.utils.LayeredSelection;
 import de.drvlabs.btscreen.utils.RepeatAction;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
@@ -42,18 +41,18 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.text.Text;
 
 public final class EventHandler implements EndWorldTick, AfterClientWorldChange, ClientStarted,
-		BaritoneEvents.Started, BaritoneEvents.Stopped, BaritoneEvents.ProcessChanged,
-		ClientPlayConnectionEvents.Join, ClientPlayConnectionEvents.Disconnect {
-	@Override
-	public void onClientStarted(MinecraftClient client) {
-		Registry.CONFIG_SCREEN.registerConfigScreenFactory(
-				new ModInfo(BTScreen.MOD_ID, BTScreen.MOD_NAME, GuiConfigs::new));
+        BaritoneEvents.Started, BaritoneEvents.Stopped, BaritoneEvents.ProcessChanged,
+        ClientPlayConnectionEvents.Join, ClientPlayConnectionEvents.Disconnect {
+    @Override
+    public void onClientStarted(MinecraftClient client) {
+        Registry.CONFIG_SCREEN.registerConfigScreenFactory(
+                new ModInfo(BTScreen.MOD_ID, BTScreen.MOD_NAME, GuiConfigs::new));
 
-		InputEventHandler.getKeybindManager().registerKeybindProvider(InputHandler.INSTANCE);
+        InputEventHandler.getKeybindManager().registerKeybindProvider(InputHandler.INSTANCE);
 
-		BaritoneEvents.STARTED.register(this);
-		BaritoneEvents.STOPPED.register(this);
-		BaritoneEvents.PROCESS_CHANGED.register(this);
+        BaritoneEvents.STARTED.register(this);
+        BaritoneEvents.STOPPED.register(this);
+        BaritoneEvents.PROCESS_CHANGED.register(this);
 
 		final IPathingControlManager controlManager = Utils.BT.getPathingControlManager();
 		controlManager.registerProcess(new BTActiveListener());
@@ -68,96 +67,94 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
 		controlManager.registerProcess(new SelectionOrchestrator());
 	}
 
-	@Override
-	public void onPlayReady(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
-		DataManager.SERVER.load();
-		DataManager.DIMENSION.load();
-	}
+    @Override
+    public void onPlayReady(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
+        DataManager.SERVER.load();
+        DataManager.DIMENSION.load();
+    }
 
-	@Override
-	public void onPlayDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
-		DataManager.SERVER.unload();
-		DataManager.DIMENSION.unload();
-		AutoTorch.onTeleport();
-		RepeatAction.cancel();
-		LayeredSelection.cancel();
-		Waiter.cancelAll();
-	}
+    @Override
+    public void onPlayDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
+        DataManager.SERVER.unload();
+        DataManager.DIMENSION.unload();
+        AutoTorch.onTeleport();
+        RepeatAction.cancel();
+        Waiter.cancelAll();
+    }
 
-	@Override
-	public void afterWorldChange(MinecraftClient client, ClientWorld world) {
-		DataManager.DIMENSION.save();
-		DataManager.DIMENSION.load();
-		AutoTorch.onTeleport();
-	}
+    @Override
+    public void afterWorldChange(MinecraftClient client, ClientWorld world) {
+        DataManager.DIMENSION.save();
+        DataManager.DIMENSION.load();
+        AutoTorch.onTeleport();
+    }
 
-	private IBaritoneProcess lastProcess = null;
+    private IBaritoneProcess lastProcess = null;
 
-	@Override
-	public void onEndTick(ClientWorld world) {
-		IBaritoneProcess currentProcess = Utils.getActiveProcess();
-		BTActiveListener.setPauseProcess(currentProcess);
-		if (lastProcess != currentProcess) {
-			BaritoneEvents.PROCESS_CHANGED.invoker().onProcessChanged(lastProcess, currentProcess);
-		}
-		lastProcess = currentProcess;
-		Waiter.tickAll();
-		BTActiveListener.updateBaritoneStatus();
-	}
+    @Override
+    public void onEndTick(ClientWorld world) {
+        IBaritoneProcess currentProcess = Utils.getActiveProcess();
+        BTActiveListener.setPauseProcess(currentProcess);
+        if (lastProcess != currentProcess) {
+            BaritoneEvents.PROCESS_CHANGED.invoker().onProcessChanged(lastProcess, currentProcess);
+        }
+        lastProcess = currentProcess;
+        Waiter.tickAll();
+        BTActiveListener.updateBaritoneStatus();
+    }
 
-	@Override
-	public void baritoneStarted() {
-		BTScreen.debugLog("Baritone is active");
-		// reinit screen if set
-		Screen screen = Utils.MC.currentScreen;
-		if (screen instanceof GuiMainMenu) {
-			screen.init(Utils.MC, screen.width, screen.height);
-		}
-	}
+    @Override
+    public void baritoneStarted() {
+        BTScreen.debugLog("Baritone is active");
+        // reinit screen if set
+        Screen screen = Utils.MC.currentScreen;
+        if (screen instanceof GuiMainMenu) {
+            screen.init(Utils.MC, screen.width, screen.height);
+        }
+    }
 
 	@Override
 	public void baritoneStopped(boolean canceled) {
 		BTScreen.debugLog("Baritone is inactive. canceled: " + canceled);
 		RepeatAction.baritoneStopped(canceled);
-		LayeredSelection.onBaritoneStopped(canceled);
 		PresetMode.loadPreviousSettings();
 		if (!canceled) {
 			Teleport.Home.FINISHED.tpToHome();
 		}
 	}
 
-	private static boolean shouldDisplayProcesses(IBaritoneProcess... processes) {
-		if (!SHOW_PROCESS_CHANGES.getBooleanValue()) {
-			return false;
-		}
-		final List<String> strings = PROCESS_CHANGES_BLACKLIST.getStrings();
-		for (IBaritoneProcess process : processes) {
-			String processName = process == null ? "IDLE" : process.getClass().getSimpleName();
-			if (strings.contains(processName)) {
-				return false;
-			}
-		}
-		return true;
-	}
+    private static boolean shouldDisplayProcesses(IBaritoneProcess... processes) {
+        if (!SHOW_PROCESS_CHANGES.getBooleanValue()) {
+            return false;
+        }
+        final List<String> strings = PROCESS_CHANGES_BLACKLIST.getStrings();
+        for (IBaritoneProcess process : processes) {
+            String processName = process == null ? "IDLE" : process.getClass().getSimpleName();
+            if (strings.contains(processName)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	private static String toDebugString(IBaritoneProcess process) {
-		return process == null ? "IDLE"
-				: String.format("%s[%s, isTemporary: %s, priority: %s, toString: %s]",
-						process.getClass().getSimpleName(), process.displayName0(), process.isTemporary(),
-						process.priority(), process.toString());
-	}
+    private static String toDebugString(IBaritoneProcess process) {
+        return process == null ? "IDLE"
+                : String.format("%s[%s, isTemporary: %s, priority: %s, toString: %s]",
+                        process.getClass().getSimpleName(), process.displayName0(), process.isTemporary(),
+                        process.priority(), process.toString());
+    }
 
-	private static String toString(IBaritoneProcess process) {
-		return process == null ? "IDLE"
-				: String.format("%s[%s]", process.getClass().getSimpleName(), process.displayName0());
-	}
+    private static String toString(IBaritoneProcess process) {
+        return process == null ? "IDLE"
+                : String.format("%s[%s]", process.getClass().getSimpleName(), process.displayName0());
+    }
 
-	public void onProcessChanged(IBaritoneProcess oldProcess, IBaritoneProcess newProcess) {
-		if (shouldDisplayProcesses(oldProcess, newProcess)) {
-			BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".processChanged",
-					toString(oldProcess), toString(newProcess)));
-		}
-		BTScreen.debugLog("Baritone Process changed: oldProcess: {}, newProcess: {}",
-				toDebugString(oldProcess), toDebugString(newProcess));
-	}
+    public void onProcessChanged(IBaritoneProcess oldProcess, IBaritoneProcess newProcess) {
+        if (shouldDisplayProcesses(oldProcess, newProcess)) {
+            BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".processChanged",
+                    toString(oldProcess), toString(newProcess)));
+        }
+        BTScreen.debugLog("Baritone Process changed: oldProcess: {}, newProcess: {}",
+                toDebugString(oldProcess), toDebugString(newProcess));
+    }
 }

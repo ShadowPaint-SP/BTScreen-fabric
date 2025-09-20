@@ -12,7 +12,6 @@ import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.config.LangKeys;
-import de.drvlabs.btscreen.utils.LayeredSelection;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.customcommands.Commands;
 import de.drvlabs.btscreen.utils.preset.PresetMode;
@@ -371,14 +370,9 @@ public class GuiMainMenu extends GuiBase {
 				case Type.SEL_REPLACE:
 					updateBlocksToReplace();
 					updateBlockToPlace();
-					String replaceCmd = "sel replace "
+					Utils.executeBuild("sel replace "
 							+ String.join(" ", Configs.Lists.BLOCKS_TO_GET_REPLACED.getStrings()) + " "
-							+ Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue();
-					if (DataManager.DIMENSION.getPresetMode().equals(PresetMode.REMOVE_LIQUID)) {
-						LayeredSelection.startFromCurrentSelection(replaceCmd);
-					} else {
-						Utils.executeBuild(replaceCmd);
-					}
+							+ Configs.Lists.BLOCK_TO_REPLACE_WITH.getStringValue());
 					return;
 				case Type.SEL_COPY:
 					Utils.execute("sel copy");
