@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import baritone.api.process.IBuilderProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.selection.ISelection;
 import baritone.api.selection.ISelectionManager;
@@ -15,6 +16,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class SelectionOrchestrator extends BTProcessHelper {
+    private static final IBuilderProcess BUILD_PROC = Utils.BT.getBuilderProcess();
     private static final ISelectionManager SEL_MGR = Utils.BT.getSelectionManager();
     private static String[] layerCommands;
     private static int layerHeight;
@@ -29,10 +31,7 @@ public class SelectionOrchestrator extends BTProcessHelper {
 
     @Override
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
-        if (Utils.BT.getBuilderProcess().isActive()) {
-            return REQUEST_PAUSE;
-        }
-        if (isSafeToCancel) {
+        if (!BUILD_PROC.isActive() && isSafeToCancel) {
             if (currentY == Integer.MAX_VALUE) {
                 selections = SEL_MGR.getSelections();
                 BTScreen.debugLog("selections: {}", selections.toString());
@@ -89,6 +88,8 @@ public class SelectionOrchestrator extends BTProcessHelper {
 
     @Override
     public void onLostControl() {
+        if (BUILD_PROC.isActive())
+            return;
         layerCommands = null;
         currentY = Integer.MAX_VALUE;
         if (selections != null && selections.length > 0) {
