@@ -5,6 +5,7 @@ import static de.drvlabs.btscreen.config.Configs.Lists.PROCESS_CHANGES_BLACKLIST
 
 import java.util.List;
 
+import baritone.api.BaritoneAPI;
 import baritone.api.pathing.calc.IPathingControlManager;
 import baritone.api.process.IBaritoneProcess;
 import de.drvlabs.btscreen.BTScreen;
@@ -54,18 +55,21 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         BaritoneEvents.STOPPED.register(this);
         BaritoneEvents.PROCESS_CHANGED.register(this);
 
-		final IPathingControlManager controlManager = Utils.BT.getPathingControlManager();
-		controlManager.registerProcess(BTActiveListener.INSTANCE);
-		controlManager.registerProcess(Teleport.INSTANCE);
-		controlManager.registerProcess(AutoDrop.INSTANCE);
-		controlManager.registerProcess(AutoEat.INSTANCE);
-		controlManager.registerProcess(AutoHaste.INSTANCE);
-		controlManager.registerProcess(AutoRepair.INSTANCE);
-		controlManager.registerProcess(AutoSleep.INSTANCE);
-		controlManager.registerProcess(AutoTorch.INSTANCE);
-		controlManager.registerProcess(LocationCheck.INSTANCE);
-		controlManager.registerProcess(SelectionOrchestrator.INSTANCE);
-	}
+        final IPathingControlManager controlManager = Utils.BT.getPathingControlManager();
+        controlManager.registerProcess(BTActiveListener.INSTANCE);
+        controlManager.registerProcess(Teleport.INSTANCE);
+        controlManager.registerProcess(AutoDrop.INSTANCE);
+        controlManager.registerProcess(AutoEat.INSTANCE);
+        controlManager.registerProcess(AutoHaste.INSTANCE);
+        controlManager.registerProcess(AutoRepair.INSTANCE);
+        controlManager.registerProcess(AutoSleep.INSTANCE);
+        controlManager.registerProcess(AutoTorch.INSTANCE);
+        controlManager.registerProcess(LocationCheck.INSTANCE);
+        controlManager.registerProcess(SelectionOrchestrator.INSTANCE);
+
+        BaritoneAPI.getSettings().logger.value.andThen(this::onBaritoneLog);
+        BaritoneAPI.getSettings().toaster.value.andThen((prefix, msg) -> onBaritoneLog(msg));
+    }
 
     @Override
     public void onPlayReady(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
@@ -103,6 +107,22 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         BTActiveListener.updateBaritoneStatus();
     }
 
+    private int retryLiquidCount = -1;
+
+    private void onBaritoneLog(Text msg) {
+        final String msgString = msg.getString();
+        if (retryLiquidCount < 0 && msgString.contains("Unreplaceable liquids at at least:")) {
+            retryLiquidCount = 2;
+            Waiter.wait(100, w -> {
+                if (retryLiquidCount > 0 && Utils.paused()) {
+                    Utils.resume();
+                    w.start(100);
+                }
+                retryLiquidCount--;
+            });
+        }
+    }
+
     @Override
     public void baritoneStarted() {
         BTScreen.debugLog("Baritone is active");
@@ -113,15 +133,15 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         }
     }
 
-	@Override
-	public void baritoneStopped(boolean canceled) {
-		BTScreen.debugLog("Baritone is inactive. canceled: " + canceled);
-		RepeatAction.baritoneStopped(canceled);
-		PresetMode.loadPreviousSettings();
-		if (!canceled) {
-			Teleport.Home.FINISHED.tpToHome();
-		}
-	}
+    @Override
+    public void baritoneStopped(boolean canceled) {
+        BTScreen.debugLog("Baritone is inactive. canceled: " + canceled);
+        RepeatAction.baritoneStopped(canceled);
+        PresetMode.loadPreviousSettings();
+        if (!canceled) {
+            Teleport.Home.FINISHED.tpToHome();
+        }
+    }
 
     private static boolean shouldDisplayProcesses(IBaritoneProcess... processes) {
         if (!SHOW_PROCESS_CHANGES.getBooleanValue()) {
