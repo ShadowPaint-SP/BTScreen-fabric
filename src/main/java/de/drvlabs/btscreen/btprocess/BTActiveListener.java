@@ -9,7 +9,12 @@ import de.drvlabs.btscreen.gui.GuiMainMenu;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.client.gui.screen.Screen;
 
-public class BTActiveListener extends BTProcessHelper {
+public final class BTActiveListener extends BTProcessHelper {
+    public static final BTActiveListener INSTANCE = new BTActiveListener();
+
+    private BTActiveListener() {
+    }
+
     private static final List<IBaritoneProcess> IS_ACTIVE_LIST = List.of(
             Utils.BT.getFarmProcess(),
             Utils.BT.getMineProcess(),
@@ -17,7 +22,8 @@ public class BTActiveListener extends BTProcessHelper {
             Utils.BT.getFollowProcess(),
             Utils.BT.getExploreProcess(),
             Utils.BT.getCustomGoalProcess(),
-            Utils.BT.getGetToBlockProcess());
+            Utils.BT.getGetToBlockProcess(),
+            SelectionOrchestrator.INSTANCE);
 
     private static boolean baritoneIsActive = false;
     private static boolean baritoneIsPaused = false;
@@ -47,7 +53,7 @@ public class BTActiveListener extends BTProcessHelper {
     }
 
     public static boolean isBaritonePaused() {
-        return pauseProcess != null && pauseProcess.isActive();
+        return pauseProcess != null && pauseProcess.isActive() || Utils.BT.getBuilderProcess().isPaused();
     }
 
     private static void setBaritoneActive(boolean newBaritoneIsActive, boolean canceled) {

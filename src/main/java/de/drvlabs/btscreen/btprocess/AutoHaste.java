@@ -11,7 +11,12 @@ import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-public class AutoHaste extends BTProcessWithInitializer {
+public final class AutoHaste extends BTProcessWithInitializer {
+    public static final AutoHaste INSTANCE = new AutoHaste();
+
+    private AutoHaste() {
+    }
+
     private static boolean hasHaste = false;
     private int timeoutTicks = 0;
 

@@ -10,7 +10,12 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.ItemTags;
 
-public class AutoRepair extends BTProcessWithInitializer {
+public final class AutoRepair extends BTProcessWithInitializer {
+    public static final AutoRepair INSTANCE = new AutoRepair();
+
+    private AutoRepair() {
+    }
+
     private static int slot = -1;
     private int attackIntervalCounter = 0;
     private int swordSlot = -1;

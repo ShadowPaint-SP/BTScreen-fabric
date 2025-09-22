@@ -55,16 +55,16 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         BaritoneEvents.PROCESS_CHANGED.register(this);
 
 		final IPathingControlManager controlManager = Utils.BT.getPathingControlManager();
-		controlManager.registerProcess(new BTActiveListener());
-		controlManager.registerProcess(new Teleport());
-		controlManager.registerProcess(new AutoDrop());
-		controlManager.registerProcess(new AutoEat());
-		controlManager.registerProcess(new AutoHaste());
-		controlManager.registerProcess(new AutoRepair());
-		controlManager.registerProcess(new AutoSleep());
-		controlManager.registerProcess(new AutoTorch());
-		controlManager.registerProcess(new LocationCheck());
-		controlManager.registerProcess(new SelectionOrchestrator());
+		controlManager.registerProcess(BTActiveListener.INSTANCE);
+		controlManager.registerProcess(Teleport.INSTANCE);
+		controlManager.registerProcess(AutoDrop.INSTANCE);
+		controlManager.registerProcess(AutoEat.INSTANCE);
+		controlManager.registerProcess(AutoHaste.INSTANCE);
+		controlManager.registerProcess(AutoRepair.INSTANCE);
+		controlManager.registerProcess(AutoSleep.INSTANCE);
+		controlManager.registerProcess(AutoTorch.INSTANCE);
+		controlManager.registerProcess(LocationCheck.INSTANCE);
+		controlManager.registerProcess(SelectionOrchestrator.INSTANCE);
 	}
 
     @Override
