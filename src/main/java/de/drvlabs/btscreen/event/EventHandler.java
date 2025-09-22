@@ -6,6 +6,7 @@ import static de.drvlabs.btscreen.config.Configs.Lists.PROCESS_CHANGES_BLACKLIST
 import java.util.List;
 
 import baritone.api.BaritoneAPI;
+import baritone.api.Settings;
 import baritone.api.pathing.calc.IPathingControlManager;
 import baritone.api.process.IBaritoneProcess;
 import de.drvlabs.btscreen.BTScreen;
@@ -67,8 +68,9 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         controlManager.registerProcess(LocationCheck.INSTANCE);
         controlManager.registerProcess(SelectionOrchestrator.INSTANCE);
 
-        BaritoneAPI.getSettings().logger.value.andThen(this::onBaritoneLog);
-        BaritoneAPI.getSettings().toaster.value.andThen((prefix, msg) -> onBaritoneLog(msg));
+        final Settings settings = BaritoneAPI.getSettings();
+        settings.logger.value = settings.logger.value.andThen(this::onBaritoneLog);
+        settings.toaster.value = settings.toaster.value.andThen((prefix, msg) -> onBaritoneLog(msg));
     }
 
     @Override
