@@ -5,6 +5,8 @@ import static de.drvlabs.btscreen.config.Configs.Lists.PROCESS_CHANGES_BLACKLIST
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
 import baritone.api.pathing.calc.IPathingControlManager;
@@ -112,8 +114,9 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
     private int retryLiquidCount = -1;
 
     private void onBaritoneLog(Text msg) {
-        final String msgString = msg.getString();
-        if (retryLiquidCount < 0 && msgString.contains("Unreplaceable liquids at at least:")) {
+		final String prefix = baritone.api.utils.Helper.getPrefix().getString();
+		final String msgString = StringUtils.removeStart(msg.getString(), prefix + " ");
+        if (retryLiquidCount < 0 && msgString.equals("Unreplaceable liquids at at least:")) {
             retryLiquidCount = 2;
             Waiter.wait(100, w -> {
                 if (retryLiquidCount > 0 && Utils.paused()) {
