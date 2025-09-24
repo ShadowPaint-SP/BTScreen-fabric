@@ -5,6 +5,10 @@ import static de.drvlabs.btscreen.config.Configs.Lists.PROCESS_CHANGES_BLACKLIST
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
+import baritone.api.BaritoneAPI;
+import baritone.api.Settings;
 import baritone.api.pathing.calc.IPathingControlManager;
 import baritone.api.process.IBaritoneProcess;
 import de.drvlabs.btscreen.BTScreen;
@@ -54,18 +58,22 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         BaritoneEvents.STOPPED.register(this);
         BaritoneEvents.PROCESS_CHANGED.register(this);
 
-		final IPathingControlManager controlManager = Utils.BT.getPathingControlManager();
-		controlManager.registerProcess(new BTActiveListener());
-		controlManager.registerProcess(new Teleport());
-		controlManager.registerProcess(new AutoDrop());
-		controlManager.registerProcess(new AutoEat());
-		controlManager.registerProcess(new AutoHaste());
-		controlManager.registerProcess(new AutoRepair());
-		controlManager.registerProcess(new AutoSleep());
-		controlManager.registerProcess(new AutoTorch());
-		controlManager.registerProcess(new LocationCheck());
-		controlManager.registerProcess(new SelectionOrchestrator());
-	}
+        final IPathingControlManager controlManager = Utils.BT.getPathingControlManager();
+        controlManager.registerProcess(BTActiveListener.INSTANCE);
+        controlManager.registerProcess(Teleport.INSTANCE);
+        controlManager.registerProcess(AutoDrop.INSTANCE);
+        controlManager.registerProcess(AutoEat.INSTANCE);
+        controlManager.registerProcess(AutoHaste.INSTANCE);
+        controlManager.registerProcess(AutoRepair.INSTANCE);
+        controlManager.registerProcess(AutoSleep.INSTANCE);
+        controlManager.registerProcess(AutoTorch.INSTANCE);
+        controlManager.registerProcess(LocationCheck.INSTANCE);
+        controlManager.registerProcess(SelectionOrchestrator.INSTANCE);
+
+        final Settings settings = BaritoneAPI.getSettings();
+        settings.logger.value = settings.logger.value.andThen(this::onBaritoneLog);
+        settings.toaster.value = settings.toaster.value.andThen((prefix, msg) -> onBaritoneLog(msg));
+    }
 
     @Override
     public void onPlayReady(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
@@ -103,6 +111,23 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         BTActiveListener.updateBaritoneStatus();
     }
 
+    private int retryLiquidCount = -1;
+
+    private void onBaritoneLog(Text msg) {
+		final String prefix = baritone.api.utils.Helper.getPrefix().getString();
+		final String msgString = StringUtils.removeStart(msg.getString(), prefix + " ");
+        if (retryLiquidCount < 0 && msgString.equals("Unreplaceable liquids at at least:")) {
+            retryLiquidCount = 2;
+            Waiter.wait(100, w -> {
+                if (retryLiquidCount > 0 && Utils.paused()) {
+                    Utils.resume();
+                    w.start(100);
+                }
+                retryLiquidCount--;
+            });
+        }
+    }
+
     @Override
     public void baritoneStarted() {
         BTScreen.debugLog("Baritone is active");
@@ -113,15 +138,15 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         }
     }
 
-	@Override
-	public void baritoneStopped(boolean canceled) {
-		BTScreen.debugLog("Baritone is inactive. canceled: " + canceled);
-		RepeatAction.baritoneStopped(canceled);
-		PresetMode.loadPreviousSettings();
-		if (!canceled) {
-			Teleport.Home.FINISHED.tpToHome();
-		}
-	}
+    @Override
+    public void baritoneStopped(boolean canceled) {
+        BTScreen.debugLog("Baritone is inactive. canceled: " + canceled);
+        RepeatAction.baritoneStopped(canceled);
+        PresetMode.loadPreviousSettings();
+        if (!canceled) {
+            Teleport.Home.FINISHED.tpToHome();
+        }
+    }
 
     private static boolean shouldDisplayProcesses(IBaritoneProcess... processes) {
         if (!SHOW_PROCESS_CHANGES.getBooleanValue()) {

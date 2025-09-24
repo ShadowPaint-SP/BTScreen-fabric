@@ -21,7 +21,12 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
 
-public class AutoSleep extends BTProcessWithInitializer {
+public final class AutoSleep extends BTProcessWithInitializer {
+    public static final AutoSleep INSTANCE = new AutoSleep();
+
+    private AutoSleep() {
+    }
+
     private boolean finishedThisDay = false;
     private Iterator<BlockPos> bedPositions = null;
 

@@ -16,7 +16,12 @@ import net.minecraft.registry.Registries;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Identifier;
 
-public class AutoDrop extends BTProcessWithInitializer implements BaritoneEvents.Started {
+public final class AutoDrop extends BTProcessWithInitializer implements BaritoneEvents.Started {
+    public static final AutoDrop INSTANCE = new AutoDrop();
+
+    private AutoDrop() {
+    }
+
     private static final Set<Identifier> blacklist = new HashSet<>();
     private static final Set<Integer> workingSlots = new HashSet<>();
     private static boolean hasFreeSlot = false;

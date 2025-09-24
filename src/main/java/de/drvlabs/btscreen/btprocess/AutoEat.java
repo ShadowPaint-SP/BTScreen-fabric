@@ -16,7 +16,12 @@ import net.minecraft.util.ActionResult.SwingSource;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 
-public class AutoEat extends BTProcessWithInitializer {
+public final class AutoEat extends BTProcessWithInitializer {
+    public static final AutoEat INSTANCE = new AutoEat();
+
+    private AutoEat() {
+    }
+
     public static final int MIN_FOOD_LEVEL = 21 - Registries.ITEM.stream()
             .map(i -> i.getComponents().get(DataComponentTypes.FOOD)).filter(i -> i != null)
             .mapToInt(FoodComponent::nutrition).max().orElse(20);

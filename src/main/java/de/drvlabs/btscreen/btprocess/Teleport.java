@@ -11,7 +11,12 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
-public class Teleport extends BTProcessHelper {
+public final class Teleport extends BTProcessHelper {
+    public static final Teleport INSTANCE = new Teleport();
+
+    private Teleport() {
+    }
+
     private static Home nextHome = null;
     private Home lastHome = null;
     private boolean teleporting = false;

@@ -22,7 +22,12 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.LightType;
 
-public class AutoTorch extends BTProcessHelper {
+public final class AutoTorch extends BTProcessHelper {
+    public static final AutoTorch INSTANCE = new AutoTorch();
+
+    private AutoTorch() {
+    }
+
     private static boolean hasLightData = false;
     private int tick = 0;
     private int torchSlot;

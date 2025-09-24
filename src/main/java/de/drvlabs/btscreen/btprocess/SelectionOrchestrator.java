@@ -4,17 +4,26 @@ import java.util.Iterator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import baritone.api.process.IBuilderProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.selection.ISelection;
 import baritone.api.selection.ISelectionManager;
 import baritone.api.utils.BetterBlockPos;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.LangKeys;
+import de.drvlabs.btscreen.event.BaritoneEvents;
 import de.drvlabs.btscreen.utils.Utils;
+import de.drvlabs.btscreen.utils.Waiter;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-public class SelectionOrchestrator extends BTProcessHelper {
+public final class SelectionOrchestrator extends BTProcessHelper implements BaritoneEvents.Stopped {
+    public static final SelectionOrchestrator INSTANCE = new SelectionOrchestrator();
+
+    private SelectionOrchestrator() {
+    }
+
+    private static final IBuilderProcess BUILD_PROC = Utils.BT.getBuilderProcess();
     private static final ISelectionManager SEL_MGR = Utils.BT.getSelectionManager();
     private static String[] layerCommands;
     private static int layerHeight;
@@ -24,17 +33,18 @@ public class SelectionOrchestrator extends BTProcessHelper {
 
     @Override
     public boolean isActive() {
-        return layerCommands != null && !Utils.BT.getBuilderProcess().isActive();
+        return layerCommands != null;
     }
 
     @Override
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
-        if (isSafeToCancel) {
+        if (!BUILD_PROC.isActive() && isSafeToCancel) {
             if (currentY == Integer.MAX_VALUE) {
                 selections = SEL_MGR.getSelections();
                 BTScreen.debugLog("selections: {}", selections.toString());
                 if (selections.length == 0) {
-                    BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".selectionOrchestrator.noSelection").formatted(Formatting.RED));
+                    BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".selectionOrchestrator.noSelection")
+                            .formatted(Formatting.RED));
                     onLostControl();
                     return DEFER;
                 }
@@ -67,25 +77,28 @@ public class SelectionOrchestrator extends BTProcessHelper {
                     if (pos2Y > max.y) {
                         pos2Y = max.y;
                     }
-                    BetterBlockPos pos2 = new BetterBlockPos(max.x, pos2Y, max.z);;
+                    BetterBlockPos pos2 = new BetterBlockPos(max.x, pos2Y, max.z);
                     BTScreen.debugLog("pos1: {}, pos2: {}", pos1, pos2);
                     SEL_MGR.addSelection(pos1, pos2);
                 }
             }
             if (SEL_MGR.getSelections().length == 0) {
-                BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".selectionOrchestrator.finished").formatted(Formatting.GREEN));
+                BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".selectionOrchestrator.finished")
+                        .formatted(Formatting.GREEN));
                 onLostControl();
                 return DEFER;
             }
             commandIterator = Stream.of(layerCommands).iterator();
             Utils.execute(commandIterator.next());
-            currentY += (currentY > 0 ? -1 : 1);
+            currentY += layerHeight;
         }
         return REQUEST_PAUSE;
     }
 
     @Override
     public void onLostControl() {
+        if (BUILD_PROC.isActive())
+            return;
         layerCommands = null;
         currentY = Integer.MAX_VALUE;
         if (selections != null && selections.length > 0) {
@@ -103,11 +116,27 @@ public class SelectionOrchestrator extends BTProcessHelper {
         return DEFAULT_PRIORITY - 1;
     }
 
+    @Override
+    public boolean isTemporary() {
+        return false;
+    }
+
     public static boolean activate(int layerHeight, String... command) {
         if (layerHeight == 0 || command.length == 0 || SelectionOrchestrator.layerCommands != null)
             return false;
         SelectionOrchestrator.layerCommands = command;
         SelectionOrchestrator.layerHeight = layerHeight;
         return true;
+    }
+
+    @Override
+    public void baritoneStopped(boolean canceled) {
+        if (canceled) {
+            Waiter.wait(1, w -> onLostControl());
+        }
+    }
+
+    {
+        BaritoneEvents.STOPPED.register(this);
     }
 }

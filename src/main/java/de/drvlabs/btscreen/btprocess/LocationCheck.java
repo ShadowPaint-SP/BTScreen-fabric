@@ -12,7 +12,12 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
-public class LocationCheck extends BTProcessHelper implements BaritoneEvents.Stopped, BaritoneEvents.Paused {
+public final class LocationCheck extends BTProcessHelper implements BaritoneEvents.Stopped, BaritoneEvents.Paused {
+    public static final LocationCheck INSTANCE = new LocationCheck();
+
+    private LocationCheck() {
+    }
+
     private Vec3d lastLocation = null;
     private Identifier lastWorld = null;
 
