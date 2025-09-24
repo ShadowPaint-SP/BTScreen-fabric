@@ -13,6 +13,7 @@ import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.event.BaritoneEvents;
 import de.drvlabs.btscreen.utils.Utils;
+import de.drvlabs.btscreen.utils.Waiter;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -131,7 +132,7 @@ public final class SelectionOrchestrator extends BTProcessHelper implements Bari
     @Override
     public void baritoneStopped(boolean canceled) {
         if (canceled) {
-            onLostControl();
+            Waiter.wait(1, w -> onLostControl());
         }
     }
 
