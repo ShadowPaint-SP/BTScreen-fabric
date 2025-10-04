@@ -142,7 +142,7 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
     public void baritoneStopped(boolean canceled) {
         BTScreen.debugLog("Baritone is inactive. canceled: " + canceled);
         RepeatAction.baritoneStopped(canceled);
-        PresetMode.loadPreviousSettings();
+        PresetMode.SETTINGS_MANAGER.reset();
         if (!canceled) {
             Teleport.Home.FINISHED.tpToHome();
         }

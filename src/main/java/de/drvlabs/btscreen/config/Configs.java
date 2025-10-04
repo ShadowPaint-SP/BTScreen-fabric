@@ -55,6 +55,7 @@ public class Configs implements IConfigHandler {
                 1000000);
         public static final ConfigBoolean SAFETY_LOCATION = new ConfigBoolean("safetyLocation", true);
         public static final ConfigInteger SAFETY_MIN_HEALTH = new ConfigInteger("safetyMinHealth", 5, 0, 20);
+        public static final ConfigTicks MAX_SLEEP_TICKS = new ConfigTicks("maxSleepTicks", 50, 0, 200);
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 AUTO_SLEEP,
@@ -81,6 +82,7 @@ public class Configs implements IConfigHandler {
                 REPEAT_ACTION_INTERVAL,
                 SAFETY_LOCATION,
                 SAFETY_MIN_HEALTH,
+                MAX_SLEEP_TICKS,
                 SHOW_PROCESS_CHANGES,
                 DEBUG_LOGGING);
 

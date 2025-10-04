@@ -1,5 +1,8 @@
 package de.drvlabs.btscreen.utils.preset;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -7,6 +10,7 @@ import com.google.common.collect.ImmutableList;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
+import baritone.api.Settings.Setting;
 import baritone.api.utils.SettingsUtil;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.btprocess.SelectionOrchestrator;
@@ -19,7 +23,6 @@ import fi.dy.masa.malilib.config.options.ConfigStringList;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.util.StringUtils;
-import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.FluidFillable;
@@ -27,6 +30,7 @@ import net.minecraft.block.Waterloggable;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -47,11 +51,12 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
     CLEAR_AREA(false) {
         @Override
         public boolean setSettings() {
-            setCommonMiningSettings();
-            SETTINGS.buildInLayers.value = true;
-            SETTINGS.buildRepeatCount.value = 0;
-            SETTINGS.layerHeight.value = 5;
-            SETTINGS.layerOrder.value = true;
+            SETTINGS_MANAGER.init().addCommonMiningSettings()
+                    .add(SETTINGS.buildInLayers, true)
+                    .add(SETTINGS.buildRepeatCount, 0)
+                    .add(SETTINGS.layerHeight, 5)
+                    .add(SETTINGS.layerOrder, true)
+                    .apply();
             return true;
         }
 
@@ -63,8 +68,9 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
     REMOVE_LIQUID(false) {
         @Override
         public boolean setSettings() {
-            setCommonMiningSettings();
-            SETTINGS.allowInventory.value = true;
+            SETTINGS_MANAGER.init().addCommonMiningSettings()
+                    .add(SETTINGS.allowInventory, true)
+                    .apply();
             return true;
         }
 
@@ -110,9 +116,10 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
     FARMING(true) {
         @Override
         public boolean setSettings() {
-            setCommonSettings();
-            SETTINGS.allowBreak.value = false;
-            SETTINGS.allowPlace.value = false;
+            SETTINGS_MANAGER.init().addCommonSettings()
+                    .add(SETTINGS.allowBreak, false)
+                    .add(SETTINGS.allowPlace, false)
+                    .apply();
             return true;
         }
 
@@ -124,10 +131,11 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
     BUILDING(false) {
         @Override
         public boolean setSettings() {
-            setCommonSettings();
-            SETTINGS.buildInLayers.value = true;
-            SETTINGS.layerOrder.value = false;
-            SETTINGS.layerHeight.value = 1;
+            SETTINGS_MANAGER.init().addCommonSettings()
+                    .add(SETTINGS.buildInLayers, true)
+                    .add(SETTINGS.layerOrder, false)
+                    .add(SETTINGS.layerHeight, 1)
+                    .apply();
             return true;
         }
 
@@ -139,6 +147,7 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
     };
 
     private static final Settings SETTINGS = BaritoneAPI.getSettings();
+    public static final SettingsManager SETTINGS_MANAGER = new SettingsManager();
 
     private final String configString;
     public final boolean additionalControls;
@@ -192,56 +201,8 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
 
     public abstract String getCommand(GuiBase gui);
 
-    private static boolean shouldLoadPreviousSettings = false;
-
-    public static boolean overwroteSettings() {
-        return shouldLoadPreviousSettings;
-    }
-
-    private static void resetSettings() {
-        shouldLoadPreviousSettings = true;
-        SettingsUtil.modifiedSettings(SETTINGS).forEach(Settings.Setting::reset);
-        Waiter.wait(2, w -> {
-            if (!Utils.isActive()) {
-                loadPreviousSettings();
-            }
-        });
-    }
-
-    public static void loadPreviousSettings() {
-        if (!shouldLoadPreviousSettings)
-            return;
-        resetSettings();
-        shouldLoadPreviousSettings = false;
-        SettingsUtil.readAndApply(SETTINGS, SettingsUtil.SETTINGS_DEFAULT_NAME);
-    }
-
-    private static void setCommonSettings() {
-        resetSettings();
-        SETTINGS.blockBreakSpeed.value = 0;
-        SETTINGS.itemSaver.value = true;
-        SETTINGS.itemSaverThreshold.value = 10;
-        SETTINGS.randomLooking.value = (double) 0;
-        SETTINGS.randomLooking113.value = (double) 0;
-        SETTINGS.acceptableThrowawayItems.value = Configs.Lists.ACCEPTABLE_THROWAWAY_ITEMS
-                .getStrings().stream().map(string -> Registries.ITEM.get(Identifier.tryParse(string)))
-                .filter(Objects::nonNull).toList();
-    }
-
-    private static void setCommonMiningSettings() {
-        setCommonSettings();
-        SETTINGS.blocksToDisallowBreaking.value = getBlockStream(Configs.Lists.BLOCKS_TO_DISALLOW_BREAKING).toList();
-        SETTINGS.buildIgnoreBlocks.value = Stream.concat(SETTINGS.blocksToDisallowBreaking.value.stream(),
-                getBlockStream(Configs.Lists.BLOCKS_TO_IGNORE)).distinct().toList();
-        if (Configs.Generic.AUTO_TORCH.getBooleanValue()) {
-            SETTINGS.buildIgnoreBlocks.value = Stream.concat(SETTINGS.buildIgnoreBlocks.value.stream(),
-                    Stream.of(Blocks.TORCH, Blocks.WALL_TORCH))
-                    .distinct().toList();
-        }
-    }
-
-    private static Stream<Block> getBlockStream(ConfigStringList config) {
-        return config.getStrings().stream().map(string -> Registries.BLOCK.get(Identifier.tryParse(string)))
+    private static <T> Stream<T> getStream(Registry<T> registry, ConfigStringList config) {
+        return config.getStrings().stream().map(string -> registry.get(Identifier.tryParse(string)))
                 .filter(Objects::nonNull).distinct();
     }
 
@@ -349,4 +310,87 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
             "structure_void",
             "jigsaw",
             "barrier");
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static class SettingsManager {
+        private SettingsManager() {
+        }
+
+        private boolean applied = false;
+        private final Map<Setting, Object> originalSettings = new HashMap<>();
+        private final Map<Setting, Object> modifiedSettings = new HashMap<>();
+
+        public SettingsManager init() {
+            originalSettings.clear();
+            modifiedSettings.clear();
+            SettingsUtil.modifiedSettings(SETTINGS).forEach(setting -> {
+                originalSettings.put(setting, setting.value);
+            });
+            return this;
+        }
+
+        public <T> SettingsManager add(Setting<T> setting, T value) {
+            modifiedSettings.put((Setting) setting, value);
+            return this;
+        }
+
+        public void apply() {
+            modifiedSettings.forEach((setting, value) -> {
+                setting.value = value;
+            });
+            Waiter.wait(2, w -> {
+                if (!Utils.isActive()) {
+                    reset();
+                }
+            });
+            applied = true;
+        }
+
+        public void reset() {
+            if (!applied)
+                return;
+            modifiedSettings.forEach((setting, value) -> {
+                if (originalSettings.containsKey(setting)) {
+                    setting.value = originalSettings.get(setting);
+                } else {
+                    setting.reset();
+                }
+            });
+            modifiedSettings.clear();
+            applied = false;
+        }
+
+        public boolean isApplied() {
+            return applied;
+        }
+
+        public List<String> getModifiedSettings() {
+            return modifiedSettings.keySet().stream().map(s -> s.getName().toLowerCase()).toList();
+        }
+
+        public SettingsManager addCommonSettings() {
+            add(SETTINGS.blockBreakSpeed, 0);
+            add(SETTINGS.itemSaver, true);
+            add(SETTINGS.itemSaverThreshold, 10);
+            add(SETTINGS.randomLooking, (double) 0);
+            add(SETTINGS.randomLooking113, (double) 0);
+            add(SETTINGS.acceptableThrowawayItems,
+                    getStream(Registries.ITEM, Configs.Lists.ACCEPTABLE_THROWAWAY_ITEMS).toList());
+            return this;
+        }
+
+        public SettingsManager addCommonMiningSettings() {
+            addCommonSettings();
+            add(SETTINGS.avoidUpdatingFallingBlocks, false);
+            add(SETTINGS.blocksToDisallowBreaking,
+                    getStream(Registries.BLOCK, Configs.Lists.BLOCKS_TO_DISALLOW_BREAKING).toList());
+            add(SETTINGS.buildIgnoreBlocks, Stream.concat(SETTINGS.blocksToDisallowBreaking.value.stream(),
+                    getStream(Registries.BLOCK, Configs.Lists.BLOCKS_TO_IGNORE)).distinct().toList());
+            if (Configs.Generic.AUTO_TORCH.getBooleanValue()) {
+                add(SETTINGS.buildIgnoreBlocks, Stream.concat(SETTINGS.buildIgnoreBlocks.value.stream(),
+                        Stream.of(Blocks.TORCH, Blocks.WALL_TORCH)).distinct().toList());
+            }
+            return this;
+        }
+    }
 }

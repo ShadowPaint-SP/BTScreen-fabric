@@ -123,6 +123,8 @@
   "btscreen.config.generic.comment.safetyLocation": "Ob der Bot stoppen soll, wenn er sich zu weit entfernt\n§6HINWEIS: Der Bot trennt die Verbindung, wenn kein Sicherheits-, Fertig- oder Schlaf-Home konfiguriert ist",
   "btscreen.config.generic.name.safetyMinHealth": "Sicherheit: Min. Lebenspunkte",
   "btscreen.config.generic.comment.safetyMinHealth": "Ob der Bot anhalten soll, wenn die Lebenspunkte zu niedrig sind\n§6HINWEIS: Der Bot trennt die Verbindung, wenn kein Sicherheits-, Fertig- oder Schlaf-Home konfiguriert ist",
+  "btscreen.config.generic.name.maxSleepTicks": "Maximale Schlafdauer",
+  "btscreen.config.generic.comment.maxSleepTicks": "Die maximale Zeit, die im Bett gewartet wird, bevor aufgestanden wird",
 
   "btscreen.config.lists.name.invPreserveItemBlackList": "Abwurf verbieten",
   "btscreen.config.lists.comment.invPreserveItemBlackList": "Gegenstände, die nicht abgeworfen werden sollen",

@@ -18,7 +18,7 @@ public final class Teleport extends BTProcessHelper {
     }
 
     private static Home nextHome = null;
-    private Home lastHome = null;
+    private static Home lastHome = null;
     private boolean teleporting = false;
     private int timeoutTicks = 0;
     private Vec3d oldPos = null;
@@ -117,6 +117,10 @@ public final class Teleport extends BTProcessHelper {
         }
         nextHome = home;
         return true;
+    }
+
+    public static Home getLastHome() {
+        return lastHome;
     }
 
     public static enum Home {
