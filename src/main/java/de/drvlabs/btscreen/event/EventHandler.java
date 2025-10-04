@@ -9,33 +9,20 @@ import org.apache.commons.lang3.StringUtils;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
-import baritone.api.pathing.calc.IPathingControlManager;
 import baritone.api.process.IBaritoneProcess;
 import de.drvlabs.btscreen.BTScreen;
-import de.drvlabs.btscreen.btprocess.AutoDrop;
-import de.drvlabs.btscreen.btprocess.AutoEat;
-import de.drvlabs.btscreen.btprocess.AutoHaste;
-import de.drvlabs.btscreen.btprocess.AutoRepair;
-import de.drvlabs.btscreen.btprocess.AutoSleep;
 import de.drvlabs.btscreen.btprocess.AutoTorch;
 import de.drvlabs.btscreen.btprocess.BTActiveListener;
-import de.drvlabs.btscreen.btprocess.LocationCheck;
-import de.drvlabs.btscreen.btprocess.SelectionOrchestrator;
 import de.drvlabs.btscreen.btprocess.Teleport;
 import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.config.LangKeys;
-import de.drvlabs.btscreen.gui.GuiConfigs;
 import de.drvlabs.btscreen.gui.GuiMainMenu;
 import de.drvlabs.btscreen.utils.RepeatAction;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
 import de.drvlabs.btscreen.utils.preset.PresetMode;
-import fi.dy.masa.malilib.event.InputEventHandler;
-import fi.dy.masa.malilib.registry.Registry;
-import fi.dy.masa.malilib.util.data.ModInfo;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents.ClientStarted;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.EndWorldTick;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents.AfterClientWorldChange;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
@@ -44,35 +31,28 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.text.Text;
 
-public final class EventHandler implements EndWorldTick, AfterClientWorldChange, ClientStarted,
-        BaritoneEvents.Started, BaritoneEvents.Stopped, BaritoneEvents.ProcessChanged,
-        ClientPlayConnectionEvents.Join, ClientPlayConnectionEvents.Disconnect {
-    @Override
-    public void onClientStarted(MinecraftClient client) {
-        Registry.CONFIG_SCREEN.registerConfigScreenFactory(
-                new ModInfo(BTScreen.MOD_ID, BTScreen.MOD_NAME, GuiConfigs::new));
+public final class EventHandler implements ClientTickEvents.EndWorldTick, ClientWorldEvents.AfterClientWorldChange,
+        BaritoneEvents.Started, BaritoneEvents.Stopped, ClientPlayConnectionEvents.Join,
+        ClientPlayConnectionEvents.Disconnect {
+    private static EventHandler INSTANCE = null;
 
-        InputEventHandler.getKeybindManager().registerKeybindProvider(InputHandler.INSTANCE);
-
+    private EventHandler() {
+        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register(this);
+        ClientTickEvents.END_WORLD_TICK.register(this);
+        ClientPlayConnectionEvents.JOIN.register(this);
+        ClientPlayConnectionEvents.DISCONNECT.register(this);
         BaritoneEvents.STARTED.register(this);
         BaritoneEvents.STOPPED.register(this);
-        BaritoneEvents.PROCESS_CHANGED.register(this);
-
-        final IPathingControlManager controlManager = Utils.BT.getPathingControlManager();
-        controlManager.registerProcess(BTActiveListener.INSTANCE);
-        controlManager.registerProcess(Teleport.INSTANCE);
-        controlManager.registerProcess(AutoDrop.INSTANCE);
-        controlManager.registerProcess(AutoEat.INSTANCE);
-        controlManager.registerProcess(AutoHaste.INSTANCE);
-        controlManager.registerProcess(AutoRepair.INSTANCE);
-        controlManager.registerProcess(AutoSleep.INSTANCE);
-        controlManager.registerProcess(AutoTorch.INSTANCE);
-        controlManager.registerProcess(LocationCheck.INSTANCE);
-        controlManager.registerProcess(SelectionOrchestrator.INSTANCE);
 
         final Settings settings = BaritoneAPI.getSettings();
         settings.logger.value = settings.logger.value.andThen(this::onBaritoneLog);
         settings.toaster.value = settings.toaster.value.andThen((prefix, msg) -> onBaritoneLog(msg));
+    }
+
+    public static void register() {
+        if (INSTANCE == null) {
+            INSTANCE = new EventHandler();
+        }
     }
 
     @Override
@@ -104,9 +84,9 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         IBaritoneProcess currentProcess = Utils.getActiveProcess();
         BTActiveListener.setPauseProcess(currentProcess);
         if (lastProcess != currentProcess) {
-            BaritoneEvents.PROCESS_CHANGED.invoker().onProcessChanged(lastProcess, currentProcess);
+            baritoneProcessChanged(lastProcess, currentProcess);
+            lastProcess = currentProcess;
         }
-        lastProcess = currentProcess;
         Waiter.tickAll();
         BTActiveListener.updateBaritoneStatus();
     }
@@ -114,8 +94,8 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
     private int retryLiquidCount = -1;
 
     private void onBaritoneLog(Text msg) {
-		final String prefix = baritone.api.utils.Helper.getPrefix().getString();
-		final String msgString = StringUtils.removeStart(msg.getString(), prefix + " ");
+        final String prefix = baritone.api.utils.Helper.getPrefix().getString();
+        final String msgString = StringUtils.removeStart(msg.getString(), prefix + " ");
         if (retryLiquidCount < 0 && msgString.equals("Unreplaceable liquids at at least:")) {
             retryLiquidCount = 2;
             Waiter.wait(100, w -> {
@@ -174,7 +154,7 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
                 : String.format("%s[%s]", process.getClass().getSimpleName(), process.displayName0());
     }
 
-    public void onProcessChanged(IBaritoneProcess oldProcess, IBaritoneProcess newProcess) {
+    private void baritoneProcessChanged(IBaritoneProcess oldProcess, IBaritoneProcess newProcess) {
         if (shouldDisplayProcesses(oldProcess, newProcess)) {
             BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".processChanged",
                     toString(oldProcess), toString(newProcess)));

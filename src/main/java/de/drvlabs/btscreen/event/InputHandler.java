@@ -2,12 +2,23 @@ package de.drvlabs.btscreen.event;
 
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Hotkeys;
+import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.IKeybindManager;
 import fi.dy.masa.malilib.hotkeys.IKeybindProvider;
 
 public class InputHandler implements IKeybindProvider {
-	public static final InputHandler INSTANCE = new InputHandler();
+	private static InputHandler INSTANCE = null;
+
+	private InputHandler() {
+		InputEventHandler.getKeybindManager().registerKeybindProvider(this);
+	}
+
+	public static void register() {
+		if (INSTANCE == null) {
+			INSTANCE = new InputHandler();
+		}
+	}
 
 	@Override
 	public void addKeysToMap(IKeybindManager manager) {
