@@ -7,7 +7,7 @@ import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
 
-public class RepeatAction {
+public final class RepeatAction {
     private static String lastCommand = "";
     private static Waiter waiter = null;
 

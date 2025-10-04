@@ -12,9 +12,6 @@ import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.text.Text;
 
 public final class ProcessChanged {
-    private ProcessChanged() {
-    }
-
     private static boolean shouldDisplayProcesses(IBaritoneProcess... processes) {
         if (!SHOW_PROCESS_CHANGES.getBooleanValue()) {
             return false;

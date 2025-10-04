@@ -13,6 +13,7 @@ import de.drvlabs.btscreen.gui.GuiMainMenu;
 import de.drvlabs.btscreen.implementation.PresetMode;
 import de.drvlabs.btscreen.implementation.ProcessChanged;
 import de.drvlabs.btscreen.implementation.RepeatAction;
+import de.drvlabs.btscreen.implementation.RetryUnreplaceableLiquids;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -79,21 +80,10 @@ public final class EventHandler implements ClientTickEvents.EndWorldTick, Client
         BTActiveListener.updateBaritoneStatus();
     }
 
-    private int retryLiquidCount = -1;
-
     private void onBaritoneLog(Text msg) {
         final String prefix = baritone.api.utils.Helper.getPrefix().getString();
         final String msgString = StringUtils.removeStart(msg.getString(), prefix + " ");
-        if (retryLiquidCount < 0 && msgString.equals("Unreplaceable liquids at at least:")) {
-            retryLiquidCount = 2;
-            Waiter.wait(100, w -> {
-                if (retryLiquidCount > 0 && Utils.isPaused()) {
-                    Utils.resume();
-                    w.start(100);
-                }
-                retryLiquidCount--;
-            });
-        }
+        RetryUnreplaceableLiquids.onBaritoneLog(msgString);
     }
 
     @Override
