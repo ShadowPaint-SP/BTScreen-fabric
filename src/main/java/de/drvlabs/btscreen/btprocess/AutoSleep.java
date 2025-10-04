@@ -1,6 +1,7 @@
 package de.drvlabs.btscreen.btprocess;
 
 import static de.drvlabs.btscreen.config.Configs.Generic.AUTO_SLEEP;
+import static de.drvlabs.btscreen.config.Configs.Generic.MAX_SLEEP_TICKS;
 
 import java.util.Iterator;
 import java.util.List;
@@ -27,12 +28,12 @@ public final class AutoSleep extends BTProcessWithInitializer {
     private AutoSleep() {
     }
 
-    private boolean finishedThisDay = false;
+    private int sleepTimer = 0;
     private Iterator<BlockPos> bedPositions = null;
 
     @Override
     public boolean isActive() {
-        return isActive(AUTO_SLEEP) && (finishedThisDay || isNight());
+        return isActive(AUTO_SLEEP) && (sleepTimer > 0 || isNight());
     }
 
     @Override
@@ -43,7 +44,7 @@ public final class AutoSleep extends BTProcessWithInitializer {
     @Override
     protected PathingCommand onTick() {
         Identifier mineWorld = Teleport.Home.MINE.getWorld();
-        if (finishedThisDay) {
+        if (sleepTimer >= MAX_SLEEP_TICKS.getIntegerValue()) {
             if (mineWorld.equals(Utils.getWorldId()) && !isNight()) {
                 onLostControl();
             }
@@ -58,18 +59,16 @@ public final class AutoSleep extends BTProcessWithInitializer {
         if (!Utils.MC.player.isSleeping()) {
             if (bedPositions == null) {
                 bedPositions = getBedPositions(Utils.MC.player.getBlockPos());
+            } else if (bedPositions.hasNext()) {
+                BlockPos pos = bedPositions.next();
+                hitBed(pos);
             } else {
-                if (bedPositions.hasNext()) {
-                    BlockPos pos = bedPositions.next();
-                    hitBed(pos);
-                } else {
-                    finishedThisDay = true;
-                    BTScreen.chatMessage(
-                            Text.translatable(LangKeys.INFO + ".autoSleep.noBed").formatted(Formatting.RED));
-                }
+                sleepTimer = MAX_SLEEP_TICKS.getIntegerValue();
+                BTScreen.chatMessage(
+                        Text.translatable(LangKeys.INFO + ".autoSleep.noBed").formatted(Formatting.RED));
             }
-        } else if (Utils.MC.player.canResetTimeBySleeping()) {
-            finishedThisDay = true;
+        } else if (Utils.MC.player.canResetTimeBySleeping()
+                && sleepTimer++ >= MAX_SLEEP_TICKS.getIntegerValue()) {
             Screen screen = Utils.MC.currentScreen;
             if (screen != null) {
                 screen.close();
@@ -80,7 +79,7 @@ public final class AutoSleep extends BTProcessWithInitializer {
 
     @Override
     protected void onReset() {
-        finishedThisDay = false;
+        sleepTimer = 0;
         bedPositions = null;
     }
 
