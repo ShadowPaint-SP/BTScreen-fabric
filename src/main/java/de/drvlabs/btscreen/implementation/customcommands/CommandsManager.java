@@ -1,4 +1,4 @@
-package de.drvlabs.btscreen.utils.customcommands;
+package de.drvlabs.btscreen.implementation.customcommands;
 
 import java.util.ArrayList;
 import java.util.List;

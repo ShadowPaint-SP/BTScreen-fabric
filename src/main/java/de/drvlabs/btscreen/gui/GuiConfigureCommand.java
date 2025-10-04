@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.config.LangKeys;
-import de.drvlabs.btscreen.utils.customcommands.Commands;
+import de.drvlabs.btscreen.implementation.customcommands.Commands;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.Message.MessageType;

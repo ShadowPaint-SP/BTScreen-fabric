@@ -8,7 +8,8 @@ import baritone.api.process.IBaritoneProcess;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.btprocess.BTActiveListener;
 import de.drvlabs.btscreen.config.DataManager;
-import de.drvlabs.btscreen.utils.preset.PresetMode;
+import de.drvlabs.btscreen.implementation.PresetMode;
+import de.drvlabs.btscreen.implementation.RepeatAction;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -50,7 +51,7 @@ public class Utils {
         return isInGame() && BTActiveListener.isBaritoneActive();
     }
 
-    public static boolean paused() {
+    public static boolean isPaused() {
         return BTActiveListener.isBaritonePaused();
     }
 

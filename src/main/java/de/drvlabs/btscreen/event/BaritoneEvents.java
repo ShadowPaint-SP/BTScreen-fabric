@@ -1,6 +1,5 @@
 package de.drvlabs.btscreen.event;
 
-import baritone.api.process.IBaritoneProcess;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
@@ -33,19 +32,7 @@ public final class BaritoneEvents {
                 }
             });
 
-    public static final Event<ProcessChanged> PROCESS_CHANGED = EventFactory
-            .createArrayBacked(ProcessChanged.class, callbacks -> (oldProcess, newProcess) -> {
-                for (ProcessChanged callback : callbacks) {
-                    callback.onProcessChanged(oldProcess, newProcess);
-                }
-            });
-
     private BaritoneEvents() {
-    }
-
-    @FunctionalInterface
-    public interface ProcessChanged {
-        void onProcessChanged(IBaritoneProcess oldProcess, IBaritoneProcess newProcess);
     }
 
     @FunctionalInterface

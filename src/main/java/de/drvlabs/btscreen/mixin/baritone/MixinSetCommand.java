@@ -12,7 +12,7 @@ import baritone.api.command.argument.IArgConsumer;
 import baritone.api.command.exception.CommandException;
 import baritone.api.command.exception.CommandInvalidStateException;
 import baritone.command.defaults.SetCommand;
-import de.drvlabs.btscreen.utils.preset.PresetMode;
+import de.drvlabs.btscreen.implementation.PresetMode;
 
 /*
  * WARNING: class is obfuscated

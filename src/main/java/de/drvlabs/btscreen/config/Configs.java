@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.btprocess.AutoEat;
-import de.drvlabs.btscreen.utils.preset.PresetMode;
+import de.drvlabs.btscreen.implementation.PresetMode;
 import fi.dy.masa.malilib.config.ConfigUtils;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigHandler;
@@ -26,7 +26,7 @@ public class Configs implements IConfigHandler {
 
     public static class Generic {
         public static final ConfigBoolean DEBUG_LOGGING = new ConfigBoolean("debugLogging", false);
-        public static final ConfigBoolean SHOW_PROCESS_CHANGES = new ConfigBoolean("showProcessChanges", true);
+        public static final ConfigBoolean SHOW_PROCESS_CHANGES = new ConfigBoolean("showProcessChanges", false);
         public static final ConfigBoolean AUTO_SLEEP = new ConfigBoolean("autoSleep", false);
         public static final ConfigBoolean AUTO_REPAIR = new ConfigBoolean("autoRepair", false);
         public static final ConfigBoolean AUTO_EAT = new ConfigBoolean("autoEat", false);

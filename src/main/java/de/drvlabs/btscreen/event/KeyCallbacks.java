@@ -25,7 +25,7 @@ public class KeyCallbacks {
 	}
 
 	public static boolean pauseResume(KeyAction action, IKeybind key) {
-		if (Utils.paused()) {
+		if (Utils.isPaused()) {
 			Utils.resume();
 		} else {
 			Utils.pause();

@@ -14,7 +14,6 @@ import net.minecraft.client.network.ClientPlayerInteractionManager;
 
 @Mixin(ClientPlayerInteractionManager.class)
 public abstract class MixinClientPlayerInteractionManager {
-    // TODO: test, because not working?
     @Shadow
     private int blockBreakingCooldown;
 

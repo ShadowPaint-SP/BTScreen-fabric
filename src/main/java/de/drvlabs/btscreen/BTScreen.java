@@ -6,15 +6,26 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import baritone.api.pathing.calc.IPathingControlManager;
+import de.drvlabs.btscreen.btprocess.AutoDrop;
+import de.drvlabs.btscreen.btprocess.AutoEat;
+import de.drvlabs.btscreen.btprocess.AutoHaste;
+import de.drvlabs.btscreen.btprocess.AutoRepair;
+import de.drvlabs.btscreen.btprocess.AutoSleep;
+import de.drvlabs.btscreen.btprocess.AutoTorch;
+import de.drvlabs.btscreen.btprocess.BTActiveListener;
+import de.drvlabs.btscreen.btprocess.LocationCheck;
+import de.drvlabs.btscreen.btprocess.SelectionOrchestrator;
+import de.drvlabs.btscreen.btprocess.Teleport;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.event.EventHandler;
+import de.drvlabs.btscreen.event.InputHandler;
+import de.drvlabs.btscreen.gui.GuiConfigs;
 import de.drvlabs.btscreen.utils.Utils;
 import fi.dy.masa.malilib.config.ConfigManager;
+import fi.dy.masa.malilib.registry.Registry;
+import fi.dy.masa.malilib.util.data.ModInfo;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
@@ -35,13 +46,23 @@ public class BTScreen implements ClientModInitializer {
         LOGGER.info("Initializing " + MOD_NAME + " " + MOD_VERSION);
         // Configs
         ConfigManager.getInstance().registerConfigHandler(BTScreen.MOD_ID, new Configs());
+        Registry.CONFIG_SCREEN.registerConfigScreenFactory(
+                new ModInfo(BTScreen.MOD_ID, BTScreen.MOD_NAME, GuiConfigs::new));
         // Events
-        final EventHandler eventHandler = new EventHandler();
-        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register(eventHandler);
-        ClientTickEvents.END_WORLD_TICK.register(eventHandler);
-        ClientLifecycleEvents.CLIENT_STARTED.register(eventHandler);
-        ClientPlayConnectionEvents.JOIN.register(eventHandler);
-        ClientPlayConnectionEvents.DISCONNECT.register(eventHandler);
+        EventHandler.register();
+        InputHandler.register();
+        // Processes
+        final IPathingControlManager controlManager = Utils.BT.getPathingControlManager();
+        controlManager.registerProcess(BTActiveListener.INSTANCE);
+        controlManager.registerProcess(Teleport.INSTANCE);
+        controlManager.registerProcess(AutoDrop.INSTANCE);
+        controlManager.registerProcess(AutoEat.INSTANCE);
+        controlManager.registerProcess(AutoHaste.INSTANCE);
+        controlManager.registerProcess(AutoRepair.INSTANCE);
+        controlManager.registerProcess(AutoSleep.INSTANCE);
+        controlManager.registerProcess(AutoTorch.INSTANCE);
+        controlManager.registerProcess(LocationCheck.INSTANCE);
+        controlManager.registerProcess(SelectionOrchestrator.INSTANCE);
     }
 
     public static void debugLog(String msg, Object... args) {
