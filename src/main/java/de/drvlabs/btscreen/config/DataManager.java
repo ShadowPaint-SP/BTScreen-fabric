@@ -7,8 +7,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 import de.drvlabs.btscreen.BTScreen;
-import de.drvlabs.btscreen.utils.customcommands.CommandsManager;
-import de.drvlabs.btscreen.utils.preset.PresetMode;
+import de.drvlabs.btscreen.implementation.PresetMode;
+import de.drvlabs.btscreen.implementation.customcommands.CommandsManager;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.StringUtils;

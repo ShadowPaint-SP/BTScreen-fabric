@@ -8,7 +8,7 @@ import com.google.common.collect.ImmutableList;
 import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.gui.ButtonIcons;
 import de.drvlabs.btscreen.gui.GuiCommandList;
-import de.drvlabs.btscreen.utils.customcommands.Commands;
+import de.drvlabs.btscreen.implementation.customcommands.Commands;
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetSearchBar;

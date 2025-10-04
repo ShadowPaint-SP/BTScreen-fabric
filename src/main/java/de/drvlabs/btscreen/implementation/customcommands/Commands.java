@@ -1,4 +1,4 @@
-package de.drvlabs.btscreen.utils.customcommands;
+package de.drvlabs.btscreen.implementation.customcommands;
 
 import java.util.Iterator;
 import java.util.List;

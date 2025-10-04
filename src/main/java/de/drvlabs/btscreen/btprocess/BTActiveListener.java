@@ -35,7 +35,8 @@ public final class BTActiveListener extends BTProcessHelper {
         setBaritonePaused(isBaritonePaused());
     }
 
-    public static void setPauseProcess(IBaritoneProcess process) {
+    public static void onTick() {
+        final IBaritoneProcess process = Utils.getActiveProcess();
         if (pauseProcess != null || process == null
                 || !process.getClass().getName().startsWith("baritone.command.defaults.ExecutionControlCommands")) {
             return;

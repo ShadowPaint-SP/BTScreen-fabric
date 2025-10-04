@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.btprocess.AutoEat;
-import de.drvlabs.btscreen.utils.preset.PresetMode;
+import de.drvlabs.btscreen.implementation.PresetMode;
 import fi.dy.masa.malilib.config.ConfigUtils;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigHandler;

@@ -1,9 +1,11 @@
-package de.drvlabs.btscreen.utils;
+package de.drvlabs.btscreen.implementation;
 
 import static de.drvlabs.btscreen.config.Configs.Generic.REPEAT_ACTION;
 import static de.drvlabs.btscreen.config.Configs.Generic.REPEAT_ACTION_INTERVAL;
 
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.utils.Utils;
+import de.drvlabs.btscreen.utils.Waiter;
 
 public class RepeatAction {
     private static String lastCommand = "";
