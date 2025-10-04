@@ -50,7 +50,7 @@ public class Utils {
         return isInGame() && BTActiveListener.isBaritoneActive();
     }
 
-    public static boolean paused() {
+    public static boolean isPaused() {
         return BTActiveListener.isBaritonePaused();
     }
 

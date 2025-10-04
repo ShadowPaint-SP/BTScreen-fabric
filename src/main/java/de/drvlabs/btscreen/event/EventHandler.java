@@ -119,7 +119,7 @@ public final class EventHandler implements EndWorldTick, AfterClientWorldChange,
         if (retryLiquidCount < 0 && msgString.equals("Unreplaceable liquids at at least:")) {
             retryLiquidCount = 2;
             Waiter.wait(100, w -> {
-                if (retryLiquidCount > 0 && Utils.paused()) {
+                if (retryLiquidCount > 0 && Utils.isPaused()) {
                     Utils.resume();
                     w.start(100);
                 }

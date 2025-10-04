@@ -66,7 +66,7 @@ public class GuiMainMenu extends GuiBase {
 		y += 22;
 		x = 17;
 		if (Utils.isActive()) {
-			if (Utils.paused()) {
+			if (Utils.isPaused()) {
 				label = StringUtils.translate(LangKeys.GUI_BUTTON + ".resume");
 			} else {
 				label = StringUtils.translate(LangKeys.GUI_BUTTON + ".pause");
@@ -346,7 +346,7 @@ public class GuiMainMenu extends GuiBase {
 					}
 					return;
 				case Type.PAUSE_RESUME:
-					if (Utils.paused()) {
+					if (Utils.isPaused()) {
 						Utils.resume();
 					} else {
 						Utils.pause();
