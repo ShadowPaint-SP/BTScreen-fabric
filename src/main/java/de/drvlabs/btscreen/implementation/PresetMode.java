@@ -13,6 +13,7 @@ import baritone.api.Settings;
 import baritone.api.Settings.Setting;
 import baritone.api.utils.SettingsUtil;
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.btprocess.BedrockCleaner;
 import de.drvlabs.btscreen.btprocess.SelectionOrchestrator;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.config.LangKeys;
@@ -110,6 +111,18 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
             builder.append(" " + id);
             SelectionOrchestrator.activate(-1, builder.toString());
             setSettings();
+            return null;
+        }
+    },
+    CLEAN_BEDROCK(false) {
+        @Override
+        public boolean setSettings() {
+            return true;
+        }
+
+        @Override
+        public String getCommand(GuiBase gui) {
+            BedrockCleaner.activate();
             return null;
         }
     },

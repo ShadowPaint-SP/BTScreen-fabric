@@ -56,6 +56,7 @@
   "btscreen.preset_mode.name.remove_liquid": "Flüssigkeit entfernen",
   "btscreen.preset_mode.name.farming": "Farmen",
   "btscreen.preset_mode.name.building": "Bauen",
+  "btscreen.preset_mode.name.clean_bedrock": "Grundgestein säubern",
 
   "btscreen.info.main_menu.startBot": "Bot läuft jetzt.\n§8Stelle sicher, dass dich niemand dabei sieht ;)",
   "btscreen.info.main_menu.stopBot": "DU BIST JETZT SICHER",

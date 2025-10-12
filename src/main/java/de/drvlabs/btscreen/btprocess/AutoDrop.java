@@ -62,7 +62,7 @@ public final class AutoDrop extends BTProcessWithInitializer implements Baritone
 
     @Override
     public double priority() {
-        if (Teleport.getLastHome().isSame(Teleport.Home.DROP)) {
+        if (Teleport.Home.DROP.isSame(Teleport.getLastHome())) {
             return super.priority() + 0.01;
         }
         return super.priority();
