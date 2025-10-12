@@ -108,9 +108,9 @@ public final class BedrockCleaner extends BTProcessHelper {
         if (playerPos.isInRange(tpToPos, 1)) {
             Utils.MC.player.setPosition(tpToPos);
             Utils.MC.player.setPitch(90);
-            MovementHelper.a(ctx, block); // obfuscated switchToBestToolFor | save?
             INPUT_HANDLER.setInputForceState(Input.SNEAK, true);
             if (ctx.isLookingAt(currentBlock)) {
+                MovementHelper.a(ctx, block); // obfuscated switchToBestToolFor | save?
                 INPUT_HANDLER.setInputForceState(Input.CLICK_LEFT, true);
             }
             // next block if "finished" with block
