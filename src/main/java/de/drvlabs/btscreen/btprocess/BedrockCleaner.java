@@ -39,6 +39,7 @@ public final class BedrockCleaner extends BTProcessHelper {
     private static int walkY;
     private BetterBlockPos currentBlock = null;
     private Vec3d tpToPos = null;
+    private int timeoutTicks = 0;
 
     @Override
     public boolean isActive() {
@@ -102,6 +103,7 @@ public final class BedrockCleaner extends BTProcessHelper {
                 currentBlock = null;
                 return CANCEL;
             }
+            timeoutTicks = 0;
         }
         // go to tp pos by walking or tp
         Vec3d playerPos = Utils.MC.player.getPos();
@@ -111,11 +113,21 @@ public final class BedrockCleaner extends BTProcessHelper {
             INPUT_HANDLER.setInputForceState(Input.SNEAK, true);
             if (ctx.isLookingAt(currentBlock)) {
                 MovementHelper.a(ctx, block); // obfuscated switchToBestToolFor | save?
-                INPUT_HANDLER.setInputForceState(Input.CLICK_LEFT, true);
+                if (timeoutTicks > 0) {
+                    INPUT_HANDLER.setInputForceState(Input.CLICK_LEFT, true);
+                }
             }
             // next block if "finished" with block
             if (block.isAir() || !block.isFullCube(Utils.MC.world, currentBlock)) {
                 currentBlock = null;
+            } else {
+                timeoutTicks++;
+                if (timeoutTicks > 200) {
+                    // Timeout
+                    BTScreen.chatMessage(Text.literal("Warn: Timeout for block: " + currentBlock.x + ", "
+                            + currentBlock.y + ", " + currentBlock.z).formatted(Formatting.GOLD));
+                    currentBlock = null;
+                }
             }
             return CANCEL;
         } else if (playerPos.isInRange(tpToPos, 2)) {
