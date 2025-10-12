@@ -97,9 +97,9 @@ public final class BedrockCleaner extends BTProcessHelper {
                 break;
             }
             if (tpToPos == null) {
-                currentBlock = null;
                 BTScreen.chatMessage(Text.literal("Warn: No save block found for block: " + currentBlock.x + ", "
                         + currentBlock.y + ", " + currentBlock.z).formatted(Formatting.GOLD));
+                currentBlock = null;
                 return CANCEL;
             }
         }
