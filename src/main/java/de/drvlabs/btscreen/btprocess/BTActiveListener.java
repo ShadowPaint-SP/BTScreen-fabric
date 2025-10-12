@@ -23,7 +23,8 @@ public final class BTActiveListener extends BTProcessHelper {
             Utils.BT.getExploreProcess(),
             Utils.BT.getCustomGoalProcess(),
             Utils.BT.getGetToBlockProcess(),
-            SelectionOrchestrator.INSTANCE);
+            SelectionOrchestrator.INSTANCE,
+            BedrockCleaner.INSTANCE);
 
     private static boolean baritoneIsActive = false;
     private static boolean baritoneIsPaused = false;

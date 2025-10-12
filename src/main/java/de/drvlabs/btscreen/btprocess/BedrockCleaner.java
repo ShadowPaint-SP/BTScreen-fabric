@@ -17,6 +17,7 @@ import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
@@ -112,8 +113,10 @@ public final class BedrockCleaner extends BTProcessHelper {
             Utils.MC.player.setPitch(90);
             INPUT_HANDLER.setInputForceState(Input.SNEAK, true);
             if (ctx.isLookingAt(currentBlock)) {
+                PlayerInventory inventory = Utils.MC.player.getInventory();
+                int prevSelectedSlot = inventory.selectedSlot;
                 MovementHelper.a(ctx, block); // obfuscated switchToBestToolFor | save?
-                if (timeoutTicks > 0) {
+                if (prevSelectedSlot == inventory.selectedSlot) {
                     INPUT_HANDLER.setInputForceState(Input.CLICK_LEFT, true);
                 }
             }
