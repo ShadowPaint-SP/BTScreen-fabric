@@ -20,11 +20,12 @@ import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
 public final class BedrockCleaner extends BTProcessHelper {
@@ -89,20 +90,30 @@ public final class BedrockCleaner extends BTProcessHelper {
         if (tpToPos == null) {
             BlockPos walkOnPos = walkBlockPos.down();
             // get save nearby block to sand on
-            for (Direction direction : List.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST)) {
-                BlockPos saveBlockPosTmp = walkOnPos.offset(direction);
-                BlockState saveBlock = Utils.MC.world.getBlockState(saveBlockPosTmp);
-                BlockState saveBlockUp1 = Utils.MC.world.getBlockState(saveBlockPosTmp.up());
-                BlockState saveBlockUp2 = Utils.MC.world.getBlockState(saveBlockPosTmp.up(2));
-                if (saveBlock.isAir()
-                        || !saveBlock.isFullCube(Utils.MC.world, saveBlockPosTmp)
-                        || !saveBlockUp1.isAir()
-                        || !saveBlockUp2.isAir())
+            for (BlockPos saveBlockPos : List.of(
+                    walkOnPos.west(),
+                    walkOnPos.north(),
+                    walkOnPos.south(),
+                    walkOnPos.east(),
+                    walkOnPos.west().north(),
+                    walkOnPos.west().south(),
+                    walkOnPos.east().north(),
+                    walkOnPos.east().south())) {
+                // check if block is save
+                BlockState saveBlock = Utils.MC.world.getBlockState(saveBlockPos);
+                if (saveBlock.isAir() || !saveBlock.isFullCube(Utils.MC.world, saveBlockPos)) {
                     continue;
+                }
                 // calculate tp pos
+                BlockPos relativBlockPos = saveBlockPos.subtract(walkOnPos);
                 tpToPos = walkBlockPos.toBottomCenterPos()
-                        .add(direction.getOffsetX() * 0.3, 0, direction.getOffsetZ() * 0.3);
-                break;
+                        .add(relativBlockPos.getX() * 0.3, 0, relativBlockPos.getZ() * 0.3);
+                // check if pos is save
+                if (Utils.MC.world.getStatesInBox(ClientPlayerEntity.STANDING_DIMENSIONS.getBoxAt(tpToPos))
+                        .allMatch(BlockState::isAir)) {
+                    break;
+                }
+                tpToPos = null;
             }
             if (tpToPos == null) {
                 BTScreen.chatMessage(Text.literal("Warn: No save block found for block: " + currentBlock.x + ", "
@@ -121,9 +132,9 @@ public final class BedrockCleaner extends BTProcessHelper {
             INPUT_HANDLER.setInputForceState(Input.SNEAK, true);
             if (ctx.isLookingAt(currentBlock)) {
                 PlayerInventory inventory = Utils.MC.player.getInventory();
-                int prevSelectedSlot = inventory.getSelectedSlot();
+                ItemStack prevSelectedSlot = inventory.getSelectedStack();
                 MovementHelper.a(ctx, block); // obfuscated switchToBestToolFor | save?
-                if (prevSelectedSlot == inventory.getSelectedSlot()) {
+                if (prevSelectedSlot.equals(inventory.getSelectedStack())) {
                     INPUT_HANDLER.setInputForceState(Input.CLICK_LEFT, true);
                 }
             }
