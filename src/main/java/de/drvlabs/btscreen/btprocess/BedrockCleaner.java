@@ -132,9 +132,9 @@ public final class BedrockCleaner extends BTProcessHelper {
             INPUT_HANDLER.setInputForceState(Input.SNEAK, true);
             if (ctx.isLookingAt(currentBlock)) {
                 PlayerInventory inventory = Utils.MC.player.getInventory();
-                ItemStack prevSelectedSlot = inventory.getSelectedStack();
+                int prevSelectedSlot = inventory.selectedSlot;
                 MovementHelper.a(ctx, block); // obfuscated switchToBestToolFor | save?
-                if (prevSelectedSlot.equals(inventory.getSelectedStack())) {
+                if (prevSelectedSlot == inventory.selectedSlot) {
                     INPUT_HANDLER.setInputForceState(Input.CLICK_LEFT, true);
                 }
             }
