@@ -2,6 +2,7 @@ package de.drvlabs.btscreen.btprocess;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 import baritone.api.pathing.goals.GoalGetToBlock;
 import baritone.api.process.PathingCommand;
@@ -30,13 +31,10 @@ public final class BedrockCleaner extends BTProcessHelper {
     private BedrockCleaner() {
     }
 
-    protected static final PathingCommand CANCEL = new PathingCommand(null, PathingCommandType.CANCEL_AND_SET_GOAL);
-    protected static final PathingCommand CONTINUE = new PathingCommand(null, PathingCommandType.SET_GOAL_AND_PATH);
-
     private static final ISelectionManager SEL_MGR = Utils.BT.getSelectionManager();
     private static final IInputOverrideHandler INPUT_HANDLER = Utils.BT.getInputOverrideHandler();
     private static final IPlayerContext ctx = Utils.BT.getPlayerContext();
-    private static Iterator<BetterBlockPos> blockIterator = null;
+    private static SelectionIterator blockIterator = null;
     private static int walkY;
     private BetterBlockPos currentBlock = null;
     private Vec3d tpToPos = null;
@@ -51,23 +49,29 @@ public final class BedrockCleaner extends BTProcessHelper {
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         INPUT_HANDLER.clearAllKeys();
         if (currentBlock == null) {
-            int columnX = Integer.MAX_VALUE, columnZ = Integer.MAX_VALUE;
-            boolean columnHasBedrock = false;
-            while (currentBlock == null && blockIterator.hasNext()) {
-                currentBlock = blockIterator.next();
-                if (columnX != currentBlock.x || columnZ != currentBlock.z) {
-                    columnX = currentBlock.x;
-                    columnZ = currentBlock.z;
-                    columnHasBedrock = false;
+            blockIterator.revertUntil(b -> Utils.MC.world.getBlockState(b).isAir(), 4);
+            currentBlock = blockIterator.nextUntil(new Function<>() {
+                int columnX = Integer.MAX_VALUE;
+                int columnZ = Integer.MAX_VALUE;
+                boolean columnHasBedrock = false;
+
+                @Override
+                public Boolean apply(BetterBlockPos currentBlock) {
+                    if (columnX != currentBlock.x || columnZ != currentBlock.z) {
+                        columnX = currentBlock.x;
+                        columnZ = currentBlock.z;
+                        columnHasBedrock = false;
+                    }
+                    BlockState blockState = Utils.MC.world.getBlockState(currentBlock);
+                    if (columnHasBedrock || blockState.getBlock().equals(Blocks.BEDROCK)) {
+                        columnHasBedrock = true;
+                        return false;
+                    } else if (blockState.isAir() || !blockState.isFullCube(Utils.MC.world, currentBlock)) {
+                        return false;
+                    }
+                    return true;
                 }
-                BlockState blockState = Utils.MC.world.getBlockState(currentBlock);
-                if (columnHasBedrock || blockState.getBlock().equals(Blocks.BEDROCK)) {
-                    columnHasBedrock = true;
-                    currentBlock = null;
-                } else if (blockState.isAir() || !blockState.isFullCube(Utils.MC.world, currentBlock)) {
-                    currentBlock = null;
-                }
-            }
+            });
             if (currentBlock == null) {
                 onLostControl();
                 BTScreen.chatMessage(Text.literal("Bedrock Cleaner finished.").formatted(Formatting.GREEN));
@@ -125,7 +129,7 @@ public final class BedrockCleaner extends BTProcessHelper {
                 currentBlock = null;
             } else {
                 timeoutTicks++;
-                if (timeoutTicks > 200) {
+                if (timeoutTicks > 100) {
                     // Timeout
                     BTScreen.chatMessage(Text.literal("Warn: Timeout for block: " + currentBlock.x + ", "
                             + currentBlock.y + ", " + currentBlock.z).formatted(Formatting.GOLD));
@@ -159,8 +163,6 @@ public final class BedrockCleaner extends BTProcessHelper {
         return false;
     }
 
-    // /execute in minecraft:overworld run tp @s -2367.24 -59.00 -7263.48 89.44
-    // 90.00
     public static void activate() {
         if (blockIterator != null && blockIterator.hasNext()) {
             BTScreen.chatMessage(Text.literal("Error: Bedrock Cleaner already started.").formatted(Formatting.RED));
@@ -186,23 +188,30 @@ public final class BedrockCleaner extends BTProcessHelper {
     private static class SelectionIterator implements Iterator<BetterBlockPos> {
         private final BetterBlockPos min;
         private final BetterBlockPos max;
-        private int x, y, z;
+
+        private int currentIndex;
+
+        private final int sizeY;
+        private final int sizeZ;
+        private final int totalSize;
+        private final int planeSize;
 
         public SelectionIterator(BetterBlockPos min, BetterBlockPos max) {
             this.min = min;
             this.max = max;
-            this.x = max.x;
-            if (x % 2 == 0) {
-                this.z = max.z;
-            } else {
-                this.z = min.z;
-            }
-            this.y = max.y;
+
+            this.sizeY = max.y - min.y + 1;
+            this.sizeZ = max.z - min.z + 1;
+            int sizeX = max.x - min.x + 1;
+            this.totalSize = sizeX * this.sizeY * this.sizeZ;
+            this.planeSize = this.sizeY * this.sizeZ;
+
+            this.currentIndex = 0;
         }
 
         @Override
         public boolean hasNext() {
-            return x >= min.x;
+            return currentIndex < totalSize;
         }
 
         @Override
@@ -210,25 +219,63 @@ public final class BedrockCleaner extends BTProcessHelper {
             if (!hasNext()) {
                 return null;
             }
-            BetterBlockPos current = new BetterBlockPos(x, y, z);
-            y--;
-            if (y < min.y) {
-                y = max.y;
-                if (x % 2 == 0) {
-                    z--;
-                    if (z < min.z) {
-                        z = min.z;
-                        x--;
-                    }
-                } else {
-                    z++;
-                    if (z > max.z) {
-                        z = max.z;
-                        x--;
-                    }
+            BetterBlockPos pos = getPosFromIndex(currentIndex);
+            currentIndex++;
+            return pos;
+        }
+
+        public BetterBlockPos nextUntil(Function<BetterBlockPos, Boolean> predicate) {
+            while (hasNext()) {
+                BetterBlockPos pos = next();
+                if (predicate.apply(pos)) {
+                    return pos;
                 }
             }
-            return current;
+            return null;
+        }
+
+        public boolean hasPrevious() {
+            return currentIndex > 0;
+        }
+
+        public BetterBlockPos previous() {
+            if (!hasPrevious()) {
+                return null;
+            }
+            currentIndex--;
+            return getPosFromIndex(currentIndex);
+        }
+
+        public void revertUntil(Function<BetterBlockPos, Boolean> predicate, int matches) {
+            int count = 0;
+            while (hasPrevious() && count < matches) {
+                if (predicate.apply(previous())) {
+                    count++;
+                }
+            }
+        }
+
+        private BetterBlockPos getPosFromIndex(int index) {
+            if (index < 0 || index >= totalSize) {
+                throw new IndexOutOfBoundsException("Must be between 0 and " + totalSize);
+            }
+
+            int xIndex = index / planeSize;
+            int x = max.x - xIndex;
+
+            int remainingInPlane = index % planeSize;
+            int zRelIndex = remainingInPlane / sizeY;
+
+            int z;
+            if (x % 2 == 0) { // z descending
+                z = max.z - zRelIndex;
+            } else { // z ascending
+                z = min.z + zRelIndex;
+            }
+
+            int y = max.y - (remainingInPlane % sizeY);
+
+            return new BetterBlockPos(x, y, z);
         }
     }
 }
