@@ -1,7 +1,9 @@
 package de.drvlabs.btscreen.btprocess;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 import baritone.api.pathing.goals.GoalGetToBlock;
@@ -106,6 +108,7 @@ public final class BedrockCleaner extends BTProcessHelper {
                 BTScreen.chatMessage(Text.literal("Warn: No save block found for block: " + currentBlock.x + ", "
                         + currentBlock.y + ", " + currentBlock.z).formatted(Formatting.GOLD));
                 currentBlock = null;
+                blockIterator.blacklistPrevious();
                 return CANCEL;
             }
             timeoutTicks = 0;
@@ -190,6 +193,7 @@ public final class BedrockCleaner extends BTProcessHelper {
         private final BetterBlockPos max;
 
         private int currentIndex;
+        private final Set<Integer> blacklist = new HashSet<>();
 
         private final int sizeY;
         private final int sizeZ;
@@ -220,7 +224,9 @@ public final class BedrockCleaner extends BTProcessHelper {
                 return null;
             }
             BetterBlockPos pos = getPosFromIndex(currentIndex);
-            currentIndex++;
+            do {
+                currentIndex++;
+            } while (blacklist.contains(currentIndex));
             return pos;
         }
 
@@ -239,11 +245,17 @@ public final class BedrockCleaner extends BTProcessHelper {
         }
 
         public BetterBlockPos previous() {
-            if (!hasPrevious()) {
-                return null;
-            }
-            currentIndex--;
+            do {
+                if (!hasPrevious()) {
+                    return null;
+                }
+                currentIndex--;
+            } while (blacklist.contains(currentIndex));
             return getPosFromIndex(currentIndex);
+        }
+
+        public void blacklistPrevious() {
+            blacklist.add(currentIndex - 1);
         }
 
         public void revertUntil(Function<BetterBlockPos, Boolean> predicate, int matches) {
