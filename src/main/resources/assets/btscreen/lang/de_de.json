@@ -163,5 +163,13 @@
   "btscreen.info.guiConfigureCommand.saveError": "Fehler beim Speichern des Befehls.",
   "btscreen.info.removeLiquid.noUsableItem": "Fehler: Kein nutzbarer Gegenstand zum Entfernen von Flüssigkeiten gefunden.",
   "btscreen.info.selectionOrchestrator.noSelection": "Fehler: Keine Auswahl gefunden!",
-  "btscreen.info.selectionOrchestrator.finished": "Fertig!"
+  "btscreen.info.selectionOrchestrator.finished": "Fertig!",
+
+  "btscreen.bedrockCleaner.finished": "Bedrock Cleaner fertig.",
+  "btscreen.bedrockCleaner.noSaveBlock": "Warnung: Kein sicherer Block für Block gefunden: %s, %s, %s",
+  "btscreen.bedrockCleaner.timeout": "Warnung: Zeitüberschreitung für Block: %s, %s, %s",
+  "btscreen.bedrockCleaner.alreadyStarted": "Fehler: Bedrock Cleaner bereits gestartet.",
+  "btscreen.bedrockCleaner.noSelection": "Fehler: Es wird genau eine Auswahl benötigt.",
+  "btscreen.bedrockCleaner.selectionTooBig": "Fehler: Auswahl zu groß (max. 4 Blöcke hoch).",
+  "btscreen.bedrockCleaner.started": "Bedrock Cleaner gestartet."
 }
