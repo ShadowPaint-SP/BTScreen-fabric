@@ -37,6 +37,7 @@ public final class BedrockCleaner extends BTProcessHelper {
     private static final ISelectionManager SEL_MGR = Utils.BT.getSelectionManager();
     private static final IInputOverrideHandler INPUT_HANDLER = Utils.BT.getInputOverrideHandler();
     private static final IPlayerContext ctx = Utils.BT.getPlayerContext();
+    private static final String TRANSLATABLE_PREFIX = BTScreen.MOD_ID + ".bedrockCleaner.";
     private static SelectionIterator blockIterator = null;
     private static int walkY;
     private BetterBlockPos currentBlock = null;
@@ -77,7 +78,7 @@ public final class BedrockCleaner extends BTProcessHelper {
             });
             if (currentBlock == null) {
                 onLostControl();
-                BTScreen.chatMessage(Text.literal("Bedrock Cleaner finished.").formatted(Formatting.GREEN));
+                BTScreen.chatMessage(Text.translatable(TRANSLATABLE_PREFIX + "finished").formatted(Formatting.GREEN));
                 return DEFER;
             }
             tpToPos = null;
@@ -116,8 +117,8 @@ public final class BedrockCleaner extends BTProcessHelper {
                 tpToPos = null;
             }
             if (tpToPos == null) {
-                BTScreen.chatMessage(Text.literal("Warn: No save block found for block: " + currentBlock.x + ", "
-                        + currentBlock.y + ", " + currentBlock.z).formatted(Formatting.GOLD));
+                BTScreen.chatMessage(Text.translatable(TRANSLATABLE_PREFIX + "noSaveBlock", currentBlock.x,
+                        currentBlock.y, currentBlock.z).formatted(Formatting.GOLD));
                 currentBlock = null;
                 blockIterator.blacklistPrevious();
                 return CANCEL;
@@ -145,8 +146,8 @@ public final class BedrockCleaner extends BTProcessHelper {
                 timeoutTicks++;
                 if (timeoutTicks > 100) {
                     // Timeout
-                    BTScreen.chatMessage(Text.literal("Warn: Timeout for block: " + currentBlock.x + ", "
-                            + currentBlock.y + ", " + currentBlock.z).formatted(Formatting.GOLD));
+                    BTScreen.chatMessage(Text.translatable(TRANSLATABLE_PREFIX + "timeout", currentBlock.x,
+                            currentBlock.y, currentBlock.z).formatted(Formatting.GOLD));
                     currentBlock = null;
                 }
             }
@@ -179,24 +180,23 @@ public final class BedrockCleaner extends BTProcessHelper {
 
     public static void activate() {
         if (blockIterator != null && blockIterator.hasNext()) {
-            BTScreen.chatMessage(Text.literal("Error: Bedrock Cleaner already started.").formatted(Formatting.RED));
+            BTScreen.chatMessage(Text.translatable(TRANSLATABLE_PREFIX + "alreadyStarted").formatted(Formatting.RED));
             return;
         }
         ISelection selection = SEL_MGR.getOnlySelection();
         if (selection == null) {
-            BTScreen.chatMessage(Text.literal("Error: Needs exactly one selection.").formatted(Formatting.RED));
+            BTScreen.chatMessage(Text.translatable(TRANSLATABLE_PREFIX + "noSelection").formatted(Formatting.RED));
             return;
         }
         BetterBlockPos min = selection.min();
         BetterBlockPos max = selection.max();
         if ((max.y - min.y) >= 4) {
-            BTScreen.chatMessage(
-                    Text.literal("Error: Selection too big (max 4 blocks high).").formatted(Formatting.RED));
+            BTScreen.chatMessage(Text.translatable(TRANSLATABLE_PREFIX + "selectionTooBig").formatted(Formatting.RED));
             return;
         }
         walkY = max.y + 1;
         blockIterator = new SelectionIterator(min, max);
-        BTScreen.chatMessage(Text.literal("Bedrock Cleaner started.").formatted(Formatting.GREEN));
+        BTScreen.chatMessage(Text.translatable(TRANSLATABLE_PREFIX + "started"));
     }
 
     private static class SelectionIterator implements Iterator<BetterBlockPos> {

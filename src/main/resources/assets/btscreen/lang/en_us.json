@@ -163,5 +163,13 @@
   "btscreen.info.guiConfigureCommand.saveError": "Error while saving the command.",
   "btscreen.info.removeLiquid.noUsableItem": "Error: No usable item found to remove liquids.",
   "btscreen.info.selectionOrchestrator.noSelection": "Error: No selection found!",
-  "btscreen.info.selectionOrchestrator.finished": "Finished!"
+  "btscreen.info.selectionOrchestrator.finished": "Finished!",
+
+  "btscreen.bedrockCleaner.finished": "Bedrock Cleaner finished.",
+  "btscreen.bedrockCleaner.noSaveBlock": "Warn: No save block found for block: %s, %s, %s",
+  "btscreen.bedrockCleaner.timeout": "Warn: Timeout for block: %s, %s, %s",
+  "btscreen.bedrockCleaner.alreadyStarted": "Error: Bedrock Cleaner already started.",
+  "btscreen.bedrockCleaner.noSelection": "Error: Needs exactly one selection.",
+  "btscreen.bedrockCleaner.selectionTooBig": "Error: Selection too big (max 4 blocks high).",
+  "btscreen.bedrockCleaner.started": "Bedrock Cleaner started."
 }
