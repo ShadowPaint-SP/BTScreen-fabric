@@ -11,9 +11,7 @@ import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetListEntryBase;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
-import net.minecraft.client.gui.DrawContext;
 
 public class WidgetCommand extends WidgetListEntryBase<Commands> {
 	public final CommandsManager manager;
@@ -48,35 +46,6 @@ public class WidgetCommand extends WidgetListEntryBase<Commands> {
 				.addButton(new ButtonGeneric(xRight, y, -1, true, type.getDisplayName()),
 						new ButtonListener(type, this))
 				.getX() - 1;
-	}
-
-	@Override
-	public boolean canSelectAt(int mouseX, int mouseY, int mouseButton) {
-		return mouseX < this.buttonsStartX && super.canSelectAt(mouseX, mouseY, mouseButton);
-	}
-
-	@Override
-	public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext) {
-		RenderUtils.color(1f, 1f, 1f, 1f);
-
-		// Draw a lighter background for the hovered and the selected entry
-		if (selected || this.isMouseOver(mouseX, mouseY)) {
-			RenderUtils.drawRect(this.x, this.y, this.width, this.height, 0xA0707070);
-		} else if (this.isOdd) {
-			RenderUtils.drawRect(this.x, this.y, this.width, this.height, 0xA0101010);
-		}
-		// Draw a slightly lighter background for even entries
-		else {
-			RenderUtils.drawRect(this.x, this.y, this.width, this.height, 0xA0303030);
-		}
-
-		String name = this.command.getName();
-		String pre = GuiBase.TXT_WHITE;
-		this.drawString(this.x + 20, this.y + 7, 0xFFFFFFFF, pre + name, drawContext);
-
-		RenderUtils.color(1, 1, 1, 1);
-
-		super.render(mouseX, mouseY, false, drawContext);
 	}
 
 	public static class ButtonListener implements IButtonActionListener {

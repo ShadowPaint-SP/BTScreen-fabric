@@ -64,8 +64,8 @@ public enum ButtonIcons implements IGuiIcon, IFileBrowserIconProvider {
 	}
 
 	@Override
-	public void renderAt(int x, int y, float zLevel, boolean enabled, boolean selected, DrawContext drawContext) {
-		RenderUtils.drawTexturedRectAndDraw(this.getTexture(), x, y, this.u, this.v, this.w, this.h, zLevel, drawContext);
+	public void renderAt(DrawContext drawContext, int x, int y, float zLevel, boolean enabled, boolean selected) {
+		RenderUtils.drawTexturedRect(drawContext, this.getTexture(), x, y, this.u, this.v, this.w, this.h, zLevel);
 	}
 
 	@Override
@@ -103,5 +103,4 @@ public enum ButtonIcons implements IGuiIcon, IFileBrowserIconProvider {
 	public IGuiIcon getIconForFile(Path file) {
 		return null;
 	}
-
 }

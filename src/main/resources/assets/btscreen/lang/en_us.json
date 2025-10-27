@@ -164,6 +164,7 @@
   "btscreen.info.removeLiquid.noUsableItem": "Error: No usable item found to remove liquids.",
   "btscreen.info.selectionOrchestrator.noSelection": "Error: No selection found!",
   "btscreen.info.selectionOrchestrator.finished": "Finished!",
+  "btscreen.info.savetyDisconnect": "%s: Safety Disconnect",
 
   "btscreen.bedrockCleaner.finished": "Bedrock Cleaner finished.",
   "btscreen.bedrockCleaner.noSaveBlock": "Warn: No save block found for block: %s, %s, %s",

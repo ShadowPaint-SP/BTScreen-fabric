@@ -48,7 +48,7 @@ public final class Teleport extends BTProcessHelper {
                     BTScreen.debugLog("Teleporting to " + nextHome + " Home");
                     // Teleport to Home prepare
                     teleporting = true;
-                    oldPos = Utils.MC.player.getPos();
+                    oldPos = Utils.MC.player.getEntityPos();
                     oldWorld = Utils.getWorldId();
                     // Set Mine home before teleporting
                     if (nextHome != Home.MINE) {
@@ -70,7 +70,7 @@ public final class Teleport extends BTProcessHelper {
                 nextHome.tpToHome();
                 nextHome = null;
             } else if (oldPos != null
-                    && (!oldPos.isInRange(Utils.MC.player.getPos(), 1) || !oldWorld.equals(Utils.getWorldId()))) {
+                    && (!oldPos.isInRange(Utils.MC.player.getEntityPos(), 1) || !oldWorld.equals(Utils.getWorldId()))) {
                 BTScreen.debugLog("Teleport Finished");
                 // Teleport Finished
                 teleporting = false;
@@ -139,7 +139,7 @@ public final class Teleport extends BTProcessHelper {
                 } else if (SLEEP.isConfigured()) {
                     SLEEP.tpToHome();
                 } else {
-                    Utils.MC.disconnect();
+                    Utils.MC.disconnect(Text.translatable(LangKeys.INFO + ".savetyDisconnect", BTScreen.MOD_NAME));
                 }
             }
         },
