@@ -3,8 +3,8 @@ package de.drvlabs.btscreen;
 import static de.drvlabs.btscreen.config.Configs.Generic.DEBUG_LOGGING;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import baritone.api.pathing.calc.IPathingControlManager;
 import de.drvlabs.btscreen.btprocess.AutoDrop;
@@ -40,7 +40,7 @@ public class BTScreen implements ClientModInitializer {
     public static final String MOD_NAME = MOD_META.getName();
     public static final String MOD_VERSION = MOD_META.getVersion().getFriendlyString();
 
-    public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     @Override
     public void onInitializeClient() {
