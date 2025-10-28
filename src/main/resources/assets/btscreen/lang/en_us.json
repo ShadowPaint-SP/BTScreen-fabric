@@ -5,7 +5,7 @@
   "btscreen.gui.title.configure_command": "Configure Command",
 
   "btscreen.gui.configure_command.label.name": "Name:",
-  "btscreen.gui.configure_command.label.command": "Command(s) (separate with ;):",
+  "btscreen.gui.configure_command.label.command": "Command(s) (separate with ';'):",
 
   "btscreen.gui.button.config_gui.generic": "Generic",
   "btscreen.gui.button.config_gui.lists": "Lists",
