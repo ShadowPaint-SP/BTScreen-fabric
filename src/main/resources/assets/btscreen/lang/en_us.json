@@ -5,7 +5,7 @@
   "btscreen.gui.title.configure_command": "Configure Command",
 
   "btscreen.gui.configure_command.label.name": "Name:",
-  "btscreen.gui.configure_command.label.command": "Command(s) (separate with ;):",
+  "btscreen.gui.configure_command.label.command": "Command(s) (separate with ';'):",
 
   "btscreen.gui.button.config_gui.generic": "Generic",
   "btscreen.gui.button.config_gui.lists": "Lists",
@@ -164,6 +164,7 @@
   "btscreen.info.removeLiquid.noUsableItem": "Error: No usable item found to remove liquids.",
   "btscreen.info.selectionOrchestrator.noSelection": "Error: No selection found!",
   "btscreen.info.selectionOrchestrator.finished": "Finished!",
+  "btscreen.info.savetyDisconnect": "%s: Safety Disconnect",
 
   "btscreen.bedrockCleaner.finished": "Bedrock Cleaner finished.",
   "btscreen.bedrockCleaner.noSaveBlock": "Warn: No save block found for block: %s, %s, %s",

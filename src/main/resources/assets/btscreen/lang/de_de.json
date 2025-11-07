@@ -5,7 +5,7 @@
   "btscreen.gui.title.configure_command": "Befehl konfigurieren",
 
   "btscreen.gui.configure_command.label.name": "Name:",
-  "btscreen.gui.configure_command.label.command": "Befehl(e) (mit ; trennen):",
+  "btscreen.gui.configure_command.label.command": "Befehl(e) (mit ';' trennen):",
 
   "btscreen.gui.button.config_gui.generic": "Allgemein",
   "btscreen.gui.button.config_gui.lists": "Listen",
@@ -164,6 +164,7 @@
   "btscreen.info.removeLiquid.noUsableItem": "Fehler: Kein nutzbarer Gegenstand zum Entfernen von Flüssigkeiten gefunden.",
   "btscreen.info.selectionOrchestrator.noSelection": "Fehler: Keine Auswahl gefunden!",
   "btscreen.info.selectionOrchestrator.finished": "Fertig!",
+  "btscreen.info.savetyDisconnect": "%s: Sicherheits-Disconnect",
 
   "btscreen.bedrockCleaner.finished": "Bedrock Cleaner fertig.",
   "btscreen.bedrockCleaner.noSaveBlock": "Warnung: Kein sicherer Block für Block gefunden: %s, %s, %s",

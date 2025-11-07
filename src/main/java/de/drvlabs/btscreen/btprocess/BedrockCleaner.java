@@ -20,7 +20,7 @@ import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -110,7 +110,7 @@ public final class BedrockCleaner extends BTProcessHelper {
                 tpToPos = walkBlockPos.toBottomCenterPos()
                         .add(relativBlockPos.getX() * 0.3, 0, relativBlockPos.getZ() * 0.3);
                 // check if pos is save
-                if (Utils.MC.world.getStatesInBox(ClientPlayerEntity.STANDING_DIMENSIONS.getBoxAt(tpToPos))
+                if (Utils.MC.world.getStatesInBox(Utils.MC.player.getDimensions(EntityPose.STANDING).getBoxAt(tpToPos))
                         .allMatch(BlockState::isAir)) {
                     break;
                 }
@@ -126,7 +126,7 @@ public final class BedrockCleaner extends BTProcessHelper {
             timeoutTicks = 0;
         }
         // go to tp pos by walking or tp
-        Vec3d playerPos = Utils.MC.player.getPos();
+        Vec3d playerPos = Utils.MC.player.getEntityPos();
         if (playerPos.isInRange(tpToPos, 1)) {
             Utils.MC.player.setPosition(tpToPos);
             Utils.MC.player.setPitch(90);

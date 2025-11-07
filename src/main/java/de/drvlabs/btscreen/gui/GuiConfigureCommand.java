@@ -42,7 +42,7 @@ public class GuiConfigureCommand extends GuiBase {
 		int x = 12;
 		int y = 22;
 
-		this.addLabel(x, y, width, 16, 0xCCCCCC, StringUtils.translate(LangKeys.GUI + ".configure_command.label.name"));
+		this.addLabel(x, y, width, 16, 0xCCCCCCFF, LangKeys.GUI + ".configure_command.label.name");
 
 		y += 16;
 
@@ -53,7 +53,7 @@ public class GuiConfigureCommand extends GuiBase {
 
 		y += 30;
 
-		this.addLabel(x, y, width, 16, 0xCCCCCC, StringUtils.translate(LangKeys.GUI + ".configure_command.label.command"));
+		this.addLabel(x, y, width, 16, 0xCCCCCCFF, LangKeys.GUI + ".configure_command.label.command");
 
 		y += 16;
 

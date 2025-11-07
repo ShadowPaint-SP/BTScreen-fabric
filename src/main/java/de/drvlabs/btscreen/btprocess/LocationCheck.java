@@ -66,7 +66,7 @@ public final class LocationCheck extends BTProcessHelper implements BaritoneEven
     }
 
     private boolean inRange() {
-        Vec3d currentLocation = Utils.MC.player.getPos();
+        Vec3d currentLocation = Utils.MC.player.getEntityPos();
         Identifier currentWorld = Utils.getWorldId();
         boolean result = true;
         if (lastWorld != null && lastLocation != null) {

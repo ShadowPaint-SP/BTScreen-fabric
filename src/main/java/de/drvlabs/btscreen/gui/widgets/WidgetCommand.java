@@ -13,6 +13,7 @@ import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetListEntryBase;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 
 public class WidgetCommand extends WidgetListEntryBase<Commands> {
@@ -51,32 +52,28 @@ public class WidgetCommand extends WidgetListEntryBase<Commands> {
 	}
 
 	@Override
-	public boolean canSelectAt(int mouseX, int mouseY, int mouseButton) {
-		return mouseX < this.buttonsStartX && super.canSelectAt(mouseX, mouseY, mouseButton);
+	public boolean canSelectAt(Click click) {
+		return click.x() < this.buttonsStartX && super.canSelectAt(click);
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext) {
-		RenderUtils.color(1f, 1f, 1f, 1f);
-
+	public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected) {
 		// Draw a lighter background for the hovered and the selected entry
 		if (selected || this.isMouseOver(mouseX, mouseY)) {
-			RenderUtils.drawRect(this.x, this.y, this.width, this.height, 0xA0707070);
+			RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, 0xA0707070);
 		} else if (this.isOdd) {
-			RenderUtils.drawRect(this.x, this.y, this.width, this.height, 0xA0101010);
+			RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, 0xA0101010);
 		}
 		// Draw a slightly lighter background for even entries
 		else {
-			RenderUtils.drawRect(this.x, this.y, this.width, this.height, 0xA0303030);
+			RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, 0xA0303030);
 		}
 
 		String name = this.command.getName();
 		String pre = GuiBase.TXT_WHITE;
-		this.drawString(this.x + 20, this.y + 7, 0xFFFFFFFF, pre + name, drawContext);
+		this.drawString(drawContext, this.x + 20, this.y + 7, 0xFFFFFFFF, pre + name);
 
-		RenderUtils.color(1, 1, 1, 1);
-
-		super.render(mouseX, mouseY, false, drawContext);
+		super.render(drawContext, mouseX, mouseY, false);
 	}
 
 	public static class ButtonListener implements IButtonActionListener {

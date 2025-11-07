@@ -27,7 +27,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.ChunkPos;
 
 public class GuiMainMenu extends GuiBase {
-	private final int textColor = 0xFEFEFEFE;
+	private final int textColor = 0xFEFEFEFF;
 	public static GuiTextFieldGeneric textBlocksToReplace;
 	public static GuiTextFieldGeneric textBlocksToPlace;
 
