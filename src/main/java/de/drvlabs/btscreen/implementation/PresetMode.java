@@ -5,7 +5,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BucketPickup;
+import net.minecraft.world.level.block.LiquidBlockContainer;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import com.google.common.collect.ImmutableList;
 
 import baritone.api.BaritoneAPI;
@@ -24,20 +35,8 @@ import fi.dy.masa.malilib.config.options.ConfigStringList;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.util.StringUtils;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.FluidDrainable;
-import net.minecraft.block.FluidFillable;
-import net.minecraft.block.Waterloggable;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.StringIdentifiable;
 
-public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
+public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
     NONE(true) {
         @Override
         public boolean setSettings() {
@@ -89,7 +88,7 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
             int maxCount = 0;
 
             for (Item item : possibleBlocks) {
-                int count = Utils.MC.player.getInventory().count(item);
+                int count = Utils.MC.player.getInventory().countItem(item);
                 if (count > maxCount) {
                     maxCount = count;
                     bestItem = item;
@@ -98,13 +97,13 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
             if (bestItem == null) {
                 sendMessage(gui, MessageType.ERROR, LangKeys.INFO + ".removeLiquid.noUsableItem");
             }
-            Identifier id = Registries.ITEM.getId(bestItem);
+            Identifier id = BuiltInRegistries.ITEM.getKey(bestItem);
             StringBuilder builder = new StringBuilder();
             builder.append("sel replace");
-            Registries.BLOCK.stream().filter(b -> b instanceof FluidDrainable || b instanceof FluidFillable)
+            BuiltInRegistries.BLOCK.stream().filter(b -> b instanceof BucketPickup || b instanceof LiquidBlockContainer)
                     .forEach(b -> {
-                        builder.append(" " + Registries.BLOCK.getId(b));
-                        if (b instanceof Waterloggable) {
+                        builder.append(" " + BuiltInRegistries.BLOCK.getKey(b));
+                        if (b instanceof SimpleWaterloggedBlock) {
                             builder.append("[waterlogged=true]");
                         }
                     });
@@ -171,7 +170,7 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
     }
 
     @Override
-    public String asString() {
+    public String getSerializedName() {
         return this.configString;
     }
 
@@ -215,7 +214,7 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
     public abstract String getCommand(GuiBase gui);
 
     private static <T> Stream<T> getStream(Registry<T> registry, ConfigStringList config) {
-        return config.getStrings().stream().map(string -> registry.get(Identifier.tryParse(string)))
+        return config.getStrings().stream().map(string -> registry.getValue(Identifier.tryParse(string)))
                 .filter(Objects::nonNull).distinct();
     }
 
@@ -223,11 +222,11 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
         if (gui != null) {
             gui.addMessage(type, 1000, messageKey, args);
         } else {
-            BTScreen.chatMessage(Text.translatable(messageKey, args).formatted(switch (type) {
-                case ERROR -> Formatting.RED;
-                case INFO -> Formatting.WHITE;
-                case SUCCESS -> Formatting.GREEN;
-                case WARNING -> Formatting.GOLD;
+            BTScreen.chatMessage(Component.translatable(messageKey, args).withStyle(switch (type) {
+                case ERROR -> ChatFormatting.RED;
+                case INFO -> ChatFormatting.WHITE;
+                case SUCCESS -> ChatFormatting.GREEN;
+                case WARNING -> ChatFormatting.GOLD;
             }));
         }
     }
@@ -388,7 +387,7 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
             add(SETTINGS.randomLooking, (double) 0);
             add(SETTINGS.randomLooking113, (double) 0);
             add(SETTINGS.acceptableThrowawayItems,
-                    getStream(Registries.ITEM, Configs.Lists.ACCEPTABLE_THROWAWAY_ITEMS).toList());
+                    getStream(BuiltInRegistries.ITEM, Configs.Lists.ACCEPTABLE_THROWAWAY_ITEMS).toList());
             return this;
         }
 
@@ -396,9 +395,9 @@ public enum PresetMode implements StringIdentifiable, IConfigOptionListEntry {
             addCommonSettings();
             add(SETTINGS.avoidUpdatingFallingBlocks, false);
             add(SETTINGS.blocksToDisallowBreaking,
-                    getStream(Registries.BLOCK, Configs.Lists.BLOCKS_TO_DISALLOW_BREAKING).toList());
+                    getStream(BuiltInRegistries.BLOCK, Configs.Lists.BLOCKS_TO_DISALLOW_BREAKING).toList());
             add(SETTINGS.buildIgnoreBlocks, Stream.concat(SETTINGS.blocksToDisallowBreaking.value.stream(),
-                    getStream(Registries.BLOCK, Configs.Lists.BLOCKS_TO_IGNORE)).distinct().toList());
+                    getStream(BuiltInRegistries.BLOCK, Configs.Lists.BLOCKS_TO_IGNORE)).distinct().toList());
             if (Configs.Generic.AUTO_TORCH.getBooleanValue()) {
                 add(SETTINGS.buildIgnoreBlocks, Stream.concat(SETTINGS.buildIgnoreBlocks.value.stream(),
                         Stream.of(Blocks.TORCH, Blocks.WALL_TORCH)).distinct().toList());

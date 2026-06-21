@@ -5,11 +5,11 @@ import static de.drvlabs.btscreen.config.Configs.Generic.AUTO_HASTE;
 import baritone.api.process.PathingCommand;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.LangKeys;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
-import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket;
+import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
+import net.minecraft.world.effect.MobEffects;
 
 public final class AutoHaste extends BTProcessWithInitializer {
     public static final AutoHaste INSTANCE = new AutoHaste();
@@ -35,7 +35,7 @@ public final class AutoHaste extends BTProcessWithInitializer {
         if (++timeoutTicks > 120) {
             AUTO_HASTE.setBooleanValue(false);
             BTScreen.chatMessage(
-                    Text.translatable(LangKeys.INFO + ".autoHaste.timeout").formatted(Formatting.RED));
+                    Component.translatable(LangKeys.INFO + ".autoHaste.timeout").withStyle(ChatFormatting.RED));
         }
         return REQUEST_PAUSE;
     }
@@ -45,14 +45,14 @@ public final class AutoHaste extends BTProcessWithInitializer {
         timeoutTicks = 0;
     }
 
-    public static void onEffect(EntityStatusEffectS2CPacket packet) {
-        if (!hasHaste && packet.getEffectId().matches(StatusEffects.HASTE::matchesKey)) {
+    public static void onEffect(ClientboundUpdateMobEffectPacket packet) {
+        if (!hasHaste && packet.getEffect().is(MobEffects.HASTE::is)) {
             hasHaste = true;
         }
     }
 
-    public static void onRemoveEffect(RemoveEntityStatusEffectS2CPacket packet) {
-        if (hasHaste && packet.effect().matches(StatusEffects.HASTE::matchesKey)) {
+    public static void onRemoveEffect(ClientboundRemoveMobEffectPacket packet) {
+        if (hasHaste && packet.effect().is(MobEffects.HASTE::is)) {
             hasHaste = false;
         }
     }

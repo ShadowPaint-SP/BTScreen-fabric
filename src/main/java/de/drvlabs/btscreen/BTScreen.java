@@ -30,8 +30,8 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 
 public class BTScreen implements ClientModInitializer {
     public static final String MOD_ID = "btscreen";
@@ -73,10 +73,10 @@ public class BTScreen implements ClientModInitializer {
         }
     }
 
-    public static void chatMessage(Text... message) {
+    public static void chatMessage(Component... message) {
         Utils.chatMessage(ArrayUtils.insert(0, message,
-                Text.literal("[").formatted(Formatting.DARK_PURPLE),
-                Text.literal(MOD_NAME).formatted(Formatting.LIGHT_PURPLE),
-                Text.literal("] ").formatted(Formatting.DARK_PURPLE)));
+                Component.literal("[").withStyle(ChatFormatting.DARK_PURPLE),
+                Component.literal(MOD_NAME).withStyle(ChatFormatting.LIGHT_PURPLE),
+                Component.literal("] ").withStyle(ChatFormatting.DARK_PURPLE)));
     }
 }

@@ -13,8 +13,8 @@ import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetListEntryBase;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
+import fi.dy.masa.malilib.render.GuiContext;
+import net.minecraft.client.input.MouseButtonEvent;
 
 public class WidgetCommand extends WidgetListEntryBase<Commands> {
 	public final CommandsManager manager;
@@ -52,12 +52,12 @@ public class WidgetCommand extends WidgetListEntryBase<Commands> {
 	}
 
 	@Override
-	public boolean canSelectAt(Click click) {
+	public boolean canSelectAt(MouseButtonEvent click) {
 		return click.x() < this.buttonsStartX && super.canSelectAt(click);
 	}
 
 	@Override
-	public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected) {
+	public void render(GuiContext drawContext, int mouseX, int mouseY, boolean selected) {
 		// Draw a lighter background for the hovered and the selected entry
 		if (selected || this.isMouseOver(mouseX, mouseY)) {
 			RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, 0xA0707070);

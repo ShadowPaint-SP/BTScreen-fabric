@@ -6,9 +6,9 @@ import static de.drvlabs.btscreen.config.Configs.Generic.PERIODIC_ATTACK_INTERVA
 
 import baritone.api.process.PathingCommand;
 import de.drvlabs.btscreen.utils.Utils;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 
 public final class AutoRepair extends BTProcessWithInitializer {
     public static final AutoRepair INSTANCE = new AutoRepair();
@@ -34,13 +34,13 @@ public final class AutoRepair extends BTProcessWithInitializer {
     @Override
     protected PathingCommand onTick() {
         if (++attackIntervalCounter >= PERIODIC_ATTACK_INTERVAL.getIntegerValue()) {
-            PlayerInventory inventory = Utils.MC.player.getInventory();
+            Inventory inventory = Utils.MC.player.getInventory();
             int tmpSlot = inventory.getSelectedSlot();
-            if (PlayerInventory.isValidHotbarIndex(swordSlot)) {
+            if (Inventory.isHotbarSlot(swordSlot)) {
                 inventory.setSelectedSlot(swordSlot);
             }
-            Utils.MC.doAttack();
-            if (PlayerInventory.isValidHotbarIndex(slot)) {
+            Utils.MC.startAttack();
+            if (Inventory.isHotbarSlot(slot)) {
                 inventory.setSelectedSlot(slot);
             } else {
                 inventory.setSelectedSlot(tmpSlot);
@@ -61,13 +61,13 @@ public final class AutoRepair extends BTProcessWithInitializer {
         if (!isActive(AUTO_REPAIR)) {
             return;
         }
-        if (newStack.isDamageable() && areEqualIgnoreComponents(newStack, oldStack)) {
+        if (newStack.isDamageableItem() && areEqualIgnoreComponents(newStack, oldStack)) {
             if (!newStack.isDamaged() && AutoRepair.slot == slot) {
                 // stop
                 AutoRepair.slot = -1;
                 return;
             }
-            if ((newStack.getMaxDamage() - newStack.getDamage()) <= ITEM_DURABILITY_THRESHOLD.getIntegerValue()) {
+            if ((newStack.getMaxDamage() - newStack.getDamageValue()) <= ITEM_DURABILITY_THRESHOLD.getIntegerValue()) {
                 // start
                 AutoRepair.slot = slot;
                 return;
@@ -76,13 +76,13 @@ public final class AutoRepair extends BTProcessWithInitializer {
     }
 
     private static boolean areEqualIgnoreComponents(ItemStack a, ItemStack b) {
-        return ItemStack.areItemsEqual(a, b) && a.getCount() == b.getCount();
+        return ItemStack.isSameItem(a, b) && a.getCount() == b.getCount();
     }
 
     private static int getSwordSlotInHotbar() {
-        PlayerInventory inventory = Utils.MC.player.getInventory();
-        for (int i = 0; i < PlayerInventory.getHotbarSize(); i++) {
-            if (inventory.getStack(i).isIn(ItemTags.SWORDS)) {
+        Inventory inventory = Utils.MC.player.getInventory();
+        for (int i = 0; i < Inventory.getSelectionSize(); i++) {
+            if (inventory.getItem(i).is(ItemTags.SWORDS)) {
                 return i;
             }
         }

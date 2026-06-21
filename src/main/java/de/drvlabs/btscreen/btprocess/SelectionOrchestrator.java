@@ -3,7 +3,8 @@ package de.drvlabs.btscreen.btprocess;
 import java.util.Iterator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import baritone.api.process.IBuilderProcess;
 import baritone.api.process.PathingCommand;
 import baritone.api.selection.ISelection;
@@ -14,8 +15,6 @@ import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.event.BaritoneEvents;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 
 public final class SelectionOrchestrator extends BTProcessHelper implements BaritoneEvents.Stopped {
     public static final SelectionOrchestrator INSTANCE = new SelectionOrchestrator();
@@ -43,8 +42,8 @@ public final class SelectionOrchestrator extends BTProcessHelper implements Bari
                 selections = SEL_MGR.getSelections();
                 BTScreen.debugLog("selections: {}", selections.toString());
                 if (selections.length == 0) {
-                    BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".selectionOrchestrator.noSelection")
-                            .formatted(Formatting.RED));
+                    BTScreen.chatMessage(Component.translatable(LangKeys.INFO + ".selectionOrchestrator.noSelection")
+                            .withStyle(ChatFormatting.RED));
                     onLostControl();
                     return DEFER;
                 }
@@ -83,8 +82,8 @@ public final class SelectionOrchestrator extends BTProcessHelper implements Bari
                 }
             }
             if (SEL_MGR.getSelections().length == 0) {
-                BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".selectionOrchestrator.finished")
-                        .formatted(Formatting.GREEN));
+                BTScreen.chatMessage(Component.translatable(LangKeys.INFO + ".selectionOrchestrator.finished")
+                        .withStyle(ChatFormatting.GREEN));
                 onLostControl();
                 return DEFER;
             }

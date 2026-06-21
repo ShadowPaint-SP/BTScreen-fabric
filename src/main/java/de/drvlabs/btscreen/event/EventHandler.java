@@ -1,6 +1,6 @@
 package de.drvlabs.btscreen.event;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
@@ -17,23 +17,23 @@ import de.drvlabs.btscreen.implementation.RetryUnreplaceableLiquids;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.chat.Component;
 
-public final class EventHandler implements ClientTickEvents.EndWorldTick, ClientWorldEvents.AfterClientWorldChange,
+public final class EventHandler implements ClientTickEvents.EndLevelTick, ClientLevelEvents.AfterClientLevelChange,
         BaritoneEvents.Started, BaritoneEvents.Stopped, ClientPlayConnectionEvents.Join,
         ClientPlayConnectionEvents.Disconnect {
     private static EventHandler INSTANCE = null;
 
     private EventHandler() {
-        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register(this);
-        ClientTickEvents.END_WORLD_TICK.register(this);
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register(this);
+        ClientTickEvents.END_LEVEL_TICK.register(this);
         ClientPlayConnectionEvents.JOIN.register(this);
         ClientPlayConnectionEvents.DISCONNECT.register(this);
         BaritoneEvents.STARTED.register(this);
@@ -51,13 +51,13 @@ public final class EventHandler implements ClientTickEvents.EndWorldTick, Client
     }
 
     @Override
-    public void onPlayReady(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
+    public void onPlayReady(ClientPacketListener handler, PacketSender sender, Minecraft client) {
         DataManager.SERVER.load();
         DataManager.DIMENSION.load();
     }
 
     @Override
-    public void onPlayDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
+    public void onPlayDisconnect(ClientPacketListener handler, Minecraft client) {
         DataManager.SERVER.unload();
         DataManager.DIMENSION.unload();
         AutoTorch.onTeleport();
@@ -66,23 +66,23 @@ public final class EventHandler implements ClientTickEvents.EndWorldTick, Client
     }
 
     @Override
-    public void afterWorldChange(MinecraftClient client, ClientWorld world) {
+    public void afterLevelChange(Minecraft client, ClientLevel level) {
         DataManager.DIMENSION.save();
         DataManager.DIMENSION.load();
         AutoTorch.onTeleport();
     }
 
     @Override
-    public void onEndTick(ClientWorld world) {
+    public void onEndTick(ClientLevel world) {
         BTActiveListener.onTick();
         ProcessChanged.onTick();
         Waiter.tickAll();
         BTActiveListener.updateBaritoneStatus();
     }
 
-    private void onBaritoneLog(Text msg) {
+    private void onBaritoneLog(Component msg) {
         final String prefix = baritone.api.utils.Helper.getPrefix().getString();
-        final String msgString = StringUtils.removeStart(msg.getString(), prefix + " ");
+        final String msgString = Strings.CS.removeStart(msg.getString(), prefix + " ");
         RetryUnreplaceableLiquids.onBaritoneLog(msgString);
     }
 
@@ -90,9 +90,9 @@ public final class EventHandler implements ClientTickEvents.EndWorldTick, Client
     public void baritoneStarted() {
         BTScreen.debugLog("Baritone is active");
         // reinit screen if set
-        Screen screen = Utils.MC.currentScreen;
+        Screen screen = Utils.MC.screen;
         if (screen instanceof GuiMainMenu) {
-            screen.init(Utils.MC, screen.width, screen.height);
+            screen.init(screen.width, screen.height);
         }
     }
 
