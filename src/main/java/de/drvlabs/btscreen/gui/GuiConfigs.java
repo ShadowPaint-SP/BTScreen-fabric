@@ -2,7 +2,7 @@ package de.drvlabs.btscreen.gui;
 
 import java.util.List;
 import java.util.Objects;
-
+import net.minecraft.client.gui.screens.Screen;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.config.Hotkeys;
@@ -11,7 +11,6 @@ import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.gui.GuiConfigsBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.util.StringUtils;
-import net.minecraft.client.gui.screen.Screen;
 
 public class GuiConfigs extends GuiConfigsBase {
 	private ConfigGuiTab tab = ConfigGuiTab.GENERIC;

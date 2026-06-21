@@ -5,16 +5,15 @@ import static de.drvlabs.btscreen.config.Configs.Lists.INV_PRESERVE_ITEM_BLACKLI
 
 import java.util.HashSet;
 import java.util.Set;
-
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.item.ItemStack;
 import baritone.api.process.PathingCommand;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.event.BaritoneEvents;
 import de.drvlabs.btscreen.utils.Utils;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.util.Identifier;
 
 public final class AutoDrop extends BTProcessWithInitializer implements BaritoneEvents.Started {
     public static final AutoDrop INSTANCE = new AutoDrop();
@@ -40,11 +39,11 @@ public final class AutoDrop extends BTProcessWithInitializer implements Baritone
 
     @Override
     protected PathingCommand onTick() {
-        PlayerInventory inventory = Utils.MC.player.getInventory();
+        Inventory inventory = Utils.MC.player.getInventory();
         active = false;
         for (Integer slot : workingSlots) {
-            if (shouldDrop(inventory.getStack(slot))) {
-                Utils.MC.interactionManager.clickSlot(0, slot, 1, SlotActionType.THROW, Utils.MC.player);
+            if (shouldDrop(inventory.getItem(slot))) {
+                Utils.MC.gameMode.handleContainerInput(0, slot, 1, ContainerInput.THROW, Utils.MC.player);
                 active = true;
                 break;
             }
@@ -84,14 +83,14 @@ public final class AutoDrop extends BTProcessWithInitializer implements Baritone
     }
 
     public static void checkInventory() {
-        hasFreeSlot = Utils.MC.player.getInventory().getEmptySlot() != PlayerInventory.NOT_FOUND;
+        hasFreeSlot = Utils.MC.player.getInventory().getFreeSlot() != Inventory.NOT_FOUND_INDEX;
     }
 
     private static void updateMaxSlots() {
-        PlayerInventory inventory = Utils.MC.player.getInventory();
+        Inventory inventory = Utils.MC.player.getInventory();
         workingSlots.clear();
-        for (int i = PlayerInventory.HOTBAR_SIZE; i < PlayerInventory.MAIN_SIZE; i++) {
-            ItemStack stack = inventory.getStack(i);
+        for (int i = Inventory.SELECTION_SIZE; i < Inventory.INVENTORY_SIZE; i++) {
+            ItemStack stack = inventory.getItem(i);
             if (stack.isEmpty()) {
                 workingSlots.add(i);
             }
@@ -116,7 +115,7 @@ public final class AutoDrop extends BTProcessWithInitializer implements Baritone
         if (itemStack.isEmpty()) {
             return false;
         }
-        Identifier itemIdentifier = Registries.ITEM.getId(itemStack.getItem());
+        Identifier itemIdentifier = BuiltInRegistries.ITEM.getKey(itemStack.getItem());
         return itemIdentifier != null && !blacklist.contains(itemIdentifier);
     }
 }

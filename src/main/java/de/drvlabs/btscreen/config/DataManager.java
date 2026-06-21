@@ -10,7 +10,7 @@ import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.implementation.PresetMode;
 import de.drvlabs.btscreen.implementation.customcommands.CommandsManager;
 import fi.dy.masa.malilib.util.FileUtils;
-import fi.dy.masa.malilib.util.JsonUtils;
+import fi.dy.masa.malilib.util.data.json.JsonUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public abstract class DataManager {
@@ -79,7 +79,7 @@ public abstract class DataManager {
     public void load() {
         file = getCurrentStorageFile();
         JsonObject root = new JsonObject();
-        JsonElement element = JsonUtils.parseJsonFileAsPath(file);
+        JsonElement element = JsonUtils.parseJsonFile(file);
         if (element != null && element.isJsonObject()) {
             root = element.getAsJsonObject();
         }
@@ -95,7 +95,7 @@ public abstract class DataManager {
         BTScreen.debugLog("Saving data");
         JsonObject root = new JsonObject();
         toJson(root);
-        JsonUtils.writeJsonToFileAsPath(root, file);
+        JsonUtils.writeJsonToFile(root, file);
     }
 
     protected abstract void toJson(JsonObject root);
@@ -112,6 +112,6 @@ public abstract class DataManager {
     }
 
     public static Path getCurrentConfigDirectory() {
-        return FileUtils.getConfigDirectoryAsPath().resolve(BTScreen.MOD_ID);
+        return FileUtils.getConfigDirectory().resolve(BTScreen.MOD_ID);
     }
 }

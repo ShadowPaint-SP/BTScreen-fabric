@@ -7,20 +7,20 @@ import baritone.api.process.PathingCommand;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.LightType;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 
 public final class AutoTorch extends BTProcessHelper {
     public static final AutoTorch INSTANCE = new AutoTorch();
@@ -45,27 +45,27 @@ public final class AutoTorch extends BTProcessHelper {
                     torchSlot = getTorchSlotInHotbar();
                     if (torchSlot == -1) {
                         AUTO_TORCH.setBooleanValue(false);
-                        BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoTorch.noTorch")
-                                .formatted(Formatting.RED));
+                        BTScreen.chatMessage(Component.translatable(LangKeys.INFO + ".autoTorch.noTorch")
+                                .withStyle(ChatFormatting.RED));
                         return DEFER;
                     }
                     Utils.BT.getInputOverrideHandler().clearAllKeys();
                 }
                 case 1 -> Utils.MC.player.getInventory().setSelectedSlot(torchSlot);
-                case 2 -> Utils.MC.player.setPitch(90);
-                case 3 -> Utils.MC.player.setSneaking(true);
+                case 2 -> Utils.MC.player.setXRot(90);
+                case 3 -> Utils.MC.player.setShiftKeyDown(true);
                 case 4 -> {
-                    BlockPos blockPos = Utils.MC.player.getBlockPos();
-                    ActionResult result = Utils.MC.interactionManager.interactBlock(Utils.MC.player, Hand.MAIN_HAND,
-                            new BlockHitResult(blockPos.toCenterPos(), Direction.UP, blockPos, false));
-                    if (result instanceof ActionResult.Success success) {
-                        if (success.swingSource() == ActionResult.SwingSource.CLIENT) {
-                            Utils.MC.player.swingHand(Hand.MAIN_HAND);
+                    BlockPos blockPos = Utils.MC.player.blockPosition();
+                    InteractionResult result = Utils.MC.gameMode.useItemOn(Utils.MC.player, InteractionHand.MAIN_HAND,
+                            new BlockHitResult(blockPos.getCenter(), Direction.UP, blockPos, false));
+                    if (result instanceof InteractionResult.Success success) {
+                        if (success.swingSource() == InteractionResult.SwingSource.CLIENT) {
+                            Utils.MC.player.swing(InteractionHand.MAIN_HAND);
                         }
                     }
                 }
-                case 5 -> Utils.MC.player.setSneaking(false);
-                case 6 -> Utils.MC.player.setPitch(0);
+                case 5 -> Utils.MC.player.setShiftKeyDown(false);
+                case 6 -> Utils.MC.player.setXRot(0);
                 default -> tick = -1;
             }
             tick++;
@@ -87,8 +87,8 @@ public final class AutoTorch extends BTProcessHelper {
     }
 
     public static void onLightData(int x, int z) {
-        ChunkPos chunkPos = Utils.MC.player.getChunkPos();
-        if (chunkPos.x == x && chunkPos.z == z) {
+        ChunkPos chunkPos = Utils.MC.player.chunkPosition();
+        if (chunkPos.x() == x && chunkPos.z() == z) {
             hasLightData = true;
         }
     }
@@ -98,20 +98,20 @@ public final class AutoTorch extends BTProcessHelper {
     }
 
     private static boolean isValid() {
-        BlockState block = Utils.MC.player.getBlockStateAtPos();
-        BlockPos pos = Utils.MC.player.getBlockPos();
-        int lightLevel = Utils.MC.world.getLightLevel(LightType.BLOCK, pos);
-        if (!block.isReplaceable() || lightLevel >= MIN_LIGHT_LEVEL.getIntegerValue()) {
+        BlockState block = Utils.MC.player.getInBlockState();
+        BlockPos pos = Utils.MC.player.blockPosition();
+        int lightLevel = Utils.MC.level.getBrightness(LightLayer.BLOCK, pos);
+        if (!block.canBeReplaced() || lightLevel >= MIN_LIGHT_LEVEL.getIntegerValue()) {
             return false;
         }
-        return Blocks.TORCH.getDefaultState().canPlaceAt(Utils.MC.world, pos);
+        return Blocks.TORCH.defaultBlockState().canSurvive(Utils.MC.level, pos);
     }
 
     private static int getTorchSlotInHotbar() {
-        PlayerInventory inventory = Utils.MC.player.getInventory();
-        for (int i = 0; i < PlayerInventory.HOTBAR_SIZE; i++) {
-            ItemStack stack = inventory.getStack(i);
-            if (stack.isOf(Items.TORCH)) {
+        Inventory inventory = Utils.MC.player.getInventory();
+        for (int i = 0; i < Inventory.SELECTION_SIZE; i++) {
+            ItemStack stack = inventory.getItem(i);
+            if (stack.is(Items.TORCH)) {
                 return i;
             }
         }

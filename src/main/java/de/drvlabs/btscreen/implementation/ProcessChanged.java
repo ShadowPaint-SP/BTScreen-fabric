@@ -4,12 +4,11 @@ import static de.drvlabs.btscreen.config.Configs.Generic.SHOW_PROCESS_CHANGES;
 import static de.drvlabs.btscreen.config.Configs.Lists.PROCESS_CHANGES_BLACKLIST;
 
 import java.util.List;
-
+import net.minecraft.network.chat.Component;
 import baritone.api.process.IBaritoneProcess;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
-import net.minecraft.text.Text;
 
 public final class ProcessChanged {
     private static boolean shouldDisplayProcesses(IBaritoneProcess... processes) {
@@ -40,7 +39,7 @@ public final class ProcessChanged {
 
     private static void baritoneProcessChanged(IBaritoneProcess oldProcess, IBaritoneProcess newProcess) {
         if (shouldDisplayProcesses(oldProcess, newProcess)) {
-            BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".processChanged",
+            BTScreen.chatMessage(Component.translatable(LangKeys.INFO + ".processChanged",
                     toString(oldProcess), toString(newProcess)));
         }
         BTScreen.debugLog("Baritone Process changed: oldProcess: {}, newProcess: {}",

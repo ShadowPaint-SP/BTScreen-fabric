@@ -1,13 +1,12 @@
 package de.drvlabs.btscreen.btprocess;
 
 import java.util.List;
-
+import net.minecraft.client.gui.screens.Screen;
 import baritone.api.process.IBaritoneProcess;
 import baritone.api.process.PathingCommand;
 import de.drvlabs.btscreen.event.BaritoneEvents;
 import de.drvlabs.btscreen.gui.GuiMainMenu;
 import de.drvlabs.btscreen.utils.Utils;
-import net.minecraft.client.gui.screen.Screen;
 
 public final class BTActiveListener extends BTProcessHelper {
     public static final BTActiveListener INSTANCE = new BTActiveListener();
@@ -44,9 +43,9 @@ public final class BTActiveListener extends BTProcessHelper {
         }
         pauseProcess = process;
         // reinit screen if set
-        Screen screen = Utils.MC.currentScreen;
+        Screen screen = Utils.MC.screen;
         if (screen instanceof GuiMainMenu) {
-            screen.init(Utils.MC, screen.width, screen.height);
+            screen.init(screen.width, screen.height);
         }
     }
 

@@ -5,7 +5,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import baritone.api.pathing.goals.GoalGetToBlock;
 import baritone.api.process.PathingCommand;
 import baritone.api.process.PathingCommandType;
@@ -18,15 +26,6 @@ import baritone.api.utils.input.Input;
 import baritone.pathing.movement.MovementHelper;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.utils.Utils;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 
 public final class BedrockCleaner extends BTProcessHelper {
     public static final BedrockCleaner INSTANCE = new BedrockCleaner();
@@ -41,7 +40,7 @@ public final class BedrockCleaner extends BTProcessHelper {
     private static SelectionIterator blockIterator = null;
     private static int walkY;
     private BetterBlockPos currentBlock = null;
-    private Vec3d tpToPos = null;
+    private Vec3 tpToPos = null;
     private int timeoutTicks = 0;
 
     @Override
@@ -53,7 +52,7 @@ public final class BedrockCleaner extends BTProcessHelper {
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         INPUT_HANDLER.clearAllKeys();
         if (currentBlock == null) {
-            blockIterator.revertUntil(b -> Utils.MC.world.getBlockState(b).isAir(), 4);
+            blockIterator.revertUntil(b -> Utils.MC.level.getBlockState(b).isAir(), 4);
             currentBlock = blockIterator.nextUntil(new Function<>() {
                 int columnX = Integer.MAX_VALUE;
                 int columnZ = Integer.MAX_VALUE;
@@ -66,11 +65,11 @@ public final class BedrockCleaner extends BTProcessHelper {
                         columnZ = currentBlock.z;
                         columnHasBedrock = false;
                     }
-                    BlockState blockState = Utils.MC.world.getBlockState(currentBlock);
+                    BlockState blockState = Utils.MC.level.getBlockState(currentBlock);
                     if (columnHasBedrock || blockState.getBlock().equals(Blocks.BEDROCK)) {
                         columnHasBedrock = true;
                         return false;
-                    } else if (blockState.isAir() || !blockState.isFullCube(Utils.MC.world, currentBlock)) {
+                    } else if (blockState.isAir() || !blockState.isCollisionShapeFullBlock(Utils.MC.level, currentBlock)) {
                         return false;
                     }
                     return true;
@@ -78,7 +77,7 @@ public final class BedrockCleaner extends BTProcessHelper {
             });
             if (currentBlock == null) {
                 onLostControl();
-                BTScreen.chatMessage(Text.translatable(TRANSLATABLE_PREFIX + "finished").formatted(Formatting.GREEN));
+                BTScreen.chatMessage(Component.translatable(TRANSLATABLE_PREFIX + "finished").withStyle(ChatFormatting.GREEN));
                 return DEFER;
             }
             tpToPos = null;
@@ -86,10 +85,10 @@ public final class BedrockCleaner extends BTProcessHelper {
         if (!isSafeToCancel) {
             return CONTINUE;
         }
-        BlockState block = Utils.MC.world.getBlockState(currentBlock);
-        BlockPos walkBlockPos = currentBlock.withY(walkY);
+        BlockState block = Utils.MC.level.getBlockState(currentBlock);
+        BlockPos walkBlockPos = currentBlock.atY(walkY);
         if (tpToPos == null) {
-            BlockPos walkOnPos = walkBlockPos.down();
+            BlockPos walkOnPos = walkBlockPos.below();
             // get save nearby block to sand on
             for (BlockPos saveBlockPos : List.of(
                     walkOnPos.west(),
@@ -101,24 +100,24 @@ public final class BedrockCleaner extends BTProcessHelper {
                     walkOnPos.east().north(),
                     walkOnPos.east().south())) {
                 // check if block is save
-                BlockState saveBlock = Utils.MC.world.getBlockState(saveBlockPos);
-                if (saveBlock.isAir() || !saveBlock.isFullCube(Utils.MC.world, saveBlockPos)) {
+                BlockState saveBlock = Utils.MC.level.getBlockState(saveBlockPos);
+                if (saveBlock.isAir() || !saveBlock.isCollisionShapeFullBlock(Utils.MC.level, saveBlockPos)) {
                     continue;
                 }
                 // calculate tp pos
                 BlockPos relativBlockPos = saveBlockPos.subtract(walkOnPos);
-                tpToPos = walkBlockPos.toBottomCenterPos()
+                tpToPos = walkBlockPos.getBottomCenter()
                         .add(relativBlockPos.getX() * 0.3, 0, relativBlockPos.getZ() * 0.3);
                 // check if pos is save
-                if (Utils.MC.world.getStatesInBox(Utils.MC.player.getDimensions(EntityPose.STANDING).getBoxAt(tpToPos))
+                if (Utils.MC.level.getBlockStates(Utils.MC.player.getDimensions(Pose.STANDING).makeBoundingBox(tpToPos))
                         .allMatch(BlockState::isAir)) {
                     break;
                 }
                 tpToPos = null;
             }
             if (tpToPos == null) {
-                BTScreen.chatMessage(Text.translatable(TRANSLATABLE_PREFIX + "noSaveBlock", currentBlock.x,
-                        currentBlock.y, currentBlock.z).formatted(Formatting.GOLD));
+                BTScreen.chatMessage(Component.translatable(TRANSLATABLE_PREFIX + "noSaveBlock", currentBlock.x,
+                        currentBlock.y, currentBlock.z).withStyle(ChatFormatting.GOLD));
                 currentBlock = null;
                 blockIterator.blacklistPrevious();
                 return CANCEL;
@@ -126,37 +125,37 @@ public final class BedrockCleaner extends BTProcessHelper {
             timeoutTicks = 0;
         }
         // go to tp pos by walking or tp
-        Vec3d playerPos = Utils.MC.player.getEntityPos();
-        if (playerPos.isInRange(tpToPos, 1)) {
-            Utils.MC.player.setPosition(tpToPos);
-            Utils.MC.player.setPitch(90);
+        Vec3 playerPos = Utils.MC.player.position();
+        if (playerPos.closerThan(tpToPos, 1)) {
+            Utils.MC.player.setPos(tpToPos);
+            Utils.MC.player.setXRot(90);
             INPUT_HANDLER.setInputForceState(Input.SNEAK, true);
             if (ctx.isLookingAt(currentBlock)) {
-                PlayerInventory inventory = Utils.MC.player.getInventory();
-                ItemStack prevSelectedSlot = inventory.getSelectedStack();
+                Inventory inventory = Utils.MC.player.getInventory();
+                ItemStack prevSelectedSlot = inventory.getSelectedItem();
                 MovementHelper.a(ctx, block); // obfuscated switchToBestToolFor | save?
-                if (prevSelectedSlot.equals(inventory.getSelectedStack())) {
+                if (prevSelectedSlot.equals(inventory.getSelectedItem())) {
                     INPUT_HANDLER.setInputForceState(Input.CLICK_LEFT, true);
                 }
             }
             // next block if "finished" with block
-            if (block.isAir() || !block.isFullCube(Utils.MC.world, currentBlock)) {
+            if (block.isAir() || !block.isCollisionShapeFullBlock(Utils.MC.level, currentBlock)) {
                 currentBlock = null;
             } else {
                 timeoutTicks++;
                 if (timeoutTicks > 100) {
                     // Timeout
-                    BTScreen.chatMessage(Text.translatable(TRANSLATABLE_PREFIX + "timeout", currentBlock.x,
-                            currentBlock.y, currentBlock.z).formatted(Formatting.GOLD));
+                    BTScreen.chatMessage(Component.translatable(TRANSLATABLE_PREFIX + "timeout", currentBlock.x,
+                            currentBlock.y, currentBlock.z).withStyle(ChatFormatting.GOLD));
                     currentBlock = null;
                 }
             }
             return CANCEL;
-        } else if (playerPos.isInRange(tpToPos, 2)) {
-            Utils.MC.player.setPosition(playerPos.subtract(tpToPos).multiply(0.5).add(tpToPos));
+        } else if (playerPos.closerThan(tpToPos, 2)) {
+            Utils.MC.player.setPos(playerPos.subtract(tpToPos).scale(0.5).add(tpToPos));
             return CANCEL;
         } else {
-            return new PathingCommand(new GoalGetToBlock(currentBlock.withY(walkY)),
+            return new PathingCommand(new GoalGetToBlock(currentBlock.atY(walkY)),
                     PathingCommandType.FORCE_REVALIDATE_GOAL_AND_PATH);
         }
     }
@@ -180,23 +179,23 @@ public final class BedrockCleaner extends BTProcessHelper {
 
     public static void activate() {
         if (blockIterator != null && blockIterator.hasNext()) {
-            BTScreen.chatMessage(Text.translatable(TRANSLATABLE_PREFIX + "alreadyStarted").formatted(Formatting.RED));
+            BTScreen.chatMessage(Component.translatable(TRANSLATABLE_PREFIX + "alreadyStarted").withStyle(ChatFormatting.RED));
             return;
         }
         ISelection selection = SEL_MGR.getOnlySelection();
         if (selection == null) {
-            BTScreen.chatMessage(Text.translatable(TRANSLATABLE_PREFIX + "noSelection").formatted(Formatting.RED));
+            BTScreen.chatMessage(Component.translatable(TRANSLATABLE_PREFIX + "noSelection").withStyle(ChatFormatting.RED));
             return;
         }
         BetterBlockPos min = selection.min();
         BetterBlockPos max = selection.max();
         if ((max.y - min.y) >= 4) {
-            BTScreen.chatMessage(Text.translatable(TRANSLATABLE_PREFIX + "selectionTooBig").formatted(Formatting.RED));
+            BTScreen.chatMessage(Component.translatable(TRANSLATABLE_PREFIX + "selectionTooBig").withStyle(ChatFormatting.RED));
             return;
         }
         walkY = max.y + 1;
         blockIterator = new SelectionIterator(min, max);
-        BTScreen.chatMessage(Text.translatable(TRANSLATABLE_PREFIX + "started"));
+        BTScreen.chatMessage(Component.translatable(TRANSLATABLE_PREFIX + "started"));
     }
 
     private static class SelectionIterator implements Iterator<BetterBlockPos> {

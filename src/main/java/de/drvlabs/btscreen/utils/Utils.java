@@ -10,17 +10,17 @@ import de.drvlabs.btscreen.btprocess.BTActiveListener;
 import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.implementation.PresetMode;
 import de.drvlabs.btscreen.implementation.RepeatAction;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.Identifier;
 
 public class Utils {
-    public static final MinecraftClient MC = MinecraftClient.getInstance();
+    public static final Minecraft MC = Minecraft.getInstance();
     public static final IBaritone BT = BaritoneAPI.getProvider().getPrimaryBaritone();
 
     public static boolean isInGame() {
-        return MC.player != null && Utils.MC.world != null;
+        return MC.player != null && Utils.MC.level != null;
     }
 
     public static IBaritoneProcess getActiveProcess() {
@@ -30,7 +30,7 @@ public class Utils {
     public static Identifier getWorldId() {
         if (!isInGame())
             return null;
-        return MC.world.getRegistryKey().getValue();
+        return MC.level.dimension().identifier();
     }
 
     public static void execute(String command) {
@@ -67,20 +67,20 @@ public class Utils {
         execute("cancel");
     }
 
-    public static void chatMessage(Text... message) {
+    public static void chatMessage(Component... message) {
         if (!isInGame())
             return;
-        MutableText msg = Text.literal("");
-        for (Text text : message) {
+        MutableComponent msg = Component.literal("");
+        for (Component text : message) {
             msg.append(text);
         }
-        MC.getMessageHandler().onGameMessage(msg, false);
+        MC.getChatListener().handleSystemMessage(msg, false);
     }
 
-    public static void overlayMessage(Text message) {
+    public static void overlayMessage(Component message) {
         if (!isInGame())
             return;
-        MC.inGameHud.setOverlayMessage(message, false);
+        MC.gui.setOverlayMessage(message, false);
     }
 
     public static void sendCommand(String command) {
@@ -89,6 +89,6 @@ public class Utils {
         String normalizeCommand = StringUtils.normalizeSpace(command.trim());
         if (normalizeCommand.isEmpty())
             return;
-        MC.getNetworkHandler().sendChatCommand(normalizeCommand);
+        MC.getConnection().sendCommand(normalizeCommand);
     }
 }

@@ -1,15 +1,14 @@
 package de.drvlabs.btscreen.gui;
 
 import java.nio.file.Path;
-
+import fi.dy.masa.malilib.render.GuiContext;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import de.drvlabs.btscreen.BTScreen;
 import fi.dy.masa.malilib.gui.interfaces.IFileBrowserIconProvider;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.RenderUtils;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Identifier;
 
 public enum ButtonIcons implements IGuiIcon, IFileBrowserIconProvider {
 	CONFIGURATION(102, 84, 14, 14),
@@ -29,7 +28,7 @@ public enum ButtonIcons implements IGuiIcon, IFileBrowserIconProvider {
 	BUTTON_PLUS_MINUS_12(24, 0, 12, 12),
 	BUTTON_PLUS_MINUS_16(0, 128, 16, 16),;
 
-	public static final Identifier TEXTURE = Identifier.of(BTScreen.MOD_ID, "textures/gui/gui_widgets.png");
+	public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(BTScreen.MOD_ID, "textures/gui/gui_widgets.png");
 
 	private final int u;
 	private final int v;
@@ -64,7 +63,7 @@ public enum ButtonIcons implements IGuiIcon, IFileBrowserIconProvider {
 	}
 
 	@Override
-	public void renderAt(DrawContext drawContext, int x, int y, float zLevel, boolean enabled, boolean selected) {
+	public void renderAt(GuiContext drawContext, int x, int y, float zLevel, boolean enabled, boolean selected) {
 		RenderUtils.drawTexturedRect(drawContext, this.getTexture(), x, y, this.u, this.v, this.w, this.h, zLevel);
 	}
 

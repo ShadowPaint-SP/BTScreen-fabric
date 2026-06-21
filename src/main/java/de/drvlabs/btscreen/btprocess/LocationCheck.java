@@ -7,10 +7,10 @@ import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.event.BaritoneEvents;
 import de.drvlabs.btscreen.utils.Utils;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.Vec3;
 
 public final class LocationCheck extends BTProcessHelper implements BaritoneEvents.Stopped, BaritoneEvents.Paused {
     public static final LocationCheck INSTANCE = new LocationCheck();
@@ -18,7 +18,7 @@ public final class LocationCheck extends BTProcessHelper implements BaritoneEven
     private LocationCheck() {
     }
 
-    private Vec3d lastLocation = null;
+    private Vec3 lastLocation = null;
     private Identifier lastWorld = null;
 
     @Override
@@ -29,8 +29,8 @@ public final class LocationCheck extends BTProcessHelper implements BaritoneEven
     @Override
     public PathingCommand onTick(boolean calcFailed, boolean isSafeToCancel) {
         if (!inRange()) {
-            BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".safety.movedTooFar")
-                    .formatted(Formatting.RED));
+            BTScreen.chatMessage(Component.translatable(LangKeys.INFO + ".safety.movedTooFar")
+                    .withStyle(ChatFormatting.RED));
             Utils.cancel();
             Teleport.Home.SAFETY.tpToHome();
             return REQUEST_PAUSE;
@@ -66,11 +66,11 @@ public final class LocationCheck extends BTProcessHelper implements BaritoneEven
     }
 
     private boolean inRange() {
-        Vec3d currentLocation = Utils.MC.player.getEntityPos();
+        Vec3 currentLocation = Utils.MC.player.position();
         Identifier currentWorld = Utils.getWorldId();
         boolean result = true;
         if (lastWorld != null && lastLocation != null) {
-            result = currentWorld.equals(lastWorld) && currentLocation.isInRange(lastLocation, 5);
+            result = currentWorld.equals(lastWorld) && currentLocation.closerThan(lastLocation, 5);
         }
         lastLocation = currentLocation;
         lastWorld = currentWorld;

@@ -6,10 +6,10 @@ import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
 import fi.dy.masa.malilib.config.options.ConfigString;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.Vec3;
 
 public final class Teleport extends BTProcessHelper {
     public static final Teleport INSTANCE = new Teleport();
@@ -21,7 +21,7 @@ public final class Teleport extends BTProcessHelper {
     private static Home lastHome = null;
     private boolean teleporting = false;
     private int timeoutTicks = 0;
-    private Vec3d oldPos = null;
+    private Vec3 oldPos = null;
     private Identifier oldWorld = null;
 
     @Override
@@ -35,7 +35,7 @@ public final class Teleport extends BTProcessHelper {
             if (timeoutTicks > 100) {
                 // Timeout
                 BTScreen.chatMessage(
-                        Text.translatable(LangKeys.INFO + ".teleport.timeout").formatted(Formatting.RED));
+                        Component.translatable(LangKeys.INFO + ".teleport.timeout").withStyle(ChatFormatting.RED));
                 Utils.cancel();
                 onLostControl();
             }
@@ -48,7 +48,7 @@ public final class Teleport extends BTProcessHelper {
                     BTScreen.debugLog("Teleporting to " + nextHome + " Home");
                     // Teleport to Home prepare
                     teleporting = true;
-                    oldPos = Utils.MC.player.getEntityPos();
+                    oldPos = Utils.MC.player.position();
                     oldWorld = Utils.getWorldId();
                     // Set Mine home before teleporting
                     if (nextHome != Home.MINE) {
@@ -70,7 +70,7 @@ public final class Teleport extends BTProcessHelper {
                 nextHome.tpToHome();
                 nextHome = null;
             } else if (oldPos != null
-                    && (!oldPos.isInRange(Utils.MC.player.getEntityPos(), 1) || !oldWorld.equals(Utils.getWorldId()))) {
+                    && (!oldPos.closerThan(Utils.MC.player.position(), 1) || !oldWorld.equals(Utils.getWorldId()))) {
                 BTScreen.debugLog("Teleport Finished");
                 // Teleport Finished
                 teleporting = false;
@@ -139,7 +139,7 @@ public final class Teleport extends BTProcessHelper {
                 } else if (SLEEP.isConfigured()) {
                     SLEEP.tpToHome();
                 } else {
-                    Utils.MC.disconnect(Text.translatable(LangKeys.INFO + ".savetyDisconnect", BTScreen.MOD_NAME));
+                    Utils.MC.disconnectFromWorld(Component.translatable(LangKeys.INFO + ".savetyDisconnect", BTScreen.MOD_NAME));
                 }
             }
         },

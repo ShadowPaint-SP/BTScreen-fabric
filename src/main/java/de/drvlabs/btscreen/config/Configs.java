@@ -19,7 +19,7 @@ import fi.dy.masa.malilib.config.options.ConfigInteger;
 import fi.dy.masa.malilib.config.options.ConfigString;
 import fi.dy.masa.malilib.config.options.ConfigStringList;
 import fi.dy.masa.malilib.util.FileUtils;
-import fi.dy.masa.malilib.util.JsonUtils;
+import fi.dy.masa.malilib.util.data.json.JsonUtils;
 
 public class Configs implements IConfigHandler {
     private static final String CONFIG_FILE_NAME = BTScreen.MOD_ID + ".json";
@@ -96,7 +96,8 @@ public class Configs implements IConfigHandler {
     }
 
     public static class Lists {
-        public static final ConfigStringList PROCESS_CHANGES_BLACKLIST = new ConfigStringList("processChangesBlacklist", ImmutableList.of("Teleport"));
+        public static final ConfigStringList PROCESS_CHANGES_BLACKLIST = new ConfigStringList("processChangesBlacklist",
+                ImmutableList.of("Teleport"));
         public static final ConfigStringList INV_PRESERVE_ITEM_BLACKLIST = new ConfigStringList(
                 "invPreserveItemBlackList", ImmutableList.of());
         public static final ConfigStringList BLOCKS_TO_GET_REPLACED = new ConfigStringList("blocksToGetReplaced",
@@ -129,10 +130,10 @@ public class Configs implements IConfigHandler {
     }
 
     public static void loadFromFile() {
-        Path configFile = FileUtils.getConfigDirectoryAsPath().resolve(CONFIG_FILE_NAME);
+        Path configFile = FileUtils.getConfigDirectory().resolve(CONFIG_FILE_NAME);
 
         if (Files.exists(configFile) && Files.isReadable(configFile)) {
-            JsonElement element = JsonUtils.parseJsonFileAsPath(configFile);
+            JsonElement element = JsonUtils.parseJsonFile(configFile);
 
             if (element != null && element.isJsonObject()) {
                 JsonObject root = element.getAsJsonObject();
@@ -151,7 +152,7 @@ public class Configs implements IConfigHandler {
     }
 
     public static void saveToFile() {
-        Path dir = FileUtils.getConfigDirectoryAsPath();
+        Path dir = FileUtils.getConfigDirectory();
 
         if (!Files.exists(dir)) {
             FileUtils.createDirectoriesIfMissing(dir);
@@ -164,7 +165,7 @@ public class Configs implements IConfigHandler {
             ConfigUtils.writeConfigBase(root, "Lists", Lists.OPTIONS);
             ConfigUtils.writeConfigBase(root, "Hotkeys", Hotkeys.HOTKEY_LIST);
 
-            JsonUtils.writeJsonToFileAsPath(root, dir.resolve(CONFIG_FILE_NAME));
+            JsonUtils.writeJsonToFile(root, dir.resolve(CONFIG_FILE_NAME));
         } else {
             BTScreen.LOGGER.error("saveToFile(): Config Folder '{}' does not exist!",
                     dir.toAbsolutePath());

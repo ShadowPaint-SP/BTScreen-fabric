@@ -10,17 +10,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import de.drvlabs.btscreen.utils.Utils;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 
-@Mixin(ClientPlayerInteractionManager.class)
+@Mixin(MultiPlayerGameMode.class)
 public abstract class MixinClientPlayerInteractionManager {
     @Shadow
-    private int blockBreakingCooldown;
+    private int destroyDelay;
 
-    @Inject(method = "updateBlockBreakingProgress", at = @At(value = "FIELD", target = "Lnet/minecraft/client/network/ClientPlayerInteractionManager;blockBreakingCooldown:I", shift = At.Shift.AFTER, opcode = Opcodes.PUTFIELD, ordinal = 2))
+    @Inject(method = "continueDestroyBlock", at = @At(value = "FIELD", target = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;destroyDelay:I", shift = At.Shift.AFTER, opcode = Opcodes.PUTFIELD, ordinal = 2))
     private void survivalBreakDelayChange(CallbackInfoReturnable<?> ci) {
         if (NO_BREAK_COOLDOWN.getBooleanValue() && Utils.isActive()) {
-            blockBreakingCooldown = 0;
+            destroyDelay = 0;
         }
     }
 }

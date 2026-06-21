@@ -7,14 +7,13 @@ import baritone.api.process.PathingCommand;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.FoodComponent;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult.Success;
-import net.minecraft.util.ActionResult.SwingSource;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult.Success;
+import net.minecraft.world.InteractionResult.SwingSource;
+import net.minecraft.world.food.FoodProperties;
 
 public final class AutoEat extends BTProcessWithInitializer {
     public static final AutoEat INSTANCE = new AutoEat();
@@ -22,9 +21,7 @@ public final class AutoEat extends BTProcessWithInitializer {
     private AutoEat() {
     }
 
-    public static final int MIN_FOOD_LEVEL = 21 - Registries.ITEM.stream()
-            .map(i -> i.getComponents().get(DataComponentTypes.FOOD)).filter(i -> i != null)
-            .mapToInt(FoodComponent::nutrition).max().orElse(20);
+    public static final int MIN_FOOD_LEVEL = 1;
     private static boolean shouldEat = false;
 
     @Override
@@ -38,7 +35,7 @@ public final class AutoEat extends BTProcessWithInitializer {
 
     @Override
     protected PathingCommand onTick() {
-        FoodComponent food = Utils.MC.player.getOffHandStack().get(DataComponentTypes.FOOD);
+        FoodProperties food = Utils.MC.player.getOffhandItem().get(DataComponents.FOOD);
         if (food == null) {
             return DEFER;
         }
@@ -60,26 +57,26 @@ public final class AutoEat extends BTProcessWithInitializer {
         boolean oldShouldEat = shouldEat;
         shouldEat = foodLevel < FOOD_LEVEL.getIntegerValue();
         if (!shouldEat) {
-            FoodComponent food = Utils.MC.player.getOffHandStack().get(DataComponentTypes.FOOD);
+            FoodProperties food = Utils.MC.player.getOffhandItem().get(DataComponents.FOOD);
             if (food != null) {
                 shouldEat = (foodLevel + food.nutrition()) <= 20;
             } else if (isActive(AUTO_EAT)) {
-                BTScreen.chatMessage(Text.translatable(LangKeys.INFO + ".autoEat.noFood").formatted(Formatting.RED));
+                BTScreen.chatMessage(Component.translatable(LangKeys.INFO + ".autoEat.noFood").withStyle(ChatFormatting.RED));
             }
         }
         if (isActive(AUTO_EAT) && !shouldEat && oldShouldEat) {
-            Utils.MC.options.useKey.setPressed(false);
+            Utils.MC.options.keyUse.setDown(false);
         }
     }
 
     private static void doItemUse() {
         if (!Utils.MC.player.isUsingItem()) {
             // Utils.MC.doItemUse(); // accesswidener:
-            // accessible method net/minecraft/client/MinecraftClient doItemUse ()V
-            Utils.MC.options.useKey.setPressed(true);
-            if (Utils.MC.interactionManager.interactItem(Utils.MC.player, Hand.OFF_HAND) instanceof Success success) {
+            // accessible method net/minecraft/client/Minecraft startUseItem ()V
+            Utils.MC.options.keyUse.setDown(true);
+            if (Utils.MC.gameMode.useItem(Utils.MC.player, InteractionHand.OFF_HAND) instanceof Success success) {
                 if (success.swingSource() == SwingSource.CLIENT) {
-                    Utils.MC.player.swingHand(Hand.OFF_HAND);
+                    Utils.MC.player.swing(InteractionHand.OFF_HAND);
                 }
                 return;
             }
