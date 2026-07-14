@@ -43,7 +43,7 @@ public final class BTActiveListener extends BTProcessHelper {
         }
         pauseProcess = process;
         // reinit screen if set
-        Screen screen = Utils.MC.screen;
+        Screen screen = Utils.MC.gui.screen();
         if (screen instanceof GuiMainMenu) {
             screen.init(screen.width, screen.height);
         }

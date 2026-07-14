@@ -21,6 +21,7 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 
 public final class AutoTorch extends BTProcessHelper {
     public static final AutoTorch INSTANCE = new AutoTorch();
@@ -57,7 +58,7 @@ public final class AutoTorch extends BTProcessHelper {
                 case 4 -> {
                     BlockPos blockPos = Utils.MC.player.blockPosition();
                     InteractionResult result = Utils.MC.gameMode.useItemOn(Utils.MC.player, InteractionHand.MAIN_HAND,
-                            new BlockHitResult(blockPos.getCenter(), Direction.UP, blockPos, false));
+                            new BlockHitResult(Vec3.atCenterOf(blockPos), Direction.UP, blockPos, false));
                     if (result instanceof InteractionResult.Success success) {
                         if (success.swingSource() == InteractionResult.SwingSource.CLIENT) {
                             Utils.MC.player.swing(InteractionHand.MAIN_HAND);

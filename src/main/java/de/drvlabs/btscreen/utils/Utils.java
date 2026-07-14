@@ -74,13 +74,13 @@ public class Utils {
         for (Component text : message) {
             msg.append(text);
         }
-        MC.getChatListener().handleSystemMessage(msg, false);
+        MC.gui.chatListener().handleSystemMessage(msg, false);
     }
 
     public static void overlayMessage(Component message) {
         if (!isInGame())
             return;
-        MC.gui.setOverlayMessage(message, false);
+        MC.gui.chatListener().handleOverlay(message);
     }
 
     public static void sendCommand(String command) {

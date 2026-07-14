@@ -69,7 +69,7 @@ public final class AutoSleep extends BTProcessWithInitializer {
             }
         } else if (Utils.MC.player.isSleepingLongEnough()
                 && sleepTimer++ >= MAX_SLEEP_TICKS.getIntegerValue()) {
-            Screen screen = Utils.MC.screen;
+            Screen screen = Utils.MC.gui.screen();
             if (screen != null) {
                 screen.onClose();
             }

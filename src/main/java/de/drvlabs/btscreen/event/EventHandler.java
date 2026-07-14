@@ -90,7 +90,7 @@ public final class EventHandler implements ClientTickEvents.EndLevelTick, Client
     public void baritoneStarted() {
         BTScreen.debugLog("Baritone is active");
         // reinit screen if set
-        Screen screen = Utils.MC.screen;
+        Screen screen = Utils.MC.gui.screen();
         if (screen instanceof GuiMainMenu) {
             screen.init(screen.width, screen.height);
         }

@@ -106,7 +106,7 @@ public final class BedrockCleaner extends BTProcessHelper {
                 }
                 // calculate tp pos
                 BlockPos relativBlockPos = saveBlockPos.subtract(walkOnPos);
-                tpToPos = walkBlockPos.getBottomCenter()
+                tpToPos = Vec3.atBottomCenterOf(walkOnPos)
                         .add(relativBlockPos.getX() * 0.3, 0, relativBlockPos.getZ() * 0.3);
                 // check if pos is save
                 if (Utils.MC.level.getBlockStates(Utils.MC.player.getDimensions(Pose.STANDING).makeBoundingBox(tpToPos))
