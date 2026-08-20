@@ -3,6 +3,11 @@
   "package": "de.drvlabs.btscreen.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "baritone.MixinBuilderCalculationContext",
+    "baritone.MixinBuilderGoalAdjacent",
+    "baritone.MixinBuilderGoalBreak",
+    "baritone.MixinBuilderProcess",
+    "baritone.MixinGoalBlock",
     "baritone.MixinSetCommand",
     "network.MixinClientPlayNetworkHandler",
     "network.MixinClientPlayerInteractionManager"

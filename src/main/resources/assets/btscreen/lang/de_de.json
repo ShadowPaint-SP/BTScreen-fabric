@@ -54,6 +54,7 @@
   "btscreen.preset_mode.name.none": "Keine",
   "btscreen.preset_mode.name.clear_area": "Bereich leeren",
   "btscreen.preset_mode.name.remove_liquid": "Flüssigkeit entfernen",
+  "btscreen.preset_mode.name.smart_water_clear": "Intelligent Wasser entfernen",
   "btscreen.preset_mode.name.farming": "Farmen",
   "btscreen.preset_mode.name.building": "Bauen",
   "btscreen.preset_mode.name.clean_bedrock": "Grundgestein säubern",
@@ -172,5 +173,15 @@
   "btscreen.bedrockCleaner.alreadyStarted": "Fehler: Bedrock Cleaner bereits gestartet.",
   "btscreen.bedrockCleaner.noSelection": "Fehler: Es wird genau eine Auswahl benötigt.",
   "btscreen.bedrockCleaner.selectionTooBig": "Fehler: Auswahl zu groß (max. 4 Blöcke hoch).",
-  "btscreen.bedrockCleaner.started": "Bedrock Cleaner gestartet."
+  "btscreen.bedrockCleaner.started": "Bedrock Cleaner gestartet.",
+  "btscreen.smartWaterClear.started": "Intelligente Wasserentfernung gestartet.",
+  "btscreen.smartWaterClear.finished": "Intelligente Wasserentfernung abgeschlossen.",
+  "btscreen.smartWaterClear.alreadyStarted": "Fehler: Die intelligente Wasserentfernung läuft bereits.",
+  "btscreen.smartWaterClear.noSelection": "Fehler: Es wird genau eine Auswahl benötigt.",
+  "btscreen.smartWaterClear.selectionTooNarrow": "Fehler: Die Auswahl muss mindestens 5 Blöcke breit und 5 Blöcke lang sein.",
+  "btscreen.smartWaterClear.noLiquid": "In der Auswahl wurde keine Flüssigkeit gefunden.",
+  "btscreen.smartWaterClear.noUsableItem": "Fehler: Kein nutzbarer Füllblock gefunden.",
+  "btscreen.smartWaterClear.outOfBlocks": "Fehler: Keine Füllblöcke mehr auf Y=%s.",
+  "btscreen.smartWaterClear.unwalkableInnerH": "Fehler: Der H_inner-Standblock bei %s %s %s ist nicht begehbar.",
+  "btscreen.smartWaterClear.stalled": "Fehler: Die intelligente Wasserentfernung hängt in Phase %s auf Y=%s fest."
 }
