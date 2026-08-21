@@ -14,6 +14,7 @@ import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.config.LangKeys;
+import de.drvlabs.btscreen.implementation.Caveman;
 import de.drvlabs.btscreen.implementation.PresetMode;
 import de.drvlabs.btscreen.implementation.customcommands.Commands;
 import de.drvlabs.btscreen.utils.Utils;
@@ -140,6 +141,9 @@ public class GuiMainMenu extends GuiBase {
         maxX = Math.max(maxX, x + this.createCoordinateInput(x, y, width, CoordinateType.EAST));
         y += 20;
         maxX = Math.max(maxX, x + this.createCoordinateInput(x, y, width, CoordinateType.DOWN));
+        y += 22;
+        x = this.getScreenWidth() / 2 + 5;
+        maxX = Math.max(maxX, x + this.createButton(x, y, -1, ButtonListener.Type.CAVEMAN, false));
 
         ////////////////////////////////////////////////// Box Moving
         x = this.getScreenWidth() / 2;
@@ -314,6 +318,9 @@ public class GuiMainMenu extends GuiBase {
                 case Type.SELCHUNK:
                     selectCurrentChunk();
                     return;
+                case Type.CAVEMAN:
+                    Caveman.clipSelections(this.gui);
+                    return;
                 case Type.SHIFTX:
                     Utils.execute("sel shift all east " + amount);
                     return;
@@ -412,7 +419,8 @@ public class GuiMainMenu extends GuiBase {
             SEL_REPLACE(LangKeys.GUI_BUTTON + ".sel_replace", null),
             SEL_COPY(LangKeys.GUI_BUTTON + ".sel_copy", null),
             SEL_PASTE(LangKeys.GUI_BUTTON + ".sel_paste", null),
-            SELCHUNK(LangKeys.GUI_BUTTON + ".selchunk", null);
+            SELCHUNK(LangKeys.GUI_BUTTON + ".selchunk", null),
+            CAVEMAN(LangKeys.GUI_BUTTON + ".caveman", null);
 
             private final String translationKey;
             private final ButtonIcons icon;

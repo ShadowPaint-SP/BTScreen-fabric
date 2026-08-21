@@ -59,6 +59,12 @@
   "btscreen.preset_mode.name.building": "Building",
   "btscreen.preset_mode.name.clean_bedrock": "Clean Bedrock",
 
+  "btscreen.gui.button.caveman": "Caveman",
+  "btscreen.caveman.noSelection": "Caveman needs at least one selection.",
+  "btscreen.caveman.chunkNotLoaded": "Chunk %s, %s is not loaded. Move closer before clipping.",
+  "btscreen.caveman.nothingToClip": "The selections have no blocks below the surface subchunks.",
+  "btscreen.caveman.clipped": "Caveman created %s clipped selection areas.",
+
   "btscreen.info.main_menu.startBot": "Bot is running now.\n§8Make sure no one sees u using this ;)",
   "btscreen.info.main_menu.stopBot": "U ARE SAFE NOW",
   "btscreen.info.main_menu.shiftX": "Shifted by %s",
@@ -176,6 +182,7 @@
   "btscreen.bedrockCleaner.started": "Bedrock Cleaner started.",
   "btscreen.smartWaterClear.started": "Smart water clear started.",
   "btscreen.smartWaterClear.finished": "Smart water clear finished.",
+  "btscreen.smartWaterClear.layerFinished": "Water clear layer Y=%s finished.",
   "btscreen.smartWaterClear.alreadyStarted": "Error: Smart water clear is already running.",
   "btscreen.smartWaterClear.noSelection": "Error: Smart water clear needs exactly one selection.",
   "btscreen.smartWaterClear.selectionTooNarrow": "Error: Smart water clear needs a selection at least 5 blocks wide and 5 blocks long.",

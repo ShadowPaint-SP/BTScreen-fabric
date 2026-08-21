@@ -54,6 +54,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     private static final String TRANSLATABLE_PREFIX = BTScreen.MOD_ID + ".smartWaterClear.";
     private static final int MAX_PHASE_ATTEMPTS = 4;
     private static final int STABLE_TICKS = 10;
+    private static final int G_CONFIRM_TICKS = 5;
 
     private static final IBuilderProcess BUILD_PROC = Utils.BT.getBuilderProcess();
     private static final ISelectionManager SEL_MGR = Utils.BT.getSelectionManager();
@@ -61,7 +62,6 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
 
     // Baritone calculates paths off-thread, so guard lookups must be thread-safe.
     private static final Set<Long> PROTECTED_G = ConcurrentHashMap.newKeySet();
-    private static volatile HClearPathConstraint H_CLEAR_PATH_CONSTRAINT;
     private static volatile ExactStandingPathConstraint OUTER_H_CLEAR_PATH_CONSTRAINT;
     private static volatile GPlacementPathConstraint G_PLACEMENT_PATH_CONSTRAINT;
 
@@ -77,6 +77,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     private Goal currentGStagingGoal;
     private List<BlockPos> gPlacementOrder = List.of();
     private int gPlacementCursor;
+    private int currentGSealedTicks;
 
     private List<LayerArea> phaseAreas = List.of();
     private Set<Long> requiredSolidPositions = Set.of();
@@ -114,11 +115,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         return text.endsWith("Filling now") || text.endsWith("Done building");
     }
 
-    /**
-     * Overrides BuilderProcess.GoalBreak while the previous H layer is being
-     * cleared. Returning {@code null} means the goal does not belong to this
-     * process and Baritone should use its normal rule.
-     */
+    /** Keeps current H_outer obstruction clearing on its safe H_inner cell. */
     public static Boolean isAllowedHClearStandingPosition(int targetX, int targetY, int targetZ,
             int standingX, int standingY, int standingZ) {
         ExactStandingPathConstraint outerConstraint = OUTER_H_CLEAR_PATH_CONSTRAINT;
@@ -129,11 +126,9 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
                 return allowed;
             }
         }
-        HClearPathConstraint constraint = H_CLEAR_PATH_CONSTRAINT;
-        if (constraint == null || !constraint.targets.contains(BlockPos.asLong(targetX, targetY, targetZ))) {
-            return null;
-        }
-        return constraint.allows(targetX, targetY, targetZ, standingX, standingY, standingZ);
+        // Previous-layer H clearing deliberately uses Baritone's unmodified
+        // GoalBreak so it can approach normally and mine path obstructions.
+        return null;
     }
 
     /** Constrains the current G placement goal to its matching H_inner cell. */
@@ -263,10 +258,6 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         }
 
         requiredSolidPositions = phase.requiresCapturedSolidTargets() ? Set.copyOf(actionPositions) : Set.of();
-        H_CLEAR_PATH_CONSTRAINT = phase == Phase.CLEAR_PREVIOUS_H
-                ? new HClearPathConstraint(Set.copyOf(actionPositions), min.x + 2, max.x - 2, min.z + 2,
-                        max.z - 2)
-                : null;
         OUTER_H_CLEAR_PATH_CONSTRAINT = phase == Phase.CLEAR_CURRENT_OUTER_H
                 ? new ExactStandingPathConstraint(currentOuterHStandingPositions(actionPositions))
                 : null;
@@ -316,12 +307,12 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         stableTicks = 0;
         builderFailureRetries = 0;
         retryScheduled = false;
-        H_CLEAR_PATH_CONSTRAINT = null;
         OUTER_H_CLEAR_PATH_CONSTRAINT = null;
         resetGPlacementLoop();
     }
 
     private Phase nextLayerOrFinish() {
+        message("layerFinished", ChatFormatting.GRAY, currentY);
         if (currentY <= min.y) {
             finish();
             return Phase.IDLE;
@@ -333,11 +324,17 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     private PathingCommand tickFillGuard(boolean calcFailed) {
         protect(guardRing(currentY));
 
-        if (currentGTarget != null && isSealed(Utils.MC.level.getBlockState(currentGTarget), currentGTarget)) {
-            gPlacementCursor++;
-            clearCurrentGPlacementTarget();
-            phaseAttempts = 0;
-            stableTicks = 0;
+        if (currentGTarget != null) {
+            boolean sealed = isSealed(Utils.MC.level.getBlockState(currentGTarget), currentGTarget);
+            currentGSealedTicks = sealed ? currentGSealedTicks + 1 : 0;
+            if (sealed && currentGSealedTicks >= G_CONFIRM_TICKS) {
+                gPlacementCursor++;
+                clearCurrentGPlacementTarget();
+                phaseAttempts = 0;
+                stableTicks = 0;
+            } else if (sealed) {
+                return REQUEST_PAUSE;
+            }
         }
 
         if (currentGTarget == null) {
@@ -382,8 +379,6 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
             }
             BlockState state = Utils.MC.level.getBlockState(currentGTarget);
             if (isSealed(state, currentGTarget)) {
-                gPlacementCursor++;
-                clearCurrentGPlacementTarget();
                 return REQUEST_PAUSE;
             }
             phaseAreas = List.of(new LayerArea(currentGTarget.getX(), currentGTarget.getX(), currentY,
@@ -490,6 +485,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     private void clearCurrentGPlacementTarget() {
         currentGTarget = null;
         currentGStagingGoal = null;
+        currentGSealedTicks = 0;
         G_PLACEMENT_PATH_CONSTRAINT = null;
         phaseCommand = null;
         commandIssued = false;
@@ -713,7 +709,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
 
     @Override
     public void baritoneStopped(boolean canceled) {
-        if (canceled && isActive()) {
+        if (isActive()) {
             Waiter.wait(1, waiter -> reset(false));
         }
     }
@@ -775,7 +771,6 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         builderFailureRetries = 0;
         retryScheduled = false;
         PROTECTED_G.clear();
-        H_CLEAR_PATH_CONSTRAINT = null;
         OUTER_H_CLEAR_PATH_CONSTRAINT = null;
         resetGPlacementLoop();
         message("started", ChatFormatting.WHITE);
@@ -904,7 +899,6 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         moveInsideGoal = null;
         activeGuardSides = EnumSet.noneOf(GuardSide.class);
         PROTECTED_G.clear();
-        H_CLEAR_PATH_CONSTRAINT = null;
         OUTER_H_CLEAR_PATH_CONSTRAINT = null;
         resetGPlacementLoop();
         if (hadState && !completed) {
@@ -965,20 +959,6 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
             int nearestX = Math.max(minX, Math.min(maxX, x));
             int nearestZ = Math.max(minZ, Math.min(maxZ, z));
             return GoalXZ.calculate(x - nearestX, z - nearestZ);
-        }
-    }
-
-    private record HClearPathConstraint(Set<Long> targets, int safeMinX, int safeMaxX, int safeMinZ,
-            int safeMaxZ) {
-        boolean allows(int targetX, int targetY, int targetZ, int standingX, int standingY, int standingZ) {
-            if (standingY != targetY + 1
-                    || standingX < safeMinX || standingX > safeMaxX
-                    || standingZ < safeMinZ || standingZ > safeMaxZ) {
-                return false;
-            }
-            // The safe interior is one block from H_inner and two from H_outer.
-            // Both distances are within normal player block reach.
-            return Math.max(Math.abs(standingX - targetX), Math.abs(standingZ - targetZ)) <= 2;
         }
     }
 
