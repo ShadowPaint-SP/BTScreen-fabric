@@ -108,6 +108,8 @@ public class Configs implements IConfigHandler {
                 "blocksToDisallowBreaking", PresetMode.BLOCKS_TO_DISALLOW_BREAKING);
         public static final ConfigStringList BLOCKS_TO_IGNORE = new ConfigStringList("blocksToIgnore",
                 PresetMode.BLOCKS_TO_IGNORE);
+        public static final ConfigStringList BLOCKS_TO_REPLACE_LIQUID_WITH = new ConfigStringList(
+                "blocksToReplaceLiquid", ImmutableList.of("netherrack", "resin_block", "moss_block", "dirt", "stone"));
         public static final ConfigStringList ACCEPTABLE_THROWAWAY_ITEMS = new ConfigStringList(
                 "acceptableThrowawayItems", PresetMode.ACCEPTABLE_THROWAWAY_ITEMS);
 
@@ -118,6 +120,7 @@ public class Configs implements IConfigHandler {
                 BLOCK_TO_REPLACE_WITH,
                 BLOCKS_TO_DISALLOW_BREAKING,
                 BLOCKS_TO_IGNORE,
+                BLOCKS_TO_REPLACE_LIQUID_WITH,
                 ACCEPTABLE_THROWAWAY_ITEMS);
 
         static {

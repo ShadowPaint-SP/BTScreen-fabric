@@ -54,7 +54,6 @@
   "btscreen.preset_mode.name.none": "None",
   "btscreen.preset_mode.name.clear_area": "Clear Area",
   "btscreen.preset_mode.name.remove_liquid": "Remove Liquid",
-  "btscreen.preset_mode.name.smart_water_clear": "Smart Water Clear",
   "btscreen.preset_mode.name.farming": "Farming",
   "btscreen.preset_mode.name.building": "Building",
   "btscreen.preset_mode.name.clean_bedrock": "Clean Bedrock",
@@ -146,6 +145,8 @@
   "btscreen.config.lists.comment.blocksToDisallowBreaking": "Blocks that cant be broken",
   "btscreen.config.lists.name.blocksToIgnore": "Blocks to ignore breaking",
   "btscreen.config.lists.comment.blocksToIgnore": "Blocks that should be ignored\nwhen in the way of pathfinding they can be broken",
+  "btscreen.config.lists.name.blocksToReplaceLiquid": "Blocks to replace liquids",
+  "btscreen.config.lists.comment.blocksToReplaceLiquid": "These blocks are used to replace water or lava",
   "btscreen.config.lists.name.acceptableThrowawayItems": "Blocks used for pathfinding",
   "btscreen.config.lists.comment.acceptableThrowawayItems": "Blocks that can be used by Bariton to build a path",
 
@@ -180,6 +181,7 @@
   "btscreen.bedrockCleaner.noSelection": "Error: Needs exactly one selection.",
   "btscreen.bedrockCleaner.selectionTooBig": "Error: Selection too big (max 4 blocks high).",
   "btscreen.bedrockCleaner.started": "Bedrock Cleaner started.",
+
   "btscreen.smartWaterClear.started": "Smart water clear started.",
   "btscreen.smartWaterClear.finished": "Smart water clear finished.",
   "btscreen.smartWaterClear.layerFinished": "Water clear layer Y=%s finished.",
@@ -190,5 +192,5 @@
   "btscreen.smartWaterClear.noUsableItem": "Error: No usable filler block was found.",
   "btscreen.smartWaterClear.outOfBlocks": "Error: Smart water clear ran out of filler blocks at Y=%s.",
   "btscreen.smartWaterClear.unwalkableInnerH": "Error: H_inner staging block at %s %s %s is not walkable.",
-  "btscreen.smartWaterClear.stalled": "Error: Smart water clear stalled in phase %s at Y=%s."
+  "btscreen.smartWaterClear.stalled": "Error: Smart water clear stalled in phase %s at Y=%s. Unresolved block: %s at %s %s %s."
 }

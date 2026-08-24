@@ -2,13 +2,15 @@ package de.drvlabs.btscreen.implementation;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.utils.Utils;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlockContainer;
@@ -17,13 +19,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 public final class LiquidReplacementHelper {
-    private static final Item[] POSSIBLE_BLOCKS = {
-            Items.NETHERRACK,
-            Items.RESIN_BLOCK,
-            Items.MOSS_BLOCK,
-            Items.DIRT,
-            Items.STONE,
-    };
+    private static final Set<Item> POSSIBLE_BLOCKS = Configs.Lists.BLOCKS_TO_REPLACE_LIQUID_WITH.getStrings().stream()
+            .map(Identifier::tryParse)
+            .filter(Objects::nonNull)
+            .map(BuiltInRegistries.ITEM::getValue)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
 
     private LiquidReplacementHelper() {
     }

@@ -24,20 +24,24 @@ import baritone.api.selection.ISelection;
 import baritone.api.selection.ISelectionManager;
 import baritone.api.utils.BetterBlockPos;
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.event.BaritoneEvents;
 import de.drvlabs.btscreen.implementation.LiquidReplacementHelper;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Clears liquid one layer at a time while extending an outside retaining wall.
  *
- * <p>The two-block inner ring is used as a moving work platform. On each new
+ * <p>
+ * The two-block inner ring is used as a moving work platform. On each new
  * layer, the process fills liquid in the new inner H ring and then moves beyond
  * that ring. It only then opens the aligned inner and outer H cells on the
  * previous layer wherever the next wall layer has a gap. During that clear,
@@ -46,7 +50,8 @@ import net.minecraft.world.level.block.state.BlockState;
  * then walks H_inner clockwise from the nearest corner. G
  * contains only face-adjacent cells on sides that had liquid during the
  * startup scan. Every wall coordinate already built remains protected from
- * Baritone's pathfinder.</p>
+ * Baritone's pathfinder.
+ * </p>
  */
 public final class SmartWaterClear extends BTProcessHelper implements BaritoneEvents.Stopped {
     public static final SmartWaterClear INSTANCE = new SmartWaterClear();
@@ -100,6 +105,10 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
 
     public static boolean isRunning() {
         return INSTANCE.isActive();
+    }
+
+    public static boolean isBaritoneLiquid(boolean isLiquidBlock, boolean isBubbleColumn) {
+        return isLiquidBlock || isBubbleColumn && isRunning();
     }
 
     public static boolean isProtected(int x, int y, int z) {
@@ -163,7 +172,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
                 if (calcFailed) {
                     phaseAttempts++;
                     if (phaseAttempts > MAX_PHASE_ATTEMPTS) {
-                        fail("stalled", phase.name().toLowerCase(Locale.ROOT), currentY);
+                        failStalled(phase.name().toLowerCase(Locale.ROOT));
                         return DEFER;
                     }
                 }
@@ -192,7 +201,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
                 stableTicks = 0;
                 phaseAttempts++;
                 if (phaseAttempts > MAX_PHASE_ATTEMPTS) {
-                    fail("stalled", phase.name().toLowerCase(Locale.ROOT), currentY);
+                    failStalled(phase.name().toLowerCase(Locale.ROOT));
                     return DEFER;
                 }
                 phasePrepared = false;
@@ -215,8 +224,8 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
             case INITIAL_G, FILL_G -> guardRing(currentY);
             case CLEAR_PREVIOUS_H -> previousHOpenings();
             case CLEAR_CURRENT_OUTER_H -> currentOuterHObstructions();
-            case FILL_INNER_H -> innerRing(currentY, 1);
-            case FILL_OUTER_H -> innerRing(currentY, 0);
+            case FILL_INNER_H -> innerRing(currentY, 1, true);
+            case FILL_OUTER_H -> innerRing(currentY, 0, false);
             case IDLE, MOVE_INSIDE -> List.of();
         };
 
@@ -364,7 +373,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
             if (calcFailed) {
                 phaseAttempts++;
                 if (phaseAttempts > MAX_PHASE_ATTEMPTS) {
-                    fail("stalled", "move_to_g", currentY);
+                    failStalled("move_to_g");
                     return DEFER;
                 }
             }
@@ -396,7 +405,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
 
         phaseAttempts++;
         if (phaseAttempts > MAX_PHASE_ATTEMPTS) {
-            fail("stalled", "place_g", currentY);
+            failStalled("place_g");
             return DEFER;
         }
         commandIssued = false;
@@ -431,9 +440,9 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         BetterBlockPos feet = Utils.BT.getPlayerContext().playerFeet();
         GuardSide[] cornerStarts = {
                 GuardSide.NORTH, // north-west
-                GuardSide.EAST,  // north-east
+                GuardSide.EAST, // north-east
                 GuardSide.SOUTH, // south-east
-                GuardSide.WEST   // south-west
+                GuardSide.WEST // south-west
         };
         int[][] innerCorners = {
                 { min.x + 1, min.z + 1 },
@@ -553,26 +562,50 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         };
     }
 
-    private List<LayerArea> innerRing(int y, int inset) {
-        int minX = min.x + inset;
-        int maxX = max.x - inset;
-        int minZ = min.z + inset;
-        int maxZ = max.z - inset;
+    record Area(int minX, int maxX, int y, int minZ, int maxZ) {
+    }
+
+    static List<Area> innerRing(int y, int selectionMinX, int selectionMaxX,
+            int selectionMinZ, int selectionMaxZ, int inset,
+            boolean includeNorth, boolean includeEast, boolean includeSouth, boolean includeWest) {
+        int minX = selectionMinX + inset;
+        int maxX = selectionMaxX - inset;
+        int minZ = selectionMinZ + inset;
+        int maxZ = selectionMaxZ - inset;
         if (minX > maxX || minZ > maxZ) {
             return List.of();
         }
-        List<LayerArea> result = new ArrayList<>(4);
-        result.add(new LayerArea(minX, maxX, y, minZ, minZ));
-        if (maxZ != minZ) {
-            result.add(new LayerArea(minX, maxX, y, maxZ, maxZ));
+
+        List<Area> result = new ArrayList<>(4);
+        if (includeNorth) {
+            result.add(new Area(minX, maxX, y, minZ, minZ));
         }
-        if (minZ + 1 <= maxZ - 1) {
-            result.add(new LayerArea(minX, minX, y, minZ + 1, maxZ - 1));
-            if (maxX != minX) {
-                result.add(new LayerArea(maxX, maxX, y, minZ + 1, maxZ - 1));
+        if (includeSouth && maxZ != minZ) {
+            result.add(new Area(minX, maxX, y, maxZ, maxZ));
+        }
+
+        int verticalMinZ = minZ + (includeNorth ? 1 : 0);
+        int verticalMaxZ = maxZ - (includeSouth ? 1 : 0);
+        if (verticalMinZ <= verticalMaxZ) {
+            if (includeWest) {
+                result.add(new Area(minX, minX, y, verticalMinZ, verticalMaxZ));
+            }
+            if (includeEast && maxX != minX) {
+                result.add(new Area(maxX, maxX, y, verticalMinZ, verticalMaxZ));
             }
         }
-        return result;
+        return List.copyOf(result);
+    }
+
+    private List<LayerArea> innerRing(int y, int inset, boolean onlyActiveGuardSides) {
+        boolean includeNorth = !onlyActiveGuardSides || activeGuardSides.contains(GuardSide.NORTH);
+        boolean includeEast = !onlyActiveGuardSides || activeGuardSides.contains(GuardSide.EAST);
+        boolean includeSouth = !onlyActiveGuardSides || activeGuardSides.contains(GuardSide.SOUTH);
+        boolean includeWest = !onlyActiveGuardSides || activeGuardSides.contains(GuardSide.WEST);
+        return innerRing(y, min.x, max.x, min.z, max.z, inset,
+                includeNorth, includeEast, includeSouth, includeWest).stream()
+                .map(area -> new LayerArea(area.minX(), area.maxX(), area.y(), area.minZ(), area.maxZ()))
+                .toList();
     }
 
     private List<LayerArea> previousHOpenings() {
@@ -669,11 +702,26 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     }
 
     private static boolean isWorkSpace(BlockState state) {
-        return state.isAir() || !state.getFluidState().isEmpty();
+        return state.isAir() || !state.getFluidState().isEmpty() || isConfiguredIgnored(state);
     }
 
     private static boolean isOpenForGuardPlacement(BlockState state) {
-        return state.isAir() || !state.getFluidState().isEmpty() && state.canBeReplaced();
+        return state.isAir() || (!state.getFluidState().isEmpty() && state.canBeReplaced())
+                || isConfiguredIgnored(state);
+    }
+
+    private static boolean keepActiveOnLostControl(boolean builderActive, boolean builderHasControl) {
+        return builderActive && builderHasControl;
+    }
+
+    private static boolean isConfiguredIgnored(BlockState state) {
+        Identifier blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+        for (String configuredId : Configs.Lists.BLOCKS_TO_IGNORE.getStrings()) {
+            if (blockId.equals(Identifier.tryParse(configuredId))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean isSealed(BlockState state, BlockPos pos) {
@@ -687,22 +735,27 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     }
 
     private static boolean allPositionsMatch(List<LayerArea> areas, StatePredicate predicate) {
+        return firstPositionNotMatching(areas, predicate) == null;
+    }
+
+    private static BlockPos firstPositionNotMatching(List<LayerArea> areas, StatePredicate predicate) {
         for (LayerArea area : areas) {
             for (int x = area.minX; x <= area.maxX; x++) {
                 for (int z = area.minZ; z <= area.maxZ; z++) {
                     BlockPos pos = new BlockPos(x, area.y, z);
                     if (!predicate.test(Utils.MC.level.getBlockState(pos), pos)) {
-                        return false;
+                        return pos;
                     }
                 }
             }
         }
-        return true;
+        return null;
     }
 
     @Override
     public void onLostControl() {
-        if (!BUILD_PROC.isActive()) {
+        boolean builderHasControl = Utils.getActiveProcess() == BUILD_PROC;
+        if (!keepActiveOnLostControl(BUILD_PROC.isActive(), builderHasControl)) {
             reset(false);
         }
     }
@@ -724,57 +777,44 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         return false;
     }
 
-    public static boolean activate() {
-        return INSTANCE.start();
-    }
-
-    private boolean start() {
-        if (isActive()) {
+    public static void activate() {
+        SmartWaterClear process = INSTANCE;
+        if (process.isActive()) {
             message("alreadyStarted", ChatFormatting.RED);
-            return false;
+            return;
         }
         ISelection selection = SEL_MGR.getOnlySelection();
         if (selection == null) {
             message("noSelection", ChatFormatting.RED);
-            return false;
+            return;
         }
-        BetterBlockPos selectionMin = selection.min();
-        BetterBlockPos selectionMax = selection.max();
-        if (selectionMax.x - selectionMin.x + 1 < 5 || selectionMax.z - selectionMin.z + 1 < 5) {
+        BetterBlockPos min = selection.min();
+        BetterBlockPos max = selection.max();
+        if (max.x - min.x + 1 < 5 || max.z - min.z + 1 < 5) {
             message("selectionTooNarrow", ChatFormatting.RED);
-            return false;
+            return;
         }
-        EnumSet<GuardSide> liquidGuardSides = findLiquidGuardSides(selectionMin, selectionMax);
-        int firstLiquidY = findHighestLiquidLayer(selectionMin, selectionMax, liquidGuardSides);
+        EnumSet<GuardSide> liquidGuardSides = findLiquidGuardSides(min, max);
+        int firstLiquidY = findHighestLiquidLayer(min, max, liquidGuardSides);
         if (firstLiquidY == Integer.MIN_VALUE) {
             message("noLiquid", ChatFormatting.GOLD);
-            return false;
+            return;
         }
         Item replacement = LiquidReplacementHelper.findBestItem();
         if (replacement == null) {
             message("noUsableItem", ChatFormatting.RED);
-            return false;
+            return;
         }
 
-        originalSelection = selection;
-        min = selectionMin;
-        max = selectionMax;
-        fillerItem = replacement;
-        currentY = firstLiquidY;
-        activeGuardSides = liquidGuardSides;
-        moveInsideGoal = new GoalInsideSelection(min.x + 2, max.x - 2, min.z + 2, max.z - 2);
-        phase = Phase.INITIAL_T;
-        phasePrepared = false;
-        commandIssued = false;
-        phaseAttempts = 0;
-        stableTicks = 0;
-        builderFailureRetries = 0;
-        retryScheduled = false;
-        PROTECTED_G.clear();
-        OUTER_H_CLEAR_PATH_CONSTRAINT = null;
-        resetGPlacementLoop();
+        process.originalSelection = selection;
+        process.min = min;
+        process.max = max;
+        process.fillerItem = replacement;
+        process.currentY = firstLiquidY;
+        process.activeGuardSides = liquidGuardSides;
+        process.moveInsideGoal = new GoalInsideSelection(min.x + 2, max.x - 2, min.z + 2, max.z - 2);
+        process.phase = Phase.INITIAL_T;
         message("started", ChatFormatting.WHITE);
-        return true;
     }
 
     private static EnumSet<GuardSide> findLiquidGuardSides(BetterBlockPos min, BetterBlockPos max) {
@@ -852,7 +892,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         }
         builderFailureRetries++;
         if (builderFailureRetries > MAX_PHASE_ATTEMPTS) {
-            fail("stalled", phase.name().toLowerCase(Locale.ROOT), currentY);
+            failStalled(phase.name().toLowerCase(Locale.ROOT));
             return true;
         }
         retryScheduled = true;
@@ -877,7 +917,49 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     private void fail(String key, Object... args) {
         BTScreen.chatMessage(Component.translatable(TRANSLATABLE_PREFIX + key, args).withStyle(ChatFormatting.RED));
         reset(false);
-        Utils.cancel();
+        // fail can run from onTick while Baritone is iterating its active
+        // processes. cancel clears that list, so defer it until the tick ends.
+        Waiter.wait(1, waiter -> Utils.cancel());
+    }
+
+    private void failStalled(String phaseName) {
+        BlockPos pos = firstUnsatisfiedPosition();
+        BlockState state = Utils.MC.level.getBlockState(pos);
+        Identifier blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+        fail("stalled", phaseName, currentY, blockId, pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    private BlockPos firstUnsatisfiedPosition() {
+        if (currentGTarget != null) {
+            return currentGTarget;
+        }
+
+        StatePredicate predicate = null;
+        if (phase.clearsBlocks()) {
+            predicate = phase == Phase.CLEAR_CURRENT_OUTER_H
+                    ? (state, pos) -> isOpenForGuardPlacement(state)
+                    : (state, pos) -> isWorkSpace(state);
+        } else if (phase.buildsGuard()) {
+            predicate = SmartWaterClear::isSealed;
+        } else if (phase == Phase.FILL_T) {
+            predicate = (state, pos) -> state.getFluidState().isEmpty();
+        }
+        if (predicate != null) {
+            BlockPos mismatch = firstPositionNotMatching(phaseAreas, predicate);
+            if (mismatch != null) {
+                return mismatch;
+            }
+        }
+
+        for (long packedPos : requiredSolidPositions) {
+            BlockPos pos = BlockPos.of(packedPos);
+            if (!isSealed(Utils.MC.level.getBlockState(pos), pos)) {
+                return pos;
+            }
+        }
+
+        BetterBlockPos feet = Utils.BT.getPlayerContext().playerFeet();
+        return new BlockPos(feet.x, feet.y, feet.z);
     }
 
     private void reset(boolean completed) {
@@ -892,6 +974,10 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         phaseCommand = null;
         phasePrepared = false;
         commandIssued = false;
+        phaseAttempts = 0;
+        stableTicks = 0;
+        builderFailureRetries = 0;
+        retryScheduled = false;
         originalSelection = null;
         min = null;
         max = null;

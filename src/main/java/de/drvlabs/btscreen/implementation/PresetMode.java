@@ -11,7 +11,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Blocks;
 import com.google.common.collect.ImmutableList;
 
@@ -21,10 +20,8 @@ import baritone.api.Settings.Setting;
 import baritone.api.utils.SettingsUtil;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.btprocess.BedrockCleaner;
-import de.drvlabs.btscreen.btprocess.SelectionOrchestrator;
 import de.drvlabs.btscreen.btprocess.SmartWaterClear;
 import de.drvlabs.btscreen.config.Configs;
-import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
@@ -67,27 +64,6 @@ public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
         public boolean setSettings() {
             SETTINGS_MANAGER.init().addCommonMiningSettings()
                     .add(SETTINGS.allowInventory, true)
-                    .apply();
-            return true;
-        }
-
-        @Override
-        public String getCommand(GuiBase gui) {
-            Item bestItem = LiquidReplacementHelper.findBestItem();
-            if (bestItem == null) {
-                sendMessage(gui, MessageType.ERROR, LangKeys.INFO + ".removeLiquid.noUsableItem");
-                return null;
-            }
-            SelectionOrchestrator.activate(-1, LiquidReplacementHelper.createLiquidReplaceCommand(bestItem));
-            setSettings();
-            return null;
-        }
-    },
-    SMART_WATER_CLEAR(false) {
-        @Override
-        public boolean setSettings() {
-            SETTINGS_MANAGER.init().addCommonMiningSettings()
-                    .add(SETTINGS.allowInventory, true)
                     .add(SETTINGS.allowPlaceInFluidsSource, true)
                     .add(SETTINGS.allowPlaceInFluidsFlow, true)
                     .add(SETTINGS.buildInLayers, false)
@@ -100,10 +76,7 @@ public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
 
         @Override
         public String getCommand(GuiBase gui) {
-            if (!SmartWaterClear.activate()) {
-                return null;
-            }
-            setSettings();
+            SmartWaterClear.activate();
             return null;
         }
     },
