@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -34,7 +35,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -75,6 +79,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     private BetterBlockPos min;
     private BetterBlockPos max;
     private Item fillerItem;
+    private int lastFillerHotbarSlot = Inventory.NOT_FOUND_INDEX;
     private int currentY;
     private Goal moveInsideGoal;
     private EnumSet<GuardSide> activeGuardSides = EnumSet.noneOf(GuardSide.class);
@@ -105,6 +110,68 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
 
     public static boolean isRunning() {
         return INSTANCE.isActive();
+    }
+
+    /** Keeps the block slot usable when Baritone empties its current stack. */
+    public static void onClientTick() {
+        SmartWaterClear process = INSTANCE;
+        if (!process.isActive() || Utils.MC.player == null) {
+            return;
+        }
+
+        Inventory inventory = Utils.MC.player.getInventory();
+        int selectedSlot = inventory.getSelectedSlot();
+        ItemStack selectedStack = inventory.getSelectedItem();
+        if (Inventory.isHotbarSlot(selectedSlot) && selectedStack.is(process.fillerItem)) {
+            process.lastFillerHotbarSlot = selectedSlot;
+        }
+        process.resupplyFillerHotbarSlot(inventory);
+    }
+
+    /** Remembers the exact hotbar slot whose filler stack was just consumed. */
+    public static void onPlayerInventorySlotUpdatePre(int slot, ItemStack newStack, ItemStack oldStack) {
+        SmartWaterClear process = INSTANCE;
+        if (process.isActive() && Inventory.isHotbarSlot(slot)
+                && oldStack.is(process.fillerItem) && newStack.isEmpty()) {
+            process.lastFillerHotbarSlot = slot;
+        }
+    }
+
+    private void resupplyFillerHotbarSlot(Inventory inventory) {
+        if (!Inventory.isHotbarSlot(lastFillerHotbarSlot)
+                || !inventory.getItem(lastFillerHotbarSlot).isEmpty()
+                || Utils.MC.player.containerMenu != Utils.MC.player.inventoryMenu
+                || Utils.MC.gameMode == null) {
+            return;
+        }
+
+        int sourceSlot = Inventory.NOT_FOUND_INDEX;
+        for (int slot = Inventory.SELECTION_SIZE; slot < Inventory.INVENTORY_SIZE; slot++) {
+            if (inventory.getItem(slot).is(fillerItem)) {
+                sourceSlot = slot;
+                break;
+            }
+        }
+        if (sourceSlot == Inventory.NOT_FOUND_INDEX) {
+            if (inventory.countItem(fillerItem) == 0) {
+                fail("outOfBlocks", currentY);
+            }
+            return;
+        }
+
+        OptionalInt menuSlot = Utils.MC.player.inventoryMenu.findSlot(inventory, sourceSlot);
+        if (menuSlot.isEmpty()) {
+            return;
+        }
+
+        Utils.MC.gameMode.handleContainerInput(
+                Utils.MC.player.inventoryMenu.containerId,
+                menuSlot.getAsInt(),
+                lastFillerHotbarSlot,
+                ContainerInput.SWAP,
+                Utils.MC.player);
+        BTScreen.debugLog("smart_water_clear resupplied hotbar slot {} from inventory slot {}",
+                lastFillerHotbarSlot, sourceSlot);
     }
 
     public static boolean isBaritoneLiquid(boolean isLiquidBlock, boolean isBubbleColumn) {
@@ -810,6 +877,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         process.min = min;
         process.max = max;
         process.fillerItem = replacement;
+        process.lastFillerHotbarSlot = Inventory.NOT_FOUND_INDEX;
         process.currentY = firstLiquidY;
         process.activeGuardSides = liquidGuardSides;
         process.moveInsideGoal = new GoalInsideSelection(min.x + 2, max.x - 2, min.z + 2, max.z - 2);
@@ -982,6 +1050,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         min = null;
         max = null;
         fillerItem = null;
+        lastFillerHotbarSlot = Inventory.NOT_FOUND_INDEX;
         moveInsideGoal = null;
         activeGuardSides = EnumSet.noneOf(GuardSide.class);
         PROTECTED_G.clear();
