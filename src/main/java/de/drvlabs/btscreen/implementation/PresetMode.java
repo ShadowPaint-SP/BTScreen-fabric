@@ -5,10 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.Blocks;
@@ -27,7 +25,6 @@ import de.drvlabs.btscreen.utils.Waiter;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.config.options.ConfigStringList;
 import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
@@ -183,19 +180,6 @@ public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
     private static <T> Stream<T> getStream(Registry<T> registry, ConfigStringList config) {
         return config.getStrings().stream().map(string -> registry.getValue(Identifier.tryParse(string)))
                 .filter(Objects::nonNull).distinct();
-    }
-
-    private static void sendMessage(GuiBase gui, MessageType type, String messageKey, Object... args) {
-        if (gui != null) {
-            gui.addMessage(type, 1000, messageKey, args);
-        } else {
-            BTScreen.chatMessage(Component.translatable(messageKey, args).withStyle(switch (type) {
-                case ERROR -> ChatFormatting.RED;
-                case INFO -> ChatFormatting.WHITE;
-                case SUCCESS -> ChatFormatting.GREEN;
-                case WARNING -> ChatFormatting.GOLD;
-            }));
-        }
     }
 
     public static final ImmutableList<String> BLOCKS_TO_IGNORE = ImmutableList.of(

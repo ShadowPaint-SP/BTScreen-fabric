@@ -124,7 +124,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     }
 
     /** Keeps the block slot usable when Baritone empties its current stack. */
-    public static void onClientTick() {
+    public static void onTick() {
         SmartWaterClear process = INSTANCE;
         if (!process.isActive() || Utils.MC.player == null) {
             return;

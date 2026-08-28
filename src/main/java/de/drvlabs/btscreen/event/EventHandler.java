@@ -86,6 +86,7 @@ public final class EventHandler implements ClientTickEvents.EndLevelTick, Client
 
     @Override
     public void onEndTick(ClientLevel world) {
+        SmartWaterClear.onTick();
         BTActiveListener.onTick();
         ProcessChanged.onTick();
         Waiter.tickAll();
