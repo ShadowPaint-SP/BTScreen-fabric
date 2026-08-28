@@ -191,6 +191,5 @@
   "btscreen.smartWaterClear.noLiquid": "No liquid was found inside the selection.",
   "btscreen.smartWaterClear.noUsableItem": "Error: No usable filler block was found.",
   "btscreen.smartWaterClear.outOfBlocks": "Error: Smart water clear ran out of filler blocks at Y=%s.",
-  "btscreen.smartWaterClear.unwalkableInnerH": "Error: H_inner staging block at %s %s %s is not walkable.",
   "btscreen.smartWaterClear.stalled": "Error: Smart water clear stalled in phase %s at Y=%s. Unresolved block: %s at %s %s %s."
 }

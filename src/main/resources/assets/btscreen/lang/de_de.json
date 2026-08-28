@@ -191,6 +191,5 @@
   "btscreen.smartWaterClear.noLiquid": "In der Auswahl wurde keine Flüssigkeit gefunden.",
   "btscreen.smartWaterClear.noUsableItem": "Fehler: Kein nutzbarer Füllblock gefunden.",
   "btscreen.smartWaterClear.outOfBlocks": "Fehler: Keine Füllblöcke mehr auf Y=%s.",
-  "btscreen.smartWaterClear.unwalkableInnerH": "Fehler: Der H_inner-Standblock bei %s %s %s ist nicht begehbar.",
   "btscreen.smartWaterClear.stalled": "Fehler: Die intelligente Wasserentfernung hängt in Phase %s auf Y=%s fest. Nicht aufgelöster Block: %s bei %s %s %s."
 }

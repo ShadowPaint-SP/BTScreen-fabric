@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,6 +25,10 @@ import baritone.api.process.PathingCommandType;
 import baritone.api.selection.ISelection;
 import baritone.api.selection.ISelectionManager;
 import baritone.api.utils.BetterBlockPos;
+import baritone.api.utils.Rotation;
+import baritone.api.utils.RotationUtils;
+import baritone.api.utils.input.Input;
+import baritone.pathing.movement.MovementHelper;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.event.BaritoneEvents;
@@ -32,6 +37,7 @@ import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -39,6 +45,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.PointedDripstoneBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -64,6 +71,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     private static final int MAX_PHASE_ATTEMPTS = 4;
     private static final int STABLE_TICKS = 10;
     private static final int G_CONFIRM_TICKS = 5;
+    private static final int G_DRIPSTONE_BREAK_TIMEOUT_TICKS = 200;
 
     private static final IBuilderProcess BUILD_PROC = Utils.BT.getBuilderProcess();
     private static final ISelectionManager SEL_MGR = Utils.BT.getSelectionManager();
@@ -85,6 +93,8 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     private EnumSet<GuardSide> activeGuardSides = EnumSet.noneOf(GuardSide.class);
     private BlockPos currentGTarget;
     private Goal currentGStagingGoal;
+    private volatile boolean clearingCurrentGDripstone;
+    private int currentGDripstoneBreakTicks;
     private List<BlockPos> gPlacementOrder = List.of();
     private int gPlacementCursor;
     private int currentGSealedTicks;
@@ -93,6 +103,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     private Set<Long> requiredSolidPositions = Set.of();
     private String phaseCommand;
     private boolean phasePrepared;
+    private boolean clearingBlocksAboveDripstone;
     private boolean commandIssued;
     private int phaseAttempts;
     private int stableTicks;
@@ -297,12 +308,30 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
 
             if (!commandIssued && phaseCommand != null) {
                 applyPhaseSelections();
-                SETTINGS.okIfWater.value = phase.clearsBlocks();
+                SETTINGS.okIfWater.value = phase.clearsBlocks() || clearingBlocksAboveDripstone;
                 BTScreen.debugLog("smart_water_clear phase: {}, y: {}, areas: {}", phase, currentY,
                         phaseAreas.size());
                 Utils.execute(phaseCommand);
                 commandIssued = true;
                 return REQUEST_PAUSE;
+            }
+
+            if (clearingBlocksAboveDripstone) {
+                if (!allPositionsMatch(phaseAreas, (state, pos) -> isWorkSpace(state))) {
+                    phaseAttempts++;
+                    if (phaseAttempts > MAX_PHASE_ATTEMPTS) {
+                        failStalled("clear_block_above_dripstone");
+                        return DEFER;
+                    }
+                    commandIssued = false;
+                    continue;
+                }
+                clearingBlocksAboveDripstone = false;
+                phasePrepared = false;
+                commandIssued = false;
+                phaseAttempts = 0;
+                stableTicks = 0;
+                continue;
             }
 
             if (!phaseSatisfied()) {
@@ -327,14 +356,15 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     }
 
     private void preparePhase() {
-        phaseAreas = switch (phase) {
-            case INITIAL_T, FILL_T -> List.of(fullLayer(currentY));
-            case INITIAL_G, FILL_G -> guardRing(currentY);
+        List<LayerArea> targetAreas = switch (phase) {
+            case FILL_T -> List.of(fullLayer(currentY));
+            case FILL_G -> guardRing(currentY);
             case CLEAR_PREVIOUS_H -> previousHOpenings();
             case CLEAR_CURRENT_OUTER_H -> currentOuterHObstructions();
             case FILL_INNER_H, RECHECK_INNER_H -> innerRing(currentY, 1, true);
             case IDLE, MOVE_INSIDE, WAIT_TO_RECHECK_INNER_H -> List.of();
         };
+        phaseAreas = targetAreas;
 
         if (phase.buildsGuard()) {
             protect(phaseAreas);
@@ -345,6 +375,21 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
             // that layer are valid parts of the wall and must not become a path.
             protect(guardRing(currentY));
         }
+
+        Set<Long> blocksAboveDripstone = waterloggedDripstoneBlocksAbove(targetAreas);
+        if (!blocksAboveDripstone.isEmpty()) {
+            phaseAreas = singletonAreas(blocksAboveDripstone);
+            requiredSolidPositions = Set.of();
+            phaseCommand = "sel cleararea";
+            OUTER_H_CLEAR_PATH_CONSTRAINT = null;
+            clearingBlocksAboveDripstone = true;
+            phasePrepared = true;
+            commandIssued = false;
+            stableTicks = 0;
+            return;
+        }
+
+        clearingBlocksAboveDripstone = false;
 
         Set<Long> actionPositions = new HashSet<>();
         Set<String> selectors = new LinkedHashSet<>();
@@ -410,8 +455,6 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
 
     private void advancePhase() {
         phase = switch (phase) {
-            case INITIAL_T -> Phase.INITIAL_G;
-            case INITIAL_G -> nextLayerOrFinish();
             case FILL_INNER_H -> Phase.WAIT_TO_RECHECK_INNER_H;
             case WAIT_TO_RECHECK_INNER_H -> Phase.RECHECK_INNER_H;
             case RECHECK_INNER_H -> Phase.MOVE_INSIDE;
@@ -428,6 +471,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         stableTicks = 0;
         builderFailureRetries = 0;
         retryScheduled = false;
+        clearingBlocksAboveDripstone = false;
         OUTER_H_CLEAR_PATH_CONSTRAINT = null;
         resetGPlacementLoop();
     }
@@ -474,10 +518,6 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
             }
 
             BlockPos stagingSupport = guardStagingPosition(currentGTarget, currentY);
-            if (!isSealed(Utils.MC.level.getBlockState(stagingSupport), stagingSupport)) {
-                fail("unwalkableInnerH", stagingSupport.getX(), stagingSupport.getY(), stagingSupport.getZ());
-                return DEFER;
-            }
             BlockPos stagingFeet = stagingSupport.above();
             currentGStagingGoal = new GoalBlock(stagingFeet);
             G_PLACEMENT_PATH_CONSTRAINT = new GPlacementPathConstraint(currentGTarget.asLong(),
@@ -498,13 +538,30 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
                     PathingCommandType.FORCE_REVALIDATE_GOAL_AND_PATH);
         }
 
+        BlockState state = Utils.MC.level.getBlockState(currentGTarget);
+        if (clearingCurrentGDripstone && !(state.getBlock() instanceof PointedDripstoneBlock)) {
+            stopBreakingCurrentGDripstone();
+            commandIssued = false;
+            phaseAttempts = 0;
+        }
+
         if (!commandIssued) {
-            BlockState state = Utils.MC.level.getBlockState(currentGTarget);
+            state = Utils.MC.level.getBlockState(currentGTarget);
+            if (clearingCurrentGDripstone || isWaterloggedPointedDripstone(state)) {
+                if (!clearingCurrentGDripstone) {
+                    clearingCurrentGDripstone = true;
+                    currentGDripstoneBreakTicks = 0;
+                    phaseCommand = null;
+                    BTScreen.debugLog("smart_water_clear directly breaking G dripstone: {}, staging: {}",
+                            currentGTarget, currentGStagingGoal);
+                }
+                return tickBreakCurrentGDripstone(state);
+            }
+
             if (isSealed(state, currentGTarget)) {
                 return REQUEST_PAUSE;
             }
-            phaseAreas = List.of(new LayerArea(currentGTarget.getX(), currentGTarget.getX(), currentY,
-                    currentGTarget.getZ(), currentGTarget.getZ()));
+            phaseAreas = singletonAreas(Set.of(currentGTarget.asLong()));
             phaseCommand = LiquidReplacementHelper.createReplaceCommand(fillerItem,
                     Set.of(LiquidReplacementHelper.selectorFor(state)));
             applyPhaseSelections();
@@ -523,6 +580,31 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         }
         commandIssued = false;
         return REQUEST_PAUSE;
+    }
+
+    private PathingCommand tickBreakCurrentGDripstone(BlockState state) {
+        Utils.BT.getInputOverrideHandler().setInputForceState(Input.CLICK_LEFT, false);
+        currentGDripstoneBreakTicks++;
+        if (currentGDripstoneBreakTicks > G_DRIPSTONE_BREAK_TIMEOUT_TICKS) {
+            failStalled("break_g_dripstone");
+            return DEFER;
+        }
+
+        Optional<Rotation> rotation = RotationUtils.reachable(Utils.BT.getPlayerContext(), currentGTarget,
+                Utils.BT.getPlayerContext().playerController().getBlockReachDistance());
+        if (rotation.isEmpty()) {
+            return CANCEL;
+        }
+
+        Utils.BT.getLookBehavior().updateTarget(rotation.get(), true);
+        ItemStack previousItem = Utils.MC.player.getInventory().getSelectedItem();
+        MovementHelper.a(Utils.BT.getPlayerContext(), state);
+        if (previousItem.equals(Utils.MC.player.getInventory().getSelectedItem())
+                && (Utils.BT.getPlayerContext().isLookingAt(currentGTarget)
+                        || Utils.BT.getPlayerContext().playerRotations().isReallyCloseTo(rotation.get()))) {
+            Utils.BT.getInputOverrideHandler().setInputForceState(Input.CLICK_LEFT, true);
+        }
+        return CANCEL;
     }
 
     private BlockPos findNextGuardTarget() {
@@ -605,12 +687,19 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     }
 
     private void clearCurrentGPlacementTarget() {
+        stopBreakingCurrentGDripstone();
         currentGTarget = null;
         currentGStagingGoal = null;
         currentGSealedTicks = 0;
         G_PLACEMENT_PATH_CONSTRAINT = null;
         phaseCommand = null;
         commandIssued = false;
+    }
+
+    private void stopBreakingCurrentGDripstone() {
+        Utils.BT.getInputOverrideHandler().setInputForceState(Input.CLICK_LEFT, false);
+        clearingCurrentGDripstone = false;
+        currentGDripstoneBreakTicks = 0;
     }
 
     private void resetGPlacementLoop() {
@@ -818,6 +907,49 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         return state.isAir() || !state.getFluidState().isEmpty() || isConfiguredIgnored(state);
     }
 
+    private static Set<Long> waterloggedDripstoneBlocksAbove(List<LayerArea> areas) {
+        Set<Long> blocks = new HashSet<>();
+        forEachPosition(areas, pos -> {
+            BlockState state = Utils.MC.level.getBlockState(pos);
+            if (!isWaterloggedPointedDripstone(state)) {
+                return;
+            }
+            BlockPos blockAbove = findDripstoneBlockAboveToClear(pos, state);
+            if (blockAbove != null && !PROTECTED_G.contains(blockAbove.asLong())) {
+                blocks.add(blockAbove.asLong());
+            }
+        });
+        return blocks;
+    }
+
+    private static BlockPos findDripstoneBlockAboveToClear(BlockPos dripstonePos, BlockState dripstoneState) {
+        BlockPos.MutableBlockPos cursor = dripstonePos.above().mutable();
+        if (isDownwardPointedDripstone(dripstoneState)) {
+            while (isDownwardPointedDripstone(Utils.MC.level.getBlockState(cursor))) {
+                cursor.move(Direction.UP);
+            }
+        }
+        BlockState stateAbove = Utils.MC.level.getBlockState(cursor);
+        return isWorkSpace(stateAbove) ? null : cursor.immutable();
+    }
+
+    private static boolean isWaterloggedPointedDripstone(BlockState state) {
+        return state.getBlock() instanceof PointedDripstoneBlock
+                && state.getValue(PointedDripstoneBlock.WATERLOGGED);
+    }
+
+    private static boolean isDownwardPointedDripstone(BlockState state) {
+        return state.getBlock() instanceof PointedDripstoneBlock
+                && state.getValue(PointedDripstoneBlock.TIP_DIRECTION) == Direction.DOWN;
+    }
+
+    private static List<LayerArea> singletonAreas(Set<Long> positions) {
+        return positions.stream()
+                .map(BlockPos::of)
+                .map(pos -> new LayerArea(pos.getX(), pos.getX(), pos.getY(), pos.getZ(), pos.getZ()))
+                .toList();
+    }
+
     private static boolean isOpenForGuardPlacement(BlockState state) {
         return state.isAir() || (!state.getFluidState().isEmpty() && state.canBeReplaced())
                 || isConfiguredIgnored(state);
@@ -927,7 +1059,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         process.currentY = firstLiquidY;
         process.activeGuardSides = liquidGuardSides;
         process.moveInsideGoal = new GoalInsideSelection(min.x + 2, max.x - 2, min.z + 2, max.z - 2);
-        process.phase = Phase.INITIAL_T;
+        process.phase = Phase.FILL_INNER_H;
         message("started", ChatFormatting.WHITE);
     }
 
@@ -1046,6 +1178,12 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         if (currentGTarget != null) {
             return currentGTarget;
         }
+        if (clearingBlocksAboveDripstone) {
+            BlockPos mismatch = firstPositionNotMatching(phaseAreas, (state, pos) -> isWorkSpace(state));
+            if (mismatch != null) {
+                return mismatch;
+            }
+        }
 
         StatePredicate predicate = null;
         if (phase.clearsBlocks()) {
@@ -1086,6 +1224,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         requiredSolidPositions = Set.of();
         phaseCommand = null;
         phasePrepared = false;
+        clearingBlocksAboveDripstone = false;
         commandIssued = false;
         phaseAttempts = 0;
         stableTicks = 0;
@@ -1120,8 +1259,6 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
 
     private enum Phase {
         IDLE,
-        INITIAL_T,
-        INITIAL_G,
         MOVE_INSIDE,
         CLEAR_PREVIOUS_H,
         CLEAR_CURRENT_OUTER_H,
@@ -1132,7 +1269,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         FILL_T;
 
         boolean buildsGuard() {
-            return this == INITIAL_G || this == FILL_G;
+            return this == FILL_G;
         }
 
         boolean clearsBlocks() {
@@ -1144,7 +1281,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         }
 
         boolean requiresCapturedSolidTargets() {
-            return this == INITIAL_T || this == FILL_INNER_H;
+            return this == FILL_INNER_H;
         }
 
         int requiredStableTicks() {
