@@ -58,6 +58,12 @@
   "btscreen.preset_mode.name.building": "Building",
   "btscreen.preset_mode.name.clean_bedrock": "Clean Bedrock",
 
+  "btscreen.gui.button.caveman": "Caveman",
+  "btscreen.caveman.noSelection": "Caveman needs at least one selection.",
+  "btscreen.caveman.chunkNotLoaded": "Chunk %s, %s is not loaded. Move closer before clipping.",
+  "btscreen.caveman.nothingToClip": "The selections have no blocks below the surface subchunks.",
+  "btscreen.caveman.clipped": "Caveman created %s clipped selection areas.",
+
   "btscreen.info.main_menu.startBot": "Bot is running now.\n§8Make sure no one sees u using this ;)",
   "btscreen.info.main_menu.stopBot": "U ARE SAFE NOW",
   "btscreen.info.main_menu.shiftX": "Shifted by %s",
@@ -139,6 +145,8 @@
   "btscreen.config.lists.comment.blocksToDisallowBreaking": "Blocks that cant be broken",
   "btscreen.config.lists.name.blocksToIgnore": "Blocks to ignore breaking",
   "btscreen.config.lists.comment.blocksToIgnore": "Blocks that should be ignored\nwhen in the way of pathfinding they can be broken",
+  "btscreen.config.lists.name.blocksToReplaceLiquid": "Blocks to replace liquids",
+  "btscreen.config.lists.comment.blocksToReplaceLiquid": "These blocks are used to replace water or lava",
   "btscreen.config.lists.name.acceptableThrowawayItems": "Blocks used for pathfinding",
   "btscreen.config.lists.comment.acceptableThrowawayItems": "Blocks that can be used by Bariton to build a path",
 
@@ -172,5 +180,16 @@
   "btscreen.bedrockCleaner.alreadyStarted": "Error: Bedrock Cleaner already started.",
   "btscreen.bedrockCleaner.noSelection": "Error: Needs exactly one selection.",
   "btscreen.bedrockCleaner.selectionTooBig": "Error: Selection too big (max 4 blocks high).",
-  "btscreen.bedrockCleaner.started": "Bedrock Cleaner started."
+  "btscreen.bedrockCleaner.started": "Bedrock Cleaner started.",
+
+  "btscreen.smartWaterClear.started": "Smart water clear started.",
+  "btscreen.smartWaterClear.finished": "Smart water clear finished.",
+  "btscreen.smartWaterClear.layerFinished": "Water clear layer Y=%s finished.",
+  "btscreen.smartWaterClear.alreadyStarted": "Error: Smart water clear is already running.",
+  "btscreen.smartWaterClear.noSelection": "Error: Smart water clear needs exactly one selection.",
+  "btscreen.smartWaterClear.selectionTooNarrow": "Error: Smart water clear needs a selection at least 5 blocks wide and 5 blocks long.",
+  "btscreen.smartWaterClear.noLiquid": "No liquid was found inside the selection.",
+  "btscreen.smartWaterClear.noUsableItem": "Error: No usable filler block was found.",
+  "btscreen.smartWaterClear.outOfBlocks": "Error: Smart water clear ran out of filler blocks at Y=%s.",
+  "btscreen.smartWaterClear.stalled": "Error: Smart water clear stalled in phase %s at Y=%s. Unresolved block: %s at %s %s %s."
 }

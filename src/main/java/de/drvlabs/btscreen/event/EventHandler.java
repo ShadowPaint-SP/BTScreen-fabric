@@ -2,12 +2,15 @@ package de.drvlabs.btscreen.event;
 
 import org.apache.commons.lang3.Strings;
 
+import java.util.function.Consumer;
+
 import baritone.api.BaritoneAPI;
 import baritone.api.Settings;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.btprocess.AutoTorch;
 import de.drvlabs.btscreen.btprocess.BTActiveListener;
 import de.drvlabs.btscreen.btprocess.Teleport;
+import de.drvlabs.btscreen.btprocess.SmartWaterClear;
 import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.gui.GuiMainMenu;
 import de.drvlabs.btscreen.implementation.PresetMode;
@@ -40,7 +43,14 @@ public final class EventHandler implements ClientTickEvents.EndLevelTick, Client
         BaritoneEvents.STOPPED.register(this);
 
         final Settings settings = BaritoneAPI.getSettings();
-        settings.logger.value = settings.logger.value.andThen(this::onBaritoneLog);
+        Consumer<Component> chatLogger = settings.logger.value;
+        settings.logger.value = msg -> {
+            boolean suppressChat = SmartWaterClear.shouldSuppressBaritoneChat(msg);
+            onBaritoneLog(msg);
+            if (!suppressChat) {
+                chatLogger.accept(msg);
+            }
+        };
         settings.toaster.value = settings.toaster.value.andThen((prefix, msg) -> onBaritoneLog(msg));
     }
 
@@ -62,6 +72,7 @@ public final class EventHandler implements ClientTickEvents.EndLevelTick, Client
         DataManager.DIMENSION.unload();
         AutoTorch.onTeleport();
         RepeatAction.cancel();
+        SmartWaterClear.resetForWorldChange();
         Waiter.cancelAll();
     }
 
@@ -74,6 +85,7 @@ public final class EventHandler implements ClientTickEvents.EndLevelTick, Client
 
     @Override
     public void onEndTick(ClientLevel world) {
+        SmartWaterClear.onTick();
         BTActiveListener.onTick();
         ProcessChanged.onTick();
         Waiter.tickAll();

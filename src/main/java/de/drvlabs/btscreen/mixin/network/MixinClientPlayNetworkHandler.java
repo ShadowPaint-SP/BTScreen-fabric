@@ -15,6 +15,7 @@ import de.drvlabs.btscreen.btprocess.AutoEat;
 import de.drvlabs.btscreen.btprocess.AutoHaste;
 import de.drvlabs.btscreen.btprocess.AutoRepair;
 import de.drvlabs.btscreen.btprocess.AutoTorch;
+import de.drvlabs.btscreen.btprocess.SmartWaterClear;
 import de.drvlabs.btscreen.btprocess.Teleport;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
@@ -42,6 +43,7 @@ public abstract class MixinClientPlayNetworkHandler {
         Slot slot = Utils.MC.player.inventoryMenu.getSlot(packet.getSlot());
         ItemStack newStack = packet.getItem();
         AutoRepair.onPlayerInventorySlotUpdatePre(slot.getContainerSlot(), newStack, slot.getItem());
+        SmartWaterClear.onPlayerInventorySlotUpdatePre(slot.getContainerSlot(), newStack, slot.getItem());
     }
 
     // Runs after the change is applied to the inventory

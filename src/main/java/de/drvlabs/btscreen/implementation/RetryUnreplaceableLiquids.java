@@ -1,5 +1,6 @@
 package de.drvlabs.btscreen.implementation;
 
+import de.drvlabs.btscreen.btprocess.SmartWaterClear;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
 
@@ -7,7 +8,11 @@ public class RetryUnreplaceableLiquids {
     private static int retryLiquidCount = -1;
 
     public static void onBaritoneLog(String msg) {
-        if (!msg.equals("Unreplaceable liquids at at least:") || retryLiquidCount >= 0)
+        if (SmartWaterClear.handleBaritoneLog(msg))
+            return;
+        if (!msg.equals("Unreplaceable liquids at at least:"))
+            return;
+        if (retryLiquidCount >= 0)
             return;
         retryLiquidCount = 2;
         Waiter.wait(100, w -> {

@@ -58,6 +58,12 @@
   "btscreen.preset_mode.name.building": "Bauen",
   "btscreen.preset_mode.name.clean_bedrock": "Grundgestein säubern",
 
+  "btscreen.gui.button.caveman": "Caveman",
+  "btscreen.caveman.noSelection": "Caveman benötigt mindestens eine Auswahl.",
+  "btscreen.caveman.chunkNotLoaded": "Chunk %s, %s ist nicht geladen. Gehe näher heran, bevor du die Auswahl zuschneidest.",
+  "btscreen.caveman.nothingToClip": "Die Auswahlen enthalten keine Blöcke unterhalb der Oberflächen-Subchunks.",
+  "btscreen.caveman.clipped": "Caveman hat %s zugeschnittene Auswahlbereiche erstellt.",
+
   "btscreen.info.main_menu.startBot": "Bot läuft jetzt.\n§8Stelle sicher, dass dich niemand dabei sieht ;)",
   "btscreen.info.main_menu.stopBot": "DU BIST JETZT SICHER",
   "btscreen.info.main_menu.shiftX": "Verschoben um %s",
@@ -139,6 +145,8 @@
   "btscreen.config.lists.comment.blocksToDisallowBreaking": "Blöcke, die nicht abgebaut werden können",
   "btscreen.config.lists.name.blocksToIgnore": "Zu ignorierende Blöcke beim Abbau",
   "btscreen.config.lists.comment.blocksToIgnore": "Blöcke, die ignoriert werden sollen\nWenn sie den Weg der Pfadfindung versperren, können sie abgebaut werden",
+  "btscreen.config.lists.name.blocksToReplaceLiquid": "Blöcke um Flüssigkeiten zu erzetzen",
+  "btscreen.config.lists.comment.blocksToReplaceLiquid": "Blöcke, die genutzt werden um Lava und Wasser zu ersetzen",
   "btscreen.config.lists.name.acceptableThrowawayItems": "Blöcke für Pfadfindung",
   "btscreen.config.lists.comment.acceptableThrowawayItems": "Blöcke, die von Bariton zum Bau eines Pfades verwendet werden können",
 
@@ -172,5 +180,16 @@
   "btscreen.bedrockCleaner.alreadyStarted": "Fehler: Bedrock Cleaner bereits gestartet.",
   "btscreen.bedrockCleaner.noSelection": "Fehler: Es wird genau eine Auswahl benötigt.",
   "btscreen.bedrockCleaner.selectionTooBig": "Fehler: Auswahl zu groß (max. 4 Blöcke hoch).",
-  "btscreen.bedrockCleaner.started": "Bedrock Cleaner gestartet."
+  "btscreen.bedrockCleaner.started": "Bedrock Cleaner gestartet.",
+
+  "btscreen.smartWaterClear.started": "Intelligente Wasserentfernung gestartet.",
+  "btscreen.smartWaterClear.finished": "Intelligente Wasserentfernung abgeschlossen.",
+  "btscreen.smartWaterClear.layerFinished": "Wasserentfernung auf Ebene Y=%s abgeschlossen.",
+  "btscreen.smartWaterClear.alreadyStarted": "Fehler: Die intelligente Wasserentfernung läuft bereits.",
+  "btscreen.smartWaterClear.noSelection": "Fehler: Es wird genau eine Auswahl benötigt.",
+  "btscreen.smartWaterClear.selectionTooNarrow": "Fehler: Die Auswahl muss mindestens 5 Blöcke breit und 5 Blöcke lang sein.",
+  "btscreen.smartWaterClear.noLiquid": "In der Auswahl wurde keine Flüssigkeit gefunden.",
+  "btscreen.smartWaterClear.noUsableItem": "Fehler: Kein nutzbarer Füllblock gefunden.",
+  "btscreen.smartWaterClear.outOfBlocks": "Fehler: Keine Füllblöcke mehr auf Y=%s.",
+  "btscreen.smartWaterClear.stalled": "Fehler: Die intelligente Wasserentfernung hängt in Phase %s auf Y=%s fest. Nicht aufgelöster Block: %s bei %s %s %s."
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import net.minecraft.network.chat.Component;
 import baritone.api.process.IBaritoneProcess;
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.btprocess.SmartWaterClear;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
 
@@ -49,10 +50,18 @@ public final class ProcessChanged {
     private static IBaritoneProcess lastProcess = null;
 
     public static void onTick() {
-        IBaritoneProcess currentProcess = Utils.getActiveProcess();
+        IBaritoneProcess currentProcess = visibleProcess(Utils.getActiveProcess());
         if (lastProcess == currentProcess)
             return;
         baritoneProcessChanged(lastProcess, currentProcess);
         lastProcess = currentProcess;
+    }
+
+    /** Treats BuilderProcess as an internal step of an active smart clear. */
+    private static IBaritoneProcess visibleProcess(IBaritoneProcess process) {
+        if (SmartWaterClear.isRunning() && process == Utils.BT.getBuilderProcess()) {
+            return SmartWaterClear.INSTANCE;
+        }
+        return process;
     }
 }

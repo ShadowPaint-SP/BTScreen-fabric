@@ -5,18 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.BucketPickup;
-import net.minecraft.world.level.block.LiquidBlockContainer;
-import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import com.google.common.collect.ImmutableList;
 
 import baritone.api.BaritoneAPI;
@@ -25,15 +18,13 @@ import baritone.api.Settings.Setting;
 import baritone.api.utils.SettingsUtil;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.btprocess.BedrockCleaner;
-import de.drvlabs.btscreen.btprocess.SelectionOrchestrator;
+import de.drvlabs.btscreen.btprocess.SmartWaterClear;
 import de.drvlabs.btscreen.config.Configs;
-import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.config.options.ConfigStringList;
 import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
@@ -70,46 +61,19 @@ public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
         public boolean setSettings() {
             SETTINGS_MANAGER.init().addCommonMiningSettings()
                     .add(SETTINGS.allowInventory, true)
+                    .add(SETTINGS.allowPlaceInFluidsSource, true)
+                    .add(SETTINGS.allowPlaceInFluidsFlow, true)
+                    .add(SETTINGS.buildInLayers, false)
+                    .add(SETTINGS.okIfWater, false)
+                    .add(SETTINGS.breakFromAbove, true)
+                    .add(SETTINGS.goalBreakFromAbove, false)
                     .apply();
             return true;
         }
 
-        private final Item[] possibleBlocks = {
-                Items.NETHERRACK,
-                Items.RESIN_BLOCK,
-                Items.MOSS_BLOCK,
-                Items.DIRT,
-                Items.STONE,
-        };
-
         @Override
         public String getCommand(GuiBase gui) {
-            Item bestItem = null;
-            int maxCount = 0;
-
-            for (Item item : possibleBlocks) {
-                int count = Utils.MC.player.getInventory().countItem(item);
-                if (count > maxCount) {
-                    maxCount = count;
-                    bestItem = item;
-                }
-            }
-            if (bestItem == null) {
-                sendMessage(gui, MessageType.ERROR, LangKeys.INFO + ".removeLiquid.noUsableItem");
-            }
-            Identifier id = BuiltInRegistries.ITEM.getKey(bestItem);
-            StringBuilder builder = new StringBuilder();
-            builder.append("sel replace");
-            BuiltInRegistries.BLOCK.stream().filter(b -> b instanceof BucketPickup || b instanceof LiquidBlockContainer)
-                    .forEach(b -> {
-                        builder.append(" " + BuiltInRegistries.BLOCK.getKey(b));
-                        if (b instanceof SimpleWaterloggedBlock) {
-                            builder.append("[waterlogged=true]");
-                        }
-                    });
-            builder.append(" " + id);
-            SelectionOrchestrator.activate(-1, builder.toString());
-            setSettings();
+            SmartWaterClear.activate();
             return null;
         }
     },
@@ -216,19 +180,6 @@ public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
     private static <T> Stream<T> getStream(Registry<T> registry, ConfigStringList config) {
         return config.getStrings().stream().map(string -> registry.getValue(Identifier.tryParse(string)))
                 .filter(Objects::nonNull).distinct();
-    }
-
-    private static void sendMessage(GuiBase gui, MessageType type, String messageKey, Object... args) {
-        if (gui != null) {
-            gui.addMessage(type, 1000, messageKey, args);
-        } else {
-            BTScreen.chatMessage(Component.translatable(messageKey, args).withStyle(switch (type) {
-                case ERROR -> ChatFormatting.RED;
-                case INFO -> ChatFormatting.WHITE;
-                case SUCCESS -> ChatFormatting.GREEN;
-                case WARNING -> ChatFormatting.GOLD;
-            }));
-        }
     }
 
     public static final ImmutableList<String> BLOCKS_TO_IGNORE = ImmutableList.of(
