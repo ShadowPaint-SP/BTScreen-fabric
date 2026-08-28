@@ -81,7 +81,6 @@ public final class EventHandler implements ClientTickEvents.EndLevelTick, Client
         DataManager.DIMENSION.save();
         DataManager.DIMENSION.load();
         AutoTorch.onTeleport();
-        SmartWaterClear.resetForWorldChange();
     }
 
     @Override

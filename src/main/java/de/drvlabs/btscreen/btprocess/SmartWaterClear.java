@@ -215,8 +215,8 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         return true;
     }
 
-    public static boolean isBaritoneLiquid(boolean isLiquidBlock, boolean isBubbleColumn) {
-        return isLiquidBlock || isBubbleColumn && isRunning();
+    public static boolean isBaritoneLiquid(boolean isLiquidBlock, boolean canPlaceDirectly) {
+        return isLiquidBlock || canPlaceDirectly && isRunning();
     }
 
     public static boolean isProtected(int x, int y, int z) {
@@ -483,6 +483,16 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
             return Phase.IDLE;
         }
         currentY--;
+        return initialPhaseForCurrentLayer();
+    }
+
+    private Phase initialPhaseForCurrentLayer() {
+        boolean guardContainsLiquid = !allPositionsMatch(guardRing(currentY),
+                (state, pos) -> state.getFluidState().isEmpty());
+        if (!guardContainsLiquid) {
+            BTScreen.debugLog("smart_water_clear skipping H/G for liquid-free G layer at y {}", currentY);
+            return Phase.FILL_T;
+        }
         return Phase.FILL_INNER_H;
     }
 
@@ -1059,7 +1069,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         process.currentY = firstLiquidY;
         process.activeGuardSides = liquidGuardSides;
         process.moveInsideGoal = new GoalInsideSelection(min.x + 2, max.x - 2, min.z + 2, max.z - 2);
-        process.phase = Phase.FILL_INNER_H;
+        process.phase = process.initialPhaseForCurrentLayer();
         message("started", ChatFormatting.WHITE);
     }
 

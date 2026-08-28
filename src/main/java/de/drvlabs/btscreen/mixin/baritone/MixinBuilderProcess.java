@@ -11,19 +11,21 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import de.drvlabs.btscreen.btprocess.SmartWaterClear;
 import net.minecraft.world.level.block.BubbleColumnBlock;
+import net.minecraft.world.level.block.GlowLichenBlock;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 /** Lets the smart process place its filler into flowing liquid. */
 @Mixin(value = BuilderProcess.class, remap = false)
 public abstract class MixinBuilderProcess {
-    // Baritone only recognizes LiquidBlock here. BubbleColumnBlock also contains
-    // source water, but mining it first lets the column immediately reform.
+    // Baritone only recognizes LiquidBlock here. Bubble columns immediately reform
+    // after mining, while glow lichen can be replaced without mining it first.
     @WrapOperation(
             method = "a(Lbaritone/process/BuilderProcess$BuilderCalculationContext;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lbaritone/api/utils/BetterBlockPos;)V",
             constant = @Constant(classValue = LiquidBlock.class))
-    private static boolean treatBubbleColumnAsLiquid(Object block, Operation<Boolean> original) {
-        return SmartWaterClear.isBaritoneLiquid(original.call(block), block instanceof BubbleColumnBlock);
+    private static boolean treatReplaceableBlocksAsLiquid(Object block, Operation<Boolean> original) {
+        boolean canPlaceDirectly = block instanceof BubbleColumnBlock || block instanceof GlowLichenBlock;
+        return SmartWaterClear.isBaritoneLiquid(original.call(block), canPlaceDirectly);
     }
 
     @Redirect(
