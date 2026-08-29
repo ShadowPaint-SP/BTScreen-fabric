@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 
 public final class AutoRepair extends BTProcessWithInitializer {
     public static final AutoRepair INSTANCE = new AutoRepair();
+    private static final float SWEEP_ATTACK_THRESHOLD = 0.9F;
 
     private AutoRepair() {
     }
@@ -33,19 +34,29 @@ public final class AutoRepair extends BTProcessWithInitializer {
 
     @Override
     protected PathingCommand onTick() {
+        if (attackIntervalCounter < 0) {
+            if (attackIntervalCounter == -2) {
+                if (Utils.MC.player.getAttackStrengthScale(0.5F) <= SWEEP_ATTACK_THRESHOLD) {
+                    return REQUEST_PAUSE;
+                }
+                Utils.MC.startAttack();
+            } else if (attackIntervalCounter == -1) {
+                Utils.MC.player.getInventory().setSelectedSlot(slot);
+            }
+            attackIntervalCounter++;
+            return REQUEST_PAUSE;
+        }
+
         if (++attackIntervalCounter >= PERIODIC_ATTACK_INTERVAL.getIntegerValue()) {
             Inventory inventory = Utils.MC.player.getInventory();
-            int tmpSlot = inventory.getSelectedSlot();
-            if (Inventory.isHotbarSlot(swordSlot)) {
+            boolean hasSword = Inventory.isHotbarSlot(swordSlot);
+            if (hasSword) {
                 inventory.setSelectedSlot(swordSlot);
-            }
-            Utils.MC.startAttack();
-            if (Inventory.isHotbarSlot(slot)) {
-                inventory.setSelectedSlot(slot);
+                attackIntervalCounter = -3;
             } else {
-                inventory.setSelectedSlot(tmpSlot);
+                Utils.MC.startAttack();
+                attackIntervalCounter = 0;
             }
-            attackIntervalCounter = 0;
         }
         return REQUEST_PAUSE;
     }
