@@ -34,13 +34,14 @@ public final class AutoRepair extends BTProcessWithInitializer {
 
     @Override
     protected PathingCommand onTick() {
+        // -3 registers the sword switch, -2 waits and attacks, -1 restores the tool.
         if (attackIntervalCounter < 0) {
             if (attackIntervalCounter == -2) {
                 if (Utils.MC.player.getAttackStrengthScale(0.5F) <= SWEEP_ATTACK_THRESHOLD) {
                     return REQUEST_PAUSE;
                 }
                 Utils.MC.startAttack();
-            } else if (attackIntervalCounter == -1) {
+            } else if (attackIntervalCounter == -1 && Inventory.isHotbarSlot(slot)) {
                 Utils.MC.player.getInventory().setSelectedSlot(slot);
             }
             attackIntervalCounter++;
