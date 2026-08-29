@@ -54,6 +54,7 @@
   "btscreen.preset_mode.name.none": "None",
   "btscreen.preset_mode.name.clear_area": "Clear Area",
   "btscreen.preset_mode.name.remove_liquid": "Remove Liquid",
+  "btscreen.preset_mode.name.layered_clear_area": "Clear Area+",
   "btscreen.preset_mode.name.farming": "Farming",
   "btscreen.preset_mode.name.building": "Building",
   "btscreen.preset_mode.name.clean_bedrock": "Clean Bedrock",
@@ -174,8 +175,16 @@
   "btscreen.info.selectionOrchestrator.finished": "Finished!",
   "btscreen.info.savetyDisconnect": "%s: Safety Disconnect",
 
+  "btscreen.clearAreaPlus.started": "Clear area+ started.",
+  "btscreen.clearAreaPlus.finished": "Clear area+ finished.",
+  "btscreen.clearAreaPlus.layerFinished": "Layer %s finished.",
+  "btscreen.clearAreaPlus.alreadyStarted": "Error: Clear area+ is already running.",
+  "btscreen.clearAreaPlus.noSelection": "Error: Clear area+ needs exactly one selection.",
+  "btscreen.clearAreaPlus.selectionTooNarrow": "Error: Clear area+ needs a selection at least 5 blocks wide and 5 blocks long.",
+  "btscreen.clearAreaPlus.clearFailed": "Error: Clear area failed on layer %s.",
+
   "btscreen.bedrockCleaner.finished": "Bedrock Cleaner finished.",
-  "btscreen.bedrockCleaner.noSaveBlock": "Warn: No save block found for block: %s, %s, %s",
+  "btscreen.bedrockCleaner.noSaveBlock": "Warn: No safe block found for block: %s, %s, %s",
   "btscreen.bedrockCleaner.timeout": "Warn: Timeout for block: %s, %s, %s",
   "btscreen.bedrockCleaner.alreadyStarted": "Error: Bedrock Cleaner already started.",
   "btscreen.bedrockCleaner.noSelection": "Error: Needs exactly one selection.",
@@ -184,12 +193,11 @@
 
   "btscreen.smartWaterClear.started": "Smart water clear started.",
   "btscreen.smartWaterClear.finished": "Smart water clear finished.",
-  "btscreen.smartWaterClear.layerFinished": "Water clear layer Y=%s finished.",
+  "btscreen.smartWaterClear.layerFinished": "Layer %s finished.",
   "btscreen.smartWaterClear.alreadyStarted": "Error: Smart water clear is already running.",
   "btscreen.smartWaterClear.noSelection": "Error: Smart water clear needs exactly one selection.",
   "btscreen.smartWaterClear.selectionTooNarrow": "Error: Smart water clear needs a selection at least 5 blocks wide and 5 blocks long.",
-  "btscreen.smartWaterClear.noLiquid": "No liquid was found inside the selection.",
-  "btscreen.smartWaterClear.noUsableItem": "Error: No usable filler block was found.",
-  "btscreen.smartWaterClear.outOfBlocks": "Error: Smart water clear ran out of filler blocks at Y=%s.",
+  "btscreen.smartWaterClear.noLiquid": "No liquids found.",
+  "btscreen.smartWaterClear.noUsableItem": "Error: No usable filler blocks.",
   "btscreen.smartWaterClear.stalled": "Error: Smart water clear stalled in phase %s at Y=%s. Unresolved block: %s at %s %s %s."
 }

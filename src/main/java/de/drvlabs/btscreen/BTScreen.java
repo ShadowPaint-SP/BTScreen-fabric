@@ -16,6 +16,7 @@ import de.drvlabs.btscreen.btprocess.AutoTorch;
 import de.drvlabs.btscreen.btprocess.BTActiveListener;
 import de.drvlabs.btscreen.btprocess.BedrockCleaner;
 import de.drvlabs.btscreen.btprocess.LocationCheck;
+import de.drvlabs.btscreen.btprocess.ClearAreaPlus;
 import de.drvlabs.btscreen.btprocess.SelectionOrchestrator;
 import de.drvlabs.btscreen.btprocess.SmartWaterClear;
 import de.drvlabs.btscreen.btprocess.Teleport;
@@ -65,6 +66,7 @@ public class BTScreen implements ClientModInitializer {
         controlManager.registerProcess(AutoTorch.INSTANCE);
         controlManager.registerProcess(LocationCheck.INSTANCE);
         controlManager.registerProcess(SelectionOrchestrator.INSTANCE);
+        controlManager.registerProcess(ClearAreaPlus.INSTANCE);
         controlManager.registerProcess(SmartWaterClear.INSTANCE);
         controlManager.registerProcess(BedrockCleaner.INSTANCE);
     }

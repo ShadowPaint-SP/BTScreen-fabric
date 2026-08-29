@@ -18,6 +18,7 @@ import baritone.api.Settings.Setting;
 import baritone.api.utils.SettingsUtil;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.btprocess.BedrockCleaner;
+import de.drvlabs.btscreen.btprocess.ClearAreaPlus;
 import de.drvlabs.btscreen.btprocess.SmartWaterClear;
 import de.drvlabs.btscreen.config.Configs;
 import de.drvlabs.btscreen.utils.Utils;
@@ -73,7 +74,35 @@ public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
 
         @Override
         public String getCommand(GuiBase gui) {
-            SmartWaterClear.activate();
+            if (SmartWaterClear.activate()) {
+                setSettings();
+            }
+            return null;
+        }
+    },
+    LAYERED_CLEAR_AREA(false) {
+        @Override
+        public boolean setSettings() {
+            SETTINGS_MANAGER.init().addCommonMiningSettings()
+                    .add(SETTINGS.allowInventory, true)
+                    .add(SETTINGS.allowPlaceInFluidsSource, true)
+                    .add(SETTINGS.allowPlaceInFluidsFlow, true)
+                    .add(SETTINGS.buildInLayers, true)
+                    .add(SETTINGS.buildRepeatCount, 0)
+                    .add(SETTINGS.layerHeight, 5)
+                    .add(SETTINGS.layerOrder, true)
+                    .add(SETTINGS.okIfWater, false)
+                    .add(SETTINGS.breakFromAbove, true)
+                    .add(SETTINGS.goalBreakFromAbove, false)
+                    .apply();
+            return true;
+        }
+
+        @Override
+        public String getCommand(GuiBase gui) {
+            if (ClearAreaPlus.activate()) {
+                setSettings();
+            }
             return null;
         }
     },

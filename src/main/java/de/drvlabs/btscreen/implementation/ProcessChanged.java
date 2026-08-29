@@ -7,6 +7,7 @@ import java.util.List;
 import net.minecraft.network.chat.Component;
 import baritone.api.process.IBaritoneProcess;
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.btprocess.ClearAreaPlus;
 import de.drvlabs.btscreen.btprocess.SmartWaterClear;
 import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.utils.Utils;
@@ -57,8 +58,12 @@ public final class ProcessChanged {
         lastProcess = currentProcess;
     }
 
-    /** Treats BuilderProcess as an internal step of an active smart clear. */
+    /** Shows nested builder and liquid-removal work as one layered clear. */
     private static IBaritoneProcess visibleProcess(IBaritoneProcess process) {
+        if (ClearAreaPlus.isRunning()
+                && (process == Utils.BT.getBuilderProcess() || process == SmartWaterClear.INSTANCE)) {
+            return ClearAreaPlus.INSTANCE;
+        }
         if (SmartWaterClear.isRunning() && process == Utils.BT.getBuilderProcess()) {
             return SmartWaterClear.INSTANCE;
         }
