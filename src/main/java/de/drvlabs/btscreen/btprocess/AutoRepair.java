@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 
 public final class AutoRepair extends BTProcessWithInitializer {
     public static final AutoRepair INSTANCE = new AutoRepair();
+    private static final float SWEEP_ATTACK_THRESHOLD = 0.9F;
 
     private AutoRepair() {
     }
@@ -33,19 +34,29 @@ public final class AutoRepair extends BTProcessWithInitializer {
 
     @Override
     protected PathingCommand onTick() {
-        if (++attackIntervalCounter >= PERIODIC_ATTACK_INTERVAL.getIntegerValue()) {
-            Inventory inventory = Utils.MC.player.getInventory();
-            int tmpSlot = inventory.getSelectedSlot();
-            if (Inventory.isHotbarSlot(swordSlot)) {
-                inventory.setSelectedSlot(swordSlot);
+        if (attackIntervalCounter < 0) {
+            if (Utils.MC.player.getAttackStrengthScale(0.5F) <= SWEEP_ATTACK_THRESHOLD) {
+                return REQUEST_PAUSE;
             }
             Utils.MC.startAttack();
             if (Inventory.isHotbarSlot(slot)) {
-                inventory.setSelectedSlot(slot);
-            } else {
-                inventory.setSelectedSlot(tmpSlot);
+                Utils.MC.player.getInventory().setSelectedSlot(slot);
             }
             attackIntervalCounter = 0;
+            return REQUEST_PAUSE;
+        }
+        // The 11 is for the Sweeping Cooldown which we are waiting for in the other
+        // loop so removing those ticks here should result in correct timing
+        if (++attackIntervalCounter >= PERIODIC_ATTACK_INTERVAL.getIntegerValue() - 11) {
+            Inventory inventory = Utils.MC.player.getInventory();
+            boolean hasSword = Inventory.isHotbarSlot(swordSlot);
+            if (hasSword) {
+                inventory.setSelectedSlot(swordSlot);
+                attackIntervalCounter = -1;
+            } else {
+                Utils.MC.startAttack();
+                attackIntervalCounter = 0;
+            }
         }
         return REQUEST_PAUSE;
     }
