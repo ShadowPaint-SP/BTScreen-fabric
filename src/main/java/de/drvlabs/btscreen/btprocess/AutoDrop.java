@@ -1,6 +1,7 @@
 package de.drvlabs.btscreen.btprocess;
 
 import static de.drvlabs.btscreen.config.Configs.Generic.AUTO_DROP;
+import static de.drvlabs.btscreen.config.Configs.Generic.MIN_DROP_SLOTS;
 import static de.drvlabs.btscreen.config.Configs.Lists.INV_PRESERVE_ITEM_BLACKLIST;
 
 import java.util.HashSet;
@@ -12,8 +13,11 @@ import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 import baritone.api.process.PathingCommand;
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.config.LangKeys;
 import de.drvlabs.btscreen.event.BaritoneEvents;
 import de.drvlabs.btscreen.utils.Utils;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 
 public final class AutoDrop extends BTProcessWithInitializer implements BaritoneEvents.Started {
     public static final AutoDrop INSTANCE = new AutoDrop();
@@ -96,6 +100,12 @@ public final class AutoDrop extends BTProcessWithInitializer implements Baritone
             }
         }
         BTScreen.debugLog("Empty Slots: " + workingSlots);
+        if (AUTO_DROP.getBooleanValue() && workingSlots.size() < MIN_DROP_SLOTS.getIntegerValue()) {
+            AUTO_DROP.setBooleanValue(false);
+            workingSlots.clear();
+            BTScreen.chatMessage(Component.translatable(LangKeys.INFO + ".autoDrop.tooFewSlots")
+                    .withStyle(ChatFormatting.RED));
+        }
         AutoDrop.checkInventory();
     }
 
