@@ -316,7 +316,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
                 return DEFER;
             }
 
-            if (!phasePrepared && !preparePhase()) {
+            if (!phasePrepared && !tryPreparePhase()) {
                 return REQUEST_PAUSE;
             }
 
@@ -369,7 +369,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         return isActive() ? REQUEST_PAUSE : DEFER;
     }
 
-    private boolean preparePhase() {
+    private boolean tryPreparePhase() {
         List<LayerArea> targetAreas = switch (phase) {
             case FILL_T -> List.of(fullLayer(currentY));
             case FILL_G -> guardRing(currentY);
@@ -446,6 +446,8 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
             phasePrepared = false;
             commandIssued = false;
             stableTicks = 0;
+            // Keep the current phase active and retry next tick. Missing world
+            // data is not a failed phase attempt and must never cancel the job.
             return false;
         }
 
