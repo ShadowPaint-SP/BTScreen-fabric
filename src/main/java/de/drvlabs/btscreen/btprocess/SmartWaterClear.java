@@ -316,7 +316,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
                 return DEFER;
             }
 
-            if (!phasePrepared && !tryPreparePhase()) {
+            if (!phasePrepared && !preparePhase()) {
                 return REQUEST_PAUSE;
             }
 
@@ -369,7 +369,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         return isActive() ? REQUEST_PAUSE : DEFER;
     }
 
-    private boolean tryPreparePhase() {
+    private boolean preparePhase() {
         List<LayerArea> targetAreas = switch (phase) {
             case FILL_T -> List.of(fullLayer(currentY));
             case FILL_G -> guardRing(currentY);
@@ -406,12 +406,15 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
 
         Set<Long> actionPositions = new HashSet<>();
         Set<String> selectors = new LinkedHashSet<>();
-        boolean[] unavailableWorldData = { false };
+        BlockPos[] unloadedPosition = { null };
         if (phase.clearsBlocks()) {
             forEachPosition(phaseAreas, pos -> {
+                if (unloadedPosition[0] != null) {
+                    return;
+                }
                 BlockState state = Utils.MC.level.getBlockState(pos);
                 if (state.is(Blocks.VOID_AIR)) {
-                    unavailableWorldData[0] = true;
+                    unloadedPosition[0] = pos;
                     return;
                 }
                 boolean needsClear = phase == Phase.CLEAR_CURRENT_OUTER_H
@@ -424,9 +427,12 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
             phaseCommand = actionPositions.isEmpty() ? null : "sel cleararea";
         } else {
             forEachPosition(phaseAreas, pos -> {
+                if (unloadedPosition[0] != null) {
+                    return;
+                }
                 BlockState state = Utils.MC.level.getBlockState(pos);
                 if (state.is(Blocks.VOID_AIR)) {
-                    unavailableWorldData[0] = true;
+                    unloadedPosition[0] = pos;
                     return;
                 }
                 boolean needsReplacement = phase.repairsInnerH()
@@ -441,13 +447,9 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
                     : LiquidReplacementHelper.createReplaceCommand(fillerItem, selectors);
         }
 
-        if (unavailableWorldData[0]) {
-            phaseCommand = null;
-            phasePrepared = false;
-            commandIssued = false;
-            stableTicks = 0;
-            // Keep the current phase active and retry next tick. Missing world
-            // data is not a failed phase attempt and must never cancel the job.
+        if (unloadedPosition[0] != null) {
+            BlockPos pos = unloadedPosition[0];
+            fail("unloadedChunk", pos.getX(), pos.getY(), pos.getZ());
             return false;
         }
 
