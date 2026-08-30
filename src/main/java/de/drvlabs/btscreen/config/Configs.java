@@ -32,6 +32,7 @@ public class Configs implements IConfigHandler {
         public static final ConfigBoolean AUTO_EAT = new ConfigBoolean("autoEat", false);
         public static final ConfigBoolean AUTO_HASTE = new ConfigBoolean("autoHaste", false);
         public static final ConfigBoolean AUTO_DROP = new ConfigBoolean("autoDrop", false);
+        public static final ConfigInteger MIN_DROP_SLOTS = new ConfigInteger("minDropSlots", 2, 1, 27);
         public static final ConfigBoolean AUTO_TORCH = new ConfigBoolean("autoTorch", false);
         public static final ConfigString HOME_COMMAND = new ConfigString("homeCommand", "home");
         public static final ConfigString SETHOME_COMMAND = new ConfigString("setHomeCommand", "sethome");
@@ -63,6 +64,7 @@ public class Configs implements IConfigHandler {
                 AUTO_EAT,
                 AUTO_HASTE,
                 AUTO_DROP,
+                MIN_DROP_SLOTS,
                 AUTO_TORCH,
                 PERIODIC_ATTACK_INTERVAL,
                 ITEM_DURABILITY_THRESHOLD,
