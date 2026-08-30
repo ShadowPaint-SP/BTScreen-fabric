@@ -38,6 +38,7 @@ import de.drvlabs.btscreen.utils.Waiter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -45,6 +46,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.PointedDripstoneBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -100,7 +102,6 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     private int currentGSealedTicks;
 
     private List<LayerArea> phaseAreas = List.of();
-    private Set<Long> requiredSolidPositions = Set.of();
     private String phaseCommand;
     private boolean phasePrepared;
     private boolean clearingBlocksAboveDripstone;
@@ -110,6 +111,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     private int builderFailureRetries;
     private int finishedLayerCount;
     private boolean retryScheduled;
+    private boolean waitingForWorkChunks;
 
     private SmartWaterClear() {
         BaritoneEvents.STOPPED.register(this);
@@ -264,6 +266,17 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         if (!isSafeToCancel || BUILD_PROC.isActive()) {
             return REQUEST_PAUSE;
         }
+        if (!areWorkChunksLoaded()) {
+            if (!waitingForWorkChunks) {
+                BTScreen.debugLog("smart_water_clear waiting for work chunks after interruption");
+                waitingForWorkChunks = true;
+            }
+            return REQUEST_PAUSE;
+        }
+        if (waitingForWorkChunks) {
+            BTScreen.debugLog("smart_water_clear work chunks loaded, resuming phase {}", phase);
+            waitingForWorkChunks = false;
+        }
 
         // Several empty phases can be skipped in one tick, but cap the loop so a
         // zero-volume edge case cannot monopolize the client thread.
@@ -303,8 +316,8 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
                 return DEFER;
             }
 
-            if (!phasePrepared) {
-                preparePhase();
+            if (!phasePrepared && !preparePhase()) {
+                return REQUEST_PAUSE;
             }
 
             if (!commandIssued && phaseCommand != null) {
@@ -356,7 +369,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         return isActive() ? REQUEST_PAUSE : DEFER;
     }
 
-    private void preparePhase() {
+    private boolean preparePhase() {
         List<LayerArea> targetAreas = switch (phase) {
             case FILL_T -> List.of(fullLayer(currentY));
             case FILL_G -> guardRing(currentY);
@@ -380,23 +393,27 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         Set<Long> blocksAboveDripstone = waterloggedDripstoneBlocksAbove(targetAreas);
         if (!blocksAboveDripstone.isEmpty()) {
             phaseAreas = singletonAreas(blocksAboveDripstone);
-            requiredSolidPositions = Set.of();
             phaseCommand = "sel cleararea";
             OUTER_H_CLEAR_PATH_CONSTRAINT = null;
             clearingBlocksAboveDripstone = true;
             phasePrepared = true;
             commandIssued = false;
             stableTicks = 0;
-            return;
+            return true;
         }
 
         clearingBlocksAboveDripstone = false;
 
         Set<Long> actionPositions = new HashSet<>();
         Set<String> selectors = new LinkedHashSet<>();
+        boolean[] unavailableWorldData = { false };
         if (phase.clearsBlocks()) {
             forEachPosition(phaseAreas, pos -> {
                 BlockState state = Utils.MC.level.getBlockState(pos);
+                if (state.is(Blocks.VOID_AIR)) {
+                    unavailableWorldData[0] = true;
+                    return;
+                }
                 boolean needsClear = phase == Phase.CLEAR_CURRENT_OUTER_H
                         ? !isOpenForGuardPlacement(state)
                         : !isWorkSpace(state);
@@ -408,9 +425,13 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         } else {
             forEachPosition(phaseAreas, pos -> {
                 BlockState state = Utils.MC.level.getBlockState(pos);
-                boolean needsReplacement = phase.buildsGuard() || phase.repairsInnerH()
-                        ? !isSealed(state, pos)
-                        : !state.getFluidState().isEmpty();
+                if (state.is(Blocks.VOID_AIR)) {
+                    unavailableWorldData[0] = true;
+                    return;
+                }
+                boolean needsReplacement = phase.repairsInnerH()
+                        ? needsInnerHReplacement(state)
+                        : phase.buildsGuard() ? !isSealed(state, pos) : !state.getFluidState().isEmpty();
                 if (needsReplacement) {
                     actionPositions.add(pos.asLong());
                     selectors.add(LiquidReplacementHelper.selectorFor(state));
@@ -420,13 +441,21 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
                     : LiquidReplacementHelper.createReplaceCommand(fillerItem, selectors);
         }
 
-        requiredSolidPositions = phase.requiresCapturedSolidTargets() ? Set.copyOf(actionPositions) : Set.of();
+        if (unavailableWorldData[0]) {
+            phaseCommand = null;
+            phasePrepared = false;
+            commandIssued = false;
+            stableTicks = 0;
+            return false;
+        }
+
         OUTER_H_CLEAR_PATH_CONSTRAINT = phase == Phase.CLEAR_CURRENT_OUTER_H
                 ? new ExactStandingPathConstraint(currentOuterHStandingPositions(actionPositions))
                 : null;
         phasePrepared = true;
         commandIssued = false;
         stableTicks = 0;
+        return true;
     }
 
     private boolean phaseSatisfied() {
@@ -440,15 +469,27 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
             return allPositionsMatch(phaseAreas, SmartWaterClear::isSealed);
         }
         if (phase == Phase.RECHECK_INNER_H) {
-            return allPositionsMatch(phaseAreas, SmartWaterClear::isSealed);
+            return allPositionsMatch(phaseAreas, (state, pos) -> isInnerHReady(state));
+        }
+        if (phase == Phase.FILL_INNER_H) {
+            return true;
         }
         if (phase == Phase.FILL_T) {
             return allPositionsMatch(phaseAreas, (state, pos) -> state.getFluidState().isEmpty());
         }
-        for (long packedPos : requiredSolidPositions) {
-            BlockPos pos = BlockPos.of(packedPos);
-            if (!isSealed(Utils.MC.level.getBlockState(pos), pos)) {
-                return false;
+        return true;
+    }
+
+    private boolean areWorkChunksLoaded() {
+        int minChunkX = SectionPos.blockToSectionCoord(min.x - 1);
+        int maxChunkX = SectionPos.blockToSectionCoord(max.x + 1);
+        int minChunkZ = SectionPos.blockToSectionCoord(min.z - 1);
+        int maxChunkZ = SectionPos.blockToSectionCoord(max.z + 1);
+        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
+            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
+                if (!Utils.MC.level.hasChunk(chunkX, chunkZ)) {
+                    return false;
+                }
             }
         }
         return true;
@@ -987,6 +1028,14 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
                 && state.isCollisionShapeFullBlock(Utils.MC.level, pos);
     }
 
+    private static boolean needsInnerHReplacement(BlockState state) {
+        return state.isAir() || !state.getFluidState().isEmpty();
+    }
+
+    private static boolean isInnerHReady(BlockState state) {
+        return !state.isAir() && state.getFluidState().isEmpty();
+    }
+
     private static void forEachPosition(List<LayerArea> areas, Consumer<BlockPos> consumer) {
         areas.forEach(area -> area.forEach(consumer));
     }
@@ -1204,8 +1253,10 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
             predicate = phase == Phase.CLEAR_CURRENT_OUTER_H
                     ? (state, pos) -> isOpenForGuardPlacement(state)
                     : (state, pos) -> isWorkSpace(state);
-        } else if (phase.buildsGuard() || phase == Phase.RECHECK_INNER_H) {
+        } else if (phase.buildsGuard()) {
             predicate = SmartWaterClear::isSealed;
+        } else if (phase.repairsInnerH()) {
+            predicate = (state, pos) -> isInnerHReady(state);
         } else if (phase == Phase.FILL_T) {
             predicate = (state, pos) -> state.getFluidState().isEmpty();
         }
@@ -1213,13 +1264,6 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
             BlockPos mismatch = firstPositionNotMatching(phaseAreas, predicate);
             if (mismatch != null) {
                 return mismatch;
-            }
-        }
-
-        for (long packedPos : requiredSolidPositions) {
-            BlockPos pos = BlockPos.of(packedPos);
-            if (!isSealed(Utils.MC.level.getBlockState(pos), pos)) {
-                return pos;
             }
         }
 
@@ -1235,7 +1279,6 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         restoreOriginalSelection();
         phase = Phase.IDLE;
         phaseAreas = List.of();
-        requiredSolidPositions = Set.of();
         phaseCommand = null;
         phasePrepared = false;
         clearingBlocksAboveDripstone = false;
@@ -1244,6 +1287,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         stableTicks = 0;
         builderFailureRetries = 0;
         retryScheduled = false;
+        waitingForWorkChunks = false;
         originalSelection = null;
         min = null;
         max = null;
@@ -1292,10 +1336,6 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
 
         boolean repairsInnerH() {
             return this == FILL_INNER_H || this == RECHECK_INNER_H;
-        }
-
-        boolean requiresCapturedSolidTargets() {
-            return this == FILL_INNER_H;
         }
 
         int requiredStableTicks() {

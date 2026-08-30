@@ -9,10 +9,12 @@ import fi.dy.masa.malilib.config.options.ConfigString;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
 
 public final class Teleport extends BTProcessHelper {
     public static final Teleport INSTANCE = new Teleport();
+    private static final int DESTINATION_CHUNK_STABLE_TICKS = 5;
 
     private Teleport() {
     }
@@ -23,6 +25,7 @@ public final class Teleport extends BTProcessHelper {
     private int timeoutTicks = 0;
     private Vec3 oldPos = null;
     private Identifier oldWorld = null;
+    private int destinationChunkStableTicks = 0;
 
     @Override
     public boolean isActive() {
@@ -48,6 +51,7 @@ public final class Teleport extends BTProcessHelper {
                     BTScreen.debugLog("Teleporting to " + nextHome + " Home");
                     // Teleport to Home prepare
                     teleporting = true;
+                    destinationChunkStableTicks = 0;
                     oldPos = Utils.MC.player.position();
                     oldWorld = Utils.getWorldId();
                     // Set Mine home before teleporting
@@ -71,14 +75,20 @@ public final class Teleport extends BTProcessHelper {
                 nextHome = null;
             } else if (oldPos != null
                     && (!oldPos.closerThan(Utils.MC.player.position(), 1) || !oldWorld.equals(Utils.getWorldId()))) {
-                BTScreen.debugLog("Teleport Finished");
-                // Teleport Finished
-                teleporting = false;
-                timeoutTicks = 0;
-                oldPos = null;
-                oldWorld = null;
-                if (lastHome != null) {
-                    lastHome.lastWorld = Utils.getWorldId();
+                ChunkPos playerChunk = Utils.MC.player.chunkPosition();
+                if (!Utils.MC.level.hasChunk(playerChunk.x(), playerChunk.z())) {
+                    destinationChunkStableTicks = 0;
+                } else if (++destinationChunkStableTicks >= DESTINATION_CHUNK_STABLE_TICKS) {
+                    BTScreen.debugLog("Teleport Finished");
+                    // Teleport Finished
+                    teleporting = false;
+                    timeoutTicks = 0;
+                    destinationChunkStableTicks = 0;
+                    oldPos = null;
+                    oldWorld = null;
+                    if (lastHome != null) {
+                        lastHome.lastWorld = Utils.getWorldId();
+                    }
                 }
             }
             timeoutTicks++;
@@ -94,6 +104,7 @@ public final class Teleport extends BTProcessHelper {
         timeoutTicks = 0;
         oldPos = null;
         oldWorld = null;
+        destinationChunkStableTicks = 0;
     }
 
     @Override
