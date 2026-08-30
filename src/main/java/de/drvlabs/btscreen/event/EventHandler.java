@@ -9,6 +9,7 @@ import baritone.api.Settings;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.btprocess.AutoTorch;
 import de.drvlabs.btscreen.btprocess.BTActiveListener;
+import de.drvlabs.btscreen.btprocess.ClearAreaPlus;
 import de.drvlabs.btscreen.btprocess.Teleport;
 import de.drvlabs.btscreen.btprocess.SmartWaterClear;
 import de.drvlabs.btscreen.config.DataManager;
@@ -45,7 +46,8 @@ public final class EventHandler implements ClientTickEvents.EndLevelTick, Client
         final Settings settings = BaritoneAPI.getSettings();
         Consumer<Component> chatLogger = settings.logger.value;
         settings.logger.value = msg -> {
-            boolean suppressChat = SmartWaterClear.shouldSuppressBaritoneChat(msg);
+            boolean suppressChat = SmartWaterClear.shouldSuppressBaritoneChat(msg)
+                    || ClearAreaPlus.shouldSuppressBaritoneChat(msg);
             onBaritoneLog(msg);
             if (!suppressChat) {
                 chatLogger.accept(msg);
@@ -73,6 +75,7 @@ public final class EventHandler implements ClientTickEvents.EndLevelTick, Client
         AutoTorch.onTeleport();
         RepeatAction.cancel();
         SmartWaterClear.resetForWorldChange();
+        ClearAreaPlus.resetForWorldChange();
         Waiter.cancelAll();
     }
 
@@ -95,7 +98,9 @@ public final class EventHandler implements ClientTickEvents.EndLevelTick, Client
     private void onBaritoneLog(Component msg) {
         final String prefix = baritone.api.utils.Helper.getPrefix().getString();
         final String msgString = Strings.CS.removeStart(msg.getString(), prefix + " ");
-        RetryUnreplaceableLiquids.onBaritoneLog(msgString);
+        if (!ClearAreaPlus.handleBaritoneLog(msgString)) {
+            RetryUnreplaceableLiquids.onBaritoneLog(msgString);
+        }
     }
 
     @Override

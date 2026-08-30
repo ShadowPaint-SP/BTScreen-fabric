@@ -54,6 +54,7 @@
   "btscreen.preset_mode.name.none": "Keine",
   "btscreen.preset_mode.name.clear_area": "Bereich leeren",
   "btscreen.preset_mode.name.remove_liquid": "Flüssigkeit entfernen",
+  "btscreen.preset_mode.name.layered_clear_area": "Bereich leeren+",
   "btscreen.preset_mode.name.farming": "Farmen",
   "btscreen.preset_mode.name.building": "Bauen",
   "btscreen.preset_mode.name.clean_bedrock": "Grundgestein säubern",
@@ -174,6 +175,14 @@
   "btscreen.info.selectionOrchestrator.finished": "Fertig!",
   "btscreen.info.savetyDisconnect": "%s: Sicherheits-Disconnect",
 
+  "btscreen.clearAreaPlus.started": "Bereich Leeren+ gestartet.",
+  "btscreen.clearAreaPlus.finished": "Bereich Leeren+ abgeschlossen.",
+  "btscreen.clearAreaPlus.layerFinished": "Schicht %s abgeschlossen.",
+  "btscreen.clearAreaPlus.alreadyStarted": "Fehler: Bereich Leeren+ läuft bereits.",
+  "btscreen.clearAreaPlus.noSelection": "Fehler: Für Bereich Leeren+ wird genau eine Auswahl benötigt.",
+  "btscreen.clearAreaPlus.selectionTooNarrow": "Fehler: Die Auswahl muss mindestens 5 Blöcke breit und 5 Blöcke lang sein.",
+  "btscreen.clearAreaPlus.clearFailed": "Fehler: Das Leeren von Schicht %s ist fehlgeschlagen.",
+
   "btscreen.bedrockCleaner.finished": "Bedrock Cleaner fertig.",
   "btscreen.bedrockCleaner.noSaveBlock": "Warnung: Kein sicherer Block für Block gefunden: %s, %s, %s",
   "btscreen.bedrockCleaner.timeout": "Warnung: Zeitüberschreitung für Block: %s, %s, %s",
@@ -188,8 +197,7 @@
   "btscreen.smartWaterClear.alreadyStarted": "Fehler: Die intelligente Wasserentfernung läuft bereits.",
   "btscreen.smartWaterClear.noSelection": "Fehler: Es wird genau eine Auswahl benötigt.",
   "btscreen.smartWaterClear.selectionTooNarrow": "Fehler: Die Auswahl muss mindestens 5 Blöcke breit und 5 Blöcke lang sein.",
-  "btscreen.smartWaterClear.noLiquid": "In der Auswahl wurde keine Flüssigkeit gefunden.",
-  "btscreen.smartWaterClear.noUsableItem": "Fehler: Kein nutzbarer Füllblock gefunden.",
-  "btscreen.smartWaterClear.outOfBlocks": "Fehler: Keine Füllblöcke mehr auf Y=%s.",
+  "btscreen.smartWaterClear.noLiquid": "Keine Flüssigkeit gefunden.",
+  "btscreen.smartWaterClear.noUsableItem": "Fehler: Keine nutzbaren Füllblöcke.",
   "btscreen.smartWaterClear.stalled": "Fehler: Die intelligente Wasserentfernung hängt in Phase %s auf Y=%s fest. Nicht aufgelöster Block: %s bei %s %s %s."
 }

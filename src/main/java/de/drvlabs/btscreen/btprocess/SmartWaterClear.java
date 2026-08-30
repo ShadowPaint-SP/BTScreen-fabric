@@ -108,6 +108,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     private int phaseAttempts;
     private int stableTicks;
     private int builderFailureRetries;
+    private int finishedLayerCount;
     private boolean retryScheduled;
 
     private SmartWaterClear() {
@@ -137,7 +138,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
             process.lastFillerHotbarSlot = selectedSlot;
         }
         if (!process.ensureFillerItemAvailable(inventory)) {
-            process.fail("outOfBlocks", process.currentY);
+            process.fail("noUsableItem");
             return;
         }
         process.resupplyFillerHotbarSlot(inventory);
@@ -298,7 +299,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
 
             if (!phase.clearsBlocks()
                     && !ensureFillerItemAvailable(Utils.MC.player.getInventory())) {
-                fail("outOfBlocks", currentY);
+                fail("noUsableItem");
                 return DEFER;
             }
 
@@ -477,7 +478,8 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     }
 
     private Phase nextLayerOrFinish() {
-        message("layerFinished", ChatFormatting.GRAY, currentY);
+        finishedLayerCount++;
+        message("layerFinished", ChatFormatting.GRAY, finishedLayerCount);
         if (currentY <= min.y) {
             finish();
             return Phase.IDLE;
@@ -500,7 +502,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         protect(guardRing(currentY));
 
         if (!ensureFillerItemAvailable(Utils.MC.player.getInventory())) {
-            fail("outOfBlocks", currentY);
+            fail("noUsableItem");
             return DEFER;
         }
 
@@ -1032,33 +1034,33 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         return false;
     }
 
-    public static void activate() {
+    public static boolean activate() {
         SmartWaterClear process = INSTANCE;
         if (process.isActive()) {
             message("alreadyStarted", ChatFormatting.RED);
-            return;
+            return false;
         }
         ISelection selection = SEL_MGR.getOnlySelection();
         if (selection == null) {
             message("noSelection", ChatFormatting.RED);
-            return;
+            return false;
         }
         BetterBlockPos min = selection.min();
         BetterBlockPos max = selection.max();
         if (max.x - min.x + 1 < 5 || max.z - min.z + 1 < 5) {
             message("selectionTooNarrow", ChatFormatting.RED);
-            return;
+            return false;
         }
         EnumSet<GuardSide> liquidGuardSides = findLiquidGuardSides(min, max);
         int firstLiquidY = findHighestLiquidLayer(min, max, liquidGuardSides);
         if (firstLiquidY == Integer.MIN_VALUE) {
             message("noLiquid", ChatFormatting.GOLD);
-            return;
+            return false;
         }
         Item replacement = LiquidReplacementHelper.findBestItem();
         if (replacement == null) {
             message("noUsableItem", ChatFormatting.RED);
-            return;
+            return false;
         }
 
         process.originalSelection = selection;
@@ -1068,9 +1070,11 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         process.lastFillerHotbarSlot = Inventory.NOT_FOUND_INDEX;
         process.currentY = firstLiquidY;
         process.activeGuardSides = liquidGuardSides;
+        process.finishedLayerCount = 0;
         process.moveInsideGoal = new GoalInsideSelection(min.x + 2, max.x - 2, min.z + 2, max.z - 2);
         process.phase = process.initialPhaseForCurrentLayer();
         message("started", ChatFormatting.WHITE);
+        return true;
     }
 
     private static EnumSet<GuardSide> findLiquidGuardSides(BetterBlockPos min, BetterBlockPos max) {
