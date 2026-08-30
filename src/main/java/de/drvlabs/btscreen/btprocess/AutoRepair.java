@@ -45,8 +45,9 @@ public final class AutoRepair extends BTProcessWithInitializer {
             attackIntervalCounter = 0;
             return REQUEST_PAUSE;
         }
-
-        if (++attackIntervalCounter >= PERIODIC_ATTACK_INTERVAL.getIntegerValue()) {
+        // The 11 is for the Sweeping Cooldown which we are waiting for in the other
+        // loop so removing those ticks here should result in correct timing
+        if (++attackIntervalCounter >= PERIODIC_ATTACK_INTERVAL.getIntegerValue() - 11) {
             Inventory inventory = Utils.MC.player.getInventory();
             boolean hasSword = Inventory.isHotbarSlot(swordSlot);
             if (hasSword) {
