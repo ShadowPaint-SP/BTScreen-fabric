@@ -9,8 +9,6 @@ import fi.dy.masa.malilib.config.options.ConfigString;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.phys.Vec3;
 
 public final class Teleport extends BTProcessHelper {
@@ -73,17 +71,14 @@ public final class Teleport extends BTProcessHelper {
                 nextHome = null;
             } else if (oldPos != null
                     && (!oldPos.closerThan(Utils.MC.player.position(), 1) || !oldWorld.equals(Utils.getWorldId()))) {
-                ChunkPos playerChunk = Utils.MC.player.chunkPosition();
-                if (isChunkLoaded(playerChunk)) {
-                    BTScreen.debugLog("Teleport Finished");
-                    // Teleport Finished
-                    teleporting = false;
-                    timeoutTicks = 0;
-                    oldPos = null;
-                    oldWorld = null;
-                    if (lastHome != null) {
-                        lastHome.lastWorld = Utils.getWorldId();
-                    }
+                BTScreen.debugLog("Teleport Finished");
+                // Teleport Finished
+                teleporting = false;
+                timeoutTicks = 0;
+                oldPos = null;
+                oldWorld = null;
+                if (lastHome != null) {
+                    lastHome.lastWorld = Utils.getWorldId();
                 }
             }
             timeoutTicks++;
@@ -122,11 +117,6 @@ public final class Teleport extends BTProcessHelper {
         }
         nextHome = home;
         return true;
-    }
-
-    private static boolean isChunkLoaded(ChunkPos chunkPos) {
-        return Utils.MC.level.getChunkSource()
-                .getChunk(chunkPos.x(), chunkPos.z(), ChunkStatus.FULL, false) != null;
     }
 
     public static Home getLastHome() {
