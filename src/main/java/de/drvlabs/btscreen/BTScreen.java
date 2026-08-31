@@ -11,6 +11,7 @@ import de.drvlabs.btscreen.btprocess.AutoDrop;
 import de.drvlabs.btscreen.btprocess.AutoEat;
 import de.drvlabs.btscreen.btprocess.AutoHaste;
 import de.drvlabs.btscreen.btprocess.AutoRepair;
+import de.drvlabs.btscreen.btprocess.AutoResupply;
 import de.drvlabs.btscreen.btprocess.AutoSleep;
 import de.drvlabs.btscreen.btprocess.AutoTorch;
 import de.drvlabs.btscreen.btprocess.BTActiveListener;
@@ -59,6 +60,7 @@ public class BTScreen implements ClientModInitializer {
         controlManager.registerProcess(BTActiveListener.INSTANCE);
         controlManager.registerProcess(Teleport.INSTANCE);
         controlManager.registerProcess(AutoDrop.INSTANCE);
+        controlManager.registerProcess(AutoResupply.INSTANCE);
         controlManager.registerProcess(AutoEat.INSTANCE);
         controlManager.registerProcess(AutoHaste.INSTANCE);
         controlManager.registerProcess(AutoRepair.INSTANCE);
