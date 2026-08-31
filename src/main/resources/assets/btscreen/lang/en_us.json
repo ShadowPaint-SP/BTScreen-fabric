@@ -199,6 +199,7 @@
   "btscreen.smartWaterClear.selectionTooNarrow": "Error: Smart water clear needs a selection at least 5 blocks wide and 5 blocks long.",
   "btscreen.smartWaterClear.noLiquid": "No liquids found.",
   "btscreen.smartWaterClear.noUsableItem": "Error: No usable filler blocks.",
+  "btscreen.smartWaterClear.waitingForChunk": "Waiting for chunk %s %s to load.",
   "btscreen.smartWaterClear.unloadedChunk": "Error: Unloaded chunk at %s %s %s.",
   "btscreen.smartWaterClear.stalled": "Error: Smart water clear stalled in phase %s at Y=%s. Unresolved block: %s at %s %s %s."
 }

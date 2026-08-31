@@ -46,9 +46,11 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.PointedDripstoneBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 
 /**
  * Clears liquid one layer at a time while extending an outside retaining wall.
@@ -74,6 +76,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     private static final int STABLE_TICKS = 10;
     private static final int G_CONFIRM_TICKS = 5;
     private static final int G_DRIPSTONE_BREAK_TIMEOUT_TICKS = 200;
+    private static final int WORK_CHUNK_WAIT_MESSAGE_TICKS = 60;
 
     private static final IBuilderProcess BUILD_PROC = Utils.BT.getBuilderProcess();
     private static final ISelectionManager SEL_MGR = Utils.BT.getSelectionManager();
@@ -111,7 +114,12 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     private int builderFailureRetries;
     private int finishedLayerCount;
     private boolean retryScheduled;
+    private List<ChunkPos> requiredWorkChunks = List.of();
     private boolean waitingForWorkChunks;
+    private int workChunkWaitTicks;
+    private int missingWorkChunkX;
+    private int missingWorkChunkZ;
+    private boolean workChunkWaitMessageShown;
 
     private SmartWaterClear() {
         BaritoneEvents.STOPPED.register(this);
@@ -267,15 +275,24 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
             return REQUEST_PAUSE;
         }
         if (!areWorkChunksLoaded()) {
+            workChunkWaitTicks++;
             if (!waitingForWorkChunks) {
-                BTScreen.debugLog("smart_water_clear waiting for work chunks after interruption");
-                waitingForWorkChunks = true;
+                BTScreen.debugLog("smart_water_clear waiting for work chunk {}, {}",
+                        missingWorkChunkX, missingWorkChunkZ);
+            }
+            waitingForWorkChunks = true;
+            if (!workChunkWaitMessageShown && workChunkWaitTicks >= WORK_CHUNK_WAIT_MESSAGE_TICKS) {
+                message("waitingForChunk", ChatFormatting.GOLD, missingWorkChunkX, missingWorkChunkZ);
+                workChunkWaitMessageShown = true;
             }
             return REQUEST_PAUSE;
         }
         if (waitingForWorkChunks) {
-            BTScreen.debugLog("smart_water_clear work chunks loaded, resuming phase {}", phase);
+            BTScreen.debugLog("smart_water_clear work chunks loaded, resuming phase {} after {} ticks",
+                    phase, workChunkWaitTicks);
             waitingForWorkChunks = false;
+            workChunkWaitTicks = 0;
+            workChunkWaitMessageShown = false;
         }
 
         // Several empty phases can be skipped in one tick, but cap the loop so a
@@ -485,18 +502,32 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
     }
 
     private boolean areWorkChunksLoaded() {
+        for (ChunkPos chunk : requiredWorkChunks) {
+            if (!isChunkLoaded(chunk.x(), chunk.z())) {
+                missingWorkChunkX = chunk.x();
+                missingWorkChunkZ = chunk.z();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static List<ChunkPos> requiredWorkChunks(BetterBlockPos min, BetterBlockPos max) {
         int minChunkX = SectionPos.blockToSectionCoord(min.x - 1);
         int maxChunkX = SectionPos.blockToSectionCoord(max.x + 1);
         int minChunkZ = SectionPos.blockToSectionCoord(min.z - 1);
         int maxChunkZ = SectionPos.blockToSectionCoord(max.z + 1);
+        List<ChunkPos> chunks = new ArrayList<>((maxChunkX - minChunkX + 1) * (maxChunkZ - minChunkZ + 1));
         for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
             for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
-                if (!Utils.MC.level.hasChunk(chunkX, chunkZ)) {
-                    return false;
-                }
+                chunks.add(new ChunkPos(chunkX, chunkZ));
             }
         }
-        return true;
+        return List.copyOf(chunks);
+    }
+
+    private static boolean isChunkLoaded(int chunkX, int chunkZ) {
+        return Utils.MC.level.getChunkSource().getChunk(chunkX, chunkZ, ChunkStatus.FULL, false) != null;
     }
 
     private void advancePhase() {
@@ -1124,6 +1155,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         process.currentY = firstLiquidY;
         process.activeGuardSides = liquidGuardSides;
         process.finishedLayerCount = 0;
+        process.requiredWorkChunks = requiredWorkChunks(min, max);
         process.moveInsideGoal = new GoalInsideSelection(min.x + 2, max.x - 2, min.z + 2, max.z - 2);
         process.phase = process.initialPhaseForCurrentLayer();
         message("started", ChatFormatting.WHITE);
@@ -1291,7 +1323,12 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
         stableTicks = 0;
         builderFailureRetries = 0;
         retryScheduled = false;
+        requiredWorkChunks = List.of();
         waitingForWorkChunks = false;
+        workChunkWaitTicks = 0;
+        missingWorkChunkX = 0;
+        missingWorkChunkZ = 0;
+        workChunkWaitMessageShown = false;
         originalSelection = null;
         min = null;
         max = null;

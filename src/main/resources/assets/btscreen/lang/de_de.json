@@ -199,6 +199,7 @@
   "btscreen.smartWaterClear.selectionTooNarrow": "Fehler: Die Auswahl muss mindestens 5 Blöcke breit und 5 Blöcke lang sein.",
   "btscreen.smartWaterClear.noLiquid": "Keine Flüssigkeit gefunden.",
   "btscreen.smartWaterClear.noUsableItem": "Fehler: Keine nutzbaren Füllblöcke.",
+  "btscreen.smartWaterClear.waitingForChunk": "Warte darauf, dass Chunk %s %s geladen wird.",
   "btscreen.smartWaterClear.unloadedChunk": "Fehler: Nicht geladener Chunk bei %s %s %s.",
   "btscreen.smartWaterClear.stalled": "Fehler: Die intelligente Wasserentfernung hängt in Phase %s auf Y=%s fest. Nicht aufgelöster Block: %s bei %s %s %s."
 }
