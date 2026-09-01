@@ -18,6 +18,9 @@ import fi.dy.masa.malilib.config.options.ConfigBoolean;
 import fi.dy.masa.malilib.config.options.ConfigInteger;
 import fi.dy.masa.malilib.config.options.ConfigString;
 import fi.dy.masa.malilib.config.options.ConfigStringList;
+import fi.dy.masa.malilib.config.options.table.ConfigTable;
+import fi.dy.masa.malilib.config.options.table.TableRow;
+import fi.dy.masa.malilib.config.options.table.type.EntryTypes;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.data.json.JsonUtils;
 
@@ -32,6 +35,7 @@ public class Configs implements IConfigHandler {
         public static final ConfigBoolean AUTO_EAT = new ConfigBoolean("autoEat", false);
         public static final ConfigBoolean AUTO_HASTE = new ConfigBoolean("autoHaste", false);
         public static final ConfigBoolean AUTO_DROP = new ConfigBoolean("autoDrop", false);
+        public static final ConfigBoolean AUTO_RESUPPLY = new ConfigBoolean("autoResupply", false);
         public static final ConfigInteger MIN_DROP_SLOTS = new ConfigInteger("minDropSlots", 2, 1, 27);
         public static final ConfigBoolean AUTO_TORCH = new ConfigBoolean("autoTorch", false);
         public static final ConfigString HOME_COMMAND = new ConfigString("homeCommand", "home");
@@ -64,6 +68,7 @@ public class Configs implements IConfigHandler {
                 AUTO_EAT,
                 AUTO_HASTE,
                 AUTO_DROP,
+                AUTO_RESUPPLY,
                 MIN_DROP_SLOTS,
                 AUTO_TORCH,
                 PERIODIC_ATTACK_INTERVAL,
@@ -114,6 +119,19 @@ public class Configs implements IConfigHandler {
                 "blocksToReplaceLiquid", ImmutableList.of("netherrack", "resin_block", "moss_block", "dirt", "stone"));
         public static final ConfigStringList ACCEPTABLE_THROWAWAY_ITEMS = new ConfigStringList(
                 "acceptableThrowawayItems", PresetMode.ACCEPTABLE_THROWAWAY_ITEMS);
+        public static final ConfigTable RESUPPLY_SOURCES = new ConfigTable.Builder(
+                "resupplySources",
+                EntryTypes.STRING,
+                EntryTypes.INTEGER,
+                EntryTypes.INTEGER,
+                EntryTypes.INTEGER)
+                .setDefaultValue(
+                        TableRow.of("stone", -1927, 68, -7465),
+                        TableRow.of("cooked_porkchop", -1928, 68, -7464),
+                        TableRow.of("torch", -1928, 68, -7463))
+                .setLabels("Item ID", "X", "Y", "Z")
+                .setShowEntryNumbers(false)
+                .build();
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 PROCESS_CHANGES_BLACKLIST,
@@ -123,7 +141,8 @@ public class Configs implements IConfigHandler {
                 BLOCKS_TO_DISALLOW_BREAKING,
                 BLOCKS_TO_IGNORE,
                 BLOCKS_TO_REPLACE_LIQUID_WITH,
-                ACCEPTABLE_THROWAWAY_ITEMS);
+                ACCEPTABLE_THROWAWAY_ITEMS,
+                RESUPPLY_SOURCES);
 
         static {
             OPTIONS.forEach(o -> {
