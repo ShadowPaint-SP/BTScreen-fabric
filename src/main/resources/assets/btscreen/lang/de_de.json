@@ -6,6 +6,12 @@
 
   "btscreen.gui.configure_command.label.name": "Name:",
   "btscreen.gui.configure_command.label.command": "Befehl(e) (mit ';' trennen):",
+  "btscreen.gui.heading.newCommand": "Neuer Befehl",
+  "btscreen.gui.heading.editCommand": "Befehl bearbeiten",
+  "btscreen.gui.label.search": "Befehle suchen...",
+  "btscreen.gui.label.blocksToReplace": "Zu ersetzende Blöcke",
+  "btscreen.gui.label.blockToPlace": "Ersatzblock",
+  "btscreen.gui.notice.commandRemoved": "%s entfernt",
 
   "btscreen.gui.button.config_gui.generic": "Allgemein",
   "btscreen.gui.button.config_gui.lists": "Listen",
@@ -41,6 +47,7 @@
   "btscreen.gui.button.customCommand.remove": "§4Löschen",
   "btscreen.gui.button.change_menu.to_main_menu": "%s Hauptmenü",
   "btscreen.gui.button.change_menu.createCommand": "Befehl erstellen",
+  "btscreen.gui.button.manageCommands": "Befehle verwalten",
   "btscreen.gui.button.save": "Speichern",
   "btscreen.gui.button.sel_copy": "Ausw kopieren",
   "btscreen.gui.button.sel_paste": "Ausw einfügen",
