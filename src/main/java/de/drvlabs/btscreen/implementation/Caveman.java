@@ -7,9 +7,8 @@ import baritone.api.selection.ISelection;
 import baritone.api.selection.ISelectionManager;
 import baritone.api.utils.BetterBlockPos;
 import de.drvlabs.btscreen.BTScreen;
+import de.drvlabs.btscreen.gui.ui.UiScreen;
 import de.drvlabs.btscreen.utils.Utils;
-import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.gui.Message.MessageType;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -22,10 +21,10 @@ public final class Caveman {
     private Caveman() {
     }
 
-    public static void clipSelections(GuiBase gui) {
+    public static void clipSelections(UiScreen gui) {
         ISelection[] selections = SEL_MGR.getSelections();
         if (selections.length == 0) {
-            gui.addMessage(MessageType.ERROR, 1000, TRANSLATABLE_PREFIX + "noSelection");
+            gui.showNotice(UiScreen.NoticeTone.ERROR, TRANSLATABLE_PREFIX + "noSelection");
             return;
         }
 
@@ -36,16 +35,16 @@ public final class Caveman {
             }
         }
         if (areas.isEmpty()) {
-            gui.addMessage(MessageType.WARNING, 1000, TRANSLATABLE_PREFIX + "nothingToClip");
+            gui.showNotice(UiScreen.NoticeTone.WARNING, TRANSLATABLE_PREFIX + "nothingToClip");
             return;
         }
 
         SEL_MGR.removeAllSelections();
         areas.forEach(area -> SEL_MGR.addSelection(area.min(), area.max()));
-        gui.addMessage(MessageType.SUCCESS, 1000, TRANSLATABLE_PREFIX + "clipped", areas.size());
+        gui.showNotice(UiScreen.NoticeTone.SUCCESS, TRANSLATABLE_PREFIX + "clipped", areas.size());
     }
 
-    private static boolean addChunkAreas(ISelection selection, List<ChunkArea> areas, GuiBase gui) {
+    private static boolean addChunkAreas(ISelection selection, List<ChunkArea> areas, UiScreen gui) {
         BetterBlockPos min = selection.min();
         BetterBlockPos max = selection.max();
         int minChunkX = SectionPos.blockToSectionCoord(min.x);
@@ -56,7 +55,7 @@ public final class Caveman {
         for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
             for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
                 if (!Utils.MC.level.hasChunk(chunkX, chunkZ)) {
-                    gui.addMessage(MessageType.ERROR, 1000, TRANSLATABLE_PREFIX + "chunkNotLoaded",
+                    gui.showNotice(UiScreen.NoticeTone.ERROR, TRANSLATABLE_PREFIX + "chunkNotLoaded",
                             chunkX, chunkZ);
                     return false;
                 }

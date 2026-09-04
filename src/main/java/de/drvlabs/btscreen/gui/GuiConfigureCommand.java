@@ -1,148 +1,96 @@
 package de.drvlabs.btscreen.gui;
 
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.DataManager;
 import de.drvlabs.btscreen.config.LangKeys;
+import de.drvlabs.btscreen.gui.ui.UiButton;
+import de.drvlabs.btscreen.gui.ui.UiScreen;
+import de.drvlabs.btscreen.gui.ui.UiTextField;
+import de.drvlabs.btscreen.gui.ui.UiTheme;
 import de.drvlabs.btscreen.implementation.customcommands.Commands;
-import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
-import fi.dy.masa.malilib.gui.Message.MessageType;
-import fi.dy.masa.malilib.gui.button.ButtonBase;
-import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
-import fi.dy.masa.malilib.util.GuiUtils;
-import fi.dy.masa.malilib.util.StringUtils;
 
-public class GuiConfigureCommand extends GuiBase {
-    public final Commands command;
-    public GuiTextFieldGeneric textFieldName;
-    public GuiTextFieldGeneric textFieldCommand;
-    public static boolean newCommand;
+public final class GuiConfigureCommand extends UiScreen {
+    private final Commands command;
+    private final boolean newCommand;
+    private UiTextField nameField;
+    private UiTextField commandField;
 
-    public GuiConfigureCommand(Commands command) {
-        if (command == null) {
-            BTScreen.debugLog("Creating new command");
-            this.command = new Commands("", "", null);
-            newCommand = true;
-        } else {
-            BTScreen.debugLog("Editing command");
-            this.command = command;
-            newCommand = false;
-        }
-        this.title = StringUtils.translate(LangKeys.GUI_TITLE + ".configure_command");
+    public GuiConfigureCommand(@Nullable Commands command) {
+        this(command, null);
+    }
+
+    public GuiConfigureCommand(@Nullable Commands command, @Nullable Screen parent) {
+        super(Component.translatable(LangKeys.GUI_TITLE + ".configure_command"), parent);
+        this.newCommand = command == null;
+        this.command = command == null ? new Commands("", "", null) : command;
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
-        int scaledWidth = GuiUtils.getScaledWindowWidth();
-        int width = Math.min(300, scaledWidth - 200);
-        int x = 12;
-        int y = 22;
+    protected void init() {
+        clearWidgets();
+        int panelWidth = Math.min(440, width - 24);
+        int x = (width - panelWidth) / 2;
+        int fieldWidth = panelWidth - 16;
 
-        this.addLabel(x, y, width, 16, 0xCCCCCCFF, LangKeys.GUI + ".configure_command.label.name");
+        nameField = new UiTextField(font, x + 8, 82, fieldWidth, 20,
+                Component.translatable(LangKeys.GUI + ".configure_command.label.name"));
+        nameField.setMaxLength(256);
+        nameField.setValue(command.getName());
+        nameField.hint(Component.translatable(LangKeys.GUI + ".configure_command.label.name"));
+        addRenderableWidget(nameField);
 
-        y += 16;
+        commandField = new UiTextField(font, x + 8, 133, fieldWidth, 20,
+                Component.translatable(LangKeys.GUI + ".configure_command.label.command"));
+        commandField.setMaxLength(2048);
+        commandField.setValue(command.getCommand());
+        commandField.hint(Component.translatable(LangKeys.GUI + ".configure_command.label.command"));
+        addRenderableWidget(commandField);
 
-        this.textFieldName = new GuiTextFieldGeneric(x, y + 2, width, 16, this.font);
-        this.textFieldName.setMaxLengthWrapper(256);
-        this.textFieldName.setValueWrapper(this.command.getName());
-        this.addTextField(this.textFieldName, null);
-
-        y += 30;
-
-        this.addLabel(x, y, width, 16, 0xCCCCCCFF, LangKeys.GUI + ".configure_command.label.command");
-
-        y += 16;
-
-        this.textFieldCommand = new GuiTextFieldGeneric(x, y + 2, width, 16, this.font);
-        this.textFieldCommand.setMaxLengthWrapper(256);
-        this.textFieldCommand.setValueWrapper(this.command.getCommand());
-        this.addTextField(this.textFieldCommand, null);
-
-        this.createButton(x + width + 4, y, -1, ButtonListener.Type.SAVE);
+        int half = (fieldWidth - 4) / 2;
+        addRenderableWidget(UiButton.create(x + 8, 168, half,
+                Component.translatable("gui.cancel"), (button, input) -> onClose()));
+        addRenderableWidget(UiButton.create(x + 12 + half, 168, half,
+                Component.translatable(LangKeys.GUI_BUTTON + ".save"), (button, input) -> save()));
     }
 
-    public int createButton(int x, int y, int width, ButtonListener.Type type) {
-        ButtonListener listener = new ButtonListener(type, this.command, this);
-        String label = type.getDisplayName();
-        if (width == -1) {
-            width = this.getStringWidth(label) + 10;
-        }
-        ButtonGeneric button = new ButtonGeneric(x, y, width, 20, label);
-        this.addButton(button, listener);
-        return width;
-    }
-
-    public static class ButtonListener implements IButtonActionListener {
-        public final GuiConfigureCommand parent;
-        public final Commands command;
-        public final Type type;
-
-        public ButtonListener(Type type, Commands command, GuiConfigureCommand parent) {
-            this.parent = parent;
-            this.command = command;
-            this.type = type;
+    private void save() {
+        String name = nameField.getValue().trim();
+        String commandText = commandField.getValue().trim();
+        if (name.isEmpty() || commandText.isEmpty()) {
+            showNotice(NoticeTone.ERROR, LangKeys.INFO + ".guiConfigureCommand.saveError");
+            return;
         }
 
-        @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
-            this.parent.setNextMessageType(MessageType.ERROR);
-
-            switch (this.type) {
-                case SAVE:
-                    BTScreen.debugLog("Saving command");
-                    if (this.parent.textFieldCommand.getValueWrapper().equals("")
-                            || this.parent.textFieldName.getValueWrapper().equals("")) {
-                        BTScreen.debugLog("Command name or command is empty");
-                        this.parent.addMessage(MessageType.ERROR, 1000,
-                                LangKeys.INFO + ".guiConfigureCommand.saveError");
-                        return;
-                    }
-                    BTScreen.debugLog("Command name: " + this.parent.textFieldName.getValueWrapper());
-                    this.command.setName(this.parent.textFieldName.getValueWrapper());
-                    BTScreen.debugLog("Command: " + this.parent.textFieldCommand.getValueWrapper());
-                    this.command.setCommand(this.parent.textFieldCommand.getValueWrapper());
-                    if (newCommand) {
-                        DataManager.SERVER.getCommandsManager().addCommand(this.command);
-                        DataManager.SERVER.save();
-                    }
-                    break;
-            }
-            GuiBase.openGui(new GuiCommandList());
+        command.setName(name);
+        command.setCommand(commandText);
+        if (newCommand) {
+            DataManager.SERVER.getCommandsManager().addCommand(command);
         }
-
-        public enum Type {
-            SAVE(LangKeys.GUI_BUTTON + ".save");
-
-            private final String translationKey;
-            @Nullable
-            private final String hoverText;
-
-            private Type(String translationKey) {
-                this(translationKey, null);
-            }
-
-            private Type(String translationKey, @Nullable String hoverText) {
-                this.translationKey = translationKey;
-                this.hoverText = hoverText;
-            }
-
-            public String getTranslationKey() {
-                return this.translationKey;
-            }
-
-            public String getDisplayName(Object... args) {
-                return StringUtils.translate(this.translationKey, args);
-            }
-
-            @Nullable
-            public String getHoverText() {
-                return this.hoverText != null ? StringUtils.translate(this.hoverText) : null;
-            }
+        DataManager.SERVER.save();
+        BTScreen.debugLog("Saved custom command '{}'", name);
+        if (parent instanceof GuiCommandList commandList) {
+            commandList.init(commandList.width, commandList.height);
+            open(commandList);
+        } else {
+            open(new GuiCommandList(parent));
         }
     }
 
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        int panelWidth = Math.min(440, width - 24);
+        int x = (width - panelWidth) / 2;
+        drawPanel(graphics, x, 48, panelWidth, 148,
+                Component.translatable(newCommand ? "btscreen.gui.heading.newCommand" : "btscreen.gui.heading.editCommand"));
+        graphics.text(font, Component.translatable(LangKeys.GUI + ".configure_command.label.name"),
+                x + 8, 68, UiTheme.TEXT_MUTED);
+        graphics.text(font, Component.translatable(LangKeys.GUI + ".configure_command.label.command"),
+                x + 8, 119, UiTheme.TEXT_MUTED);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+    }
 }
