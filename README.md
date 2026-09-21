@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="src/main/resources/assets/btscreen/icon.png" width="64" height="64" alt="BT Screen icon">
+  <img src="src/main/resources/assets/btscreen/icon.png" width="120" height="120" alt="BT Screen icon">
 </p>
 
 <h1 align="center">BT Screen</h1>
@@ -21,7 +21,6 @@ Current development targets Minecraft 26.2. Older versions have dedicated builds
 | Minecraft | BT Screen | Java | Status |
 | --- | --- | --- | --- |
 | 26.2 | [0.4.8](https://github.com/ShadowPaint-SP/BTScreen-fabric/releases/tag/0.4.8) | 25 or newer | Current |
-| 26.1.2 | [`26.1.2-migration`](https://github.com/ShadowPaint-SP/BTScreen-fabric/tree/26.1.2-migration) | 25 or newer | Experimental branch |
 | 1.21.10 | [0.4.6](https://github.com/ShadowPaint-SP/BTScreen-fabric/releases/tag/0.4.6) | 21 or newer | Legacy |
 | 1.21.5 | [0.4.5](https://github.com/ShadowPaint-SP/BTScreen-fabric/releases/tag/0.4.5) | 21 or newer | Legacy |
 | 1.21.4 | [0.3.0](https://github.com/ShadowPaint-SP/BTScreen-fabric/releases/tag/1.21.4-0.3.0) | 21 or newer | Legacy |
