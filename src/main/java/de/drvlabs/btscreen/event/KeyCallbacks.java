@@ -9,17 +9,17 @@ import fi.dy.masa.malilib.hotkeys.KeyAction;
 
 public class KeyCallbacks {
 	public static boolean openGuiMainMenu(KeyAction action, IKeybind key) {
-		Utils.MC.setScreenAndShow(new GuiMainMenu());
+		Utils.MC.gui.setScreen(new GuiMainMenu());
 		return true;
 	}
 
 	public static boolean openGuiSettings(KeyAction action, IKeybind key) {
-		Utils.MC.setScreenAndShow(new GuiConfigs());
+		Utils.MC.gui.setScreen(new GuiConfigs());
 		return true;
 	}
 
 	public static boolean openGuiCustomCommands(KeyAction action, IKeybind key) {
-		Utils.MC.setScreenAndShow(new GuiCommandList());
+		Utils.MC.gui.setScreen(new GuiCommandList());
 		return true;
 	}
 

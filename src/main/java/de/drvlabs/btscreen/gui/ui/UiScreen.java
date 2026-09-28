@@ -24,20 +24,17 @@ public abstract class UiScreen extends Screen {
     }
 
     public final void open(Screen screen) {
-        minecraft.setScreenAndShow(screen);
+        minecraft.gui.setScreen(screen);
     }
 
     @Override
     public void onClose() {
-        minecraft.setScreenAndShow(parent);
+        minecraft.gui.setScreen(parent);
     }
 
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        if (minecraft.level != null) {
-            extractBlurredBackground(graphics);
-        }
-        graphics.fillGradient(0, 0, width, height, UiTheme.BACKGROUND_TOP, UiTheme.BACKGROUND_BOTTOM);
+        graphics.fill(0, 0, width, height, minecraft.level == null ? 0xFF080808 : 0x44000000);
     }
 
     @Override

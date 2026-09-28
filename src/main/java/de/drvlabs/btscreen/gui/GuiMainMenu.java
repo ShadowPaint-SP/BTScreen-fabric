@@ -11,6 +11,7 @@ import net.minecraft.world.level.ChunkPos;
 import org.jetbrains.annotations.Nullable;
 
 import baritone.api.selection.ISelectionManager;
+import baritone.api.selection.ISelection;
 import baritone.api.utils.BetterBlockPos;
 import de.drvlabs.btscreen.BTScreen;
 import de.drvlabs.btscreen.config.Configs;
@@ -28,8 +29,11 @@ import de.drvlabs.btscreen.utils.Utils;
 
 public final class GuiMainMenu extends UiScreen {
     private static final int SECTION_TOP = 42;
-    private static final int SECOND_SECTION_TOP = 104;
-    private static final int ADDITIONAL_TOP = 165;
+    private static final int SECOND_SECTION_TOP = 124;
+    private static final int ADDITIONAL_TOP = 185;
+    private boolean selectionExpanded = true;
+    private boolean boxExpanded = true;
+    private boolean commandsExpanded = true;
 
     private UiTextField blocksToReplace;
     private UiTextField blockToPlace;
@@ -50,36 +54,63 @@ public final class GuiMainMenu extends UiScreen {
     @Override
     protected void init() {
         clearWidgets();
+        blocksToReplace = null;
+        blockToPlace = null;
         commandButtons.clear();
         commandGrid = null;
         MainLayout layout = layout();
 
-        addSettingsButton(layout);
-        addSelectionControls(layout.firstX, SECTION_TOP, layout.columnWidth);
-        addBotControls(layout.firstX, SECOND_SECTION_TOP, layout.columnWidth);
-        addResizeControls(layout.secondX, SECTION_TOP, layout.columnWidth);
-        addMoveControls(layout.secondX, SECOND_SECTION_TOP, layout.columnWidth);
+        addSettingsButton();
+        addSectionToggle(layout.firstX, SECTION_TOP, layout.columnWidth,
+                LangKeys.GUI_SECTION + ".label.selManagement", selectionExpanded,
+                () -> selectionExpanded = !selectionExpanded);
+        addSectionToggle(layout.secondX, SECTION_TOP, layout.columnWidth,
+                LangKeys.GUI_SECTION + ".label.boxResizing", boxExpanded,
+                () -> boxExpanded = !boxExpanded);
 
         int commandsX = layout.wide ? layout.thirdX : layout.secondX;
-        int commandsY = layout.wide ? SECTION_TOP : 148;
-        addCommandControls(commandsX, commandsY, layout.columnWidth);
-
-        if (hasAdditionalControls()) {
-            int additionalWidth = layout.wide
-                    ? layout.columnWidth * 2 + layout.columnGap
-                    : layout.columnWidth;
-            addAdditionalControls(layout.firstX, ADDITIONAL_TOP, additionalWidth);
+        int commandsY = layout.wide ? SECTION_TOP : (boxExpanded ? 148 : 65);
+        addSectionToggle(commandsX, commandsY, layout.columnWidth,
+                LangKeys.GUI_BUTTON + ".change_menu.command_list_manager", commandsExpanded,
+                () -> commandsExpanded = !commandsExpanded);
+        if (selectionExpanded) {
+            addSelectionControls(layout.firstX, SECTION_TOP, layout.columnWidth);
+            addBotControls(layout.firstX, SECOND_SECTION_TOP, layout.columnWidth);
+            if (hasAdditionalControls()) {
+                int additionalWidth = layout.wide
+                        ? layout.columnWidth * 2 + layout.columnGap
+                        : layout.columnWidth;
+                addAdditionalControls(layout.firstX, ADDITIONAL_TOP, additionalWidth);
+            }
+        }
+        if (boxExpanded) {
+            addResizeControls(layout.secondX, SECTION_TOP, layout.columnWidth);
+            addMoveControls(layout.secondX, SECOND_SECTION_TOP - 20, layout.columnWidth);
+        }
+        if (commandsExpanded) {
+            addCommandControls(commandsX, commandsY, layout.columnWidth);
         }
     }
 
-    private void addSettingsButton(MainLayout layout) {
+    private void addSettingsButton() {
         Component label = Component.translatable(LangKeys.GUI_BUTTON + ".configuration_menu");
         int buttonWidth = font.width(label) + 14;
-        int contentRight = layout.wide
-                ? layout.thirdX + layout.columnWidth
-                : layout.secondX + layout.columnWidth;
-        addRenderableWidget(UiButton.compact(contentRight - buttonWidth, 8, buttonWidth, label,
-                (button, input) -> open(new GuiConfigs(this))));
+        addRenderableWidget(UiButton.compact(UiTheme.MARGIN, height - 28, buttonWidth, label,
+                (button, input) -> {
+                    storeBlockInputs();
+                    open(new GuiConfigs(this));
+                }));
+    }
+
+    private void addSectionToggle(int x, int y, int sectionWidth, String label, boolean expanded,
+            Runnable toggle) {
+        addRenderableWidget(UiButton.compact(x, y, sectionWidth,
+                Component.empty().append(expanded ? "▾ " : "▸ ").append(Component.translatable(label)),
+                (button, input) -> {
+                    storeBlockInputs();
+                    toggle.run();
+                    rebuildWidgets();
+                }));
     }
 
     private void addSelectionControls(int x, int y, int sectionWidth) {
@@ -209,7 +240,7 @@ public final class GuiMainMenu extends UiScreen {
             UiButton commandButton = UiButton.compact(0, 0, buttonWidth,
                     Component.literal(command.getName()), (button, input) -> {
                         command.executeCommand();
-                        minecraft.setScreenAndShow(null);
+                        minecraft.gui.setScreen(null);
                     }).tooltip(Component.literal(command.getCommand()));
             commandButtons.add(commandButton);
             addRenderableWidget(commandButton);
@@ -314,6 +345,19 @@ public final class GuiMainMenu extends UiScreen {
         }
     }
 
+    @Override
+    protected void rebuildWidgets() {
+        storeBlockInputs();
+        super.rebuildWidgets();
+    }
+
+    @Override
+    public void onClose() {
+        storeBlockInputs();
+        Configs.saveToFile();
+        super.onClose();
+    }
+
     private boolean hasAdditionalControls() {
         return DataManager.DIMENSION.getPresetMode().additionalControls;
     }
@@ -353,22 +397,25 @@ public final class GuiMainMenu extends UiScreen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         MainLayout layout = layout();
-        drawSectionHeading(graphics, layout.firstX, SECTION_TOP, layout.columnWidth,
-                Component.translatable(LangKeys.GUI_SECTION + ".label.selManagement"));
-        drawSectionHeading(graphics, layout.firstX, SECOND_SECTION_TOP, layout.columnWidth,
-                Component.translatable(LangKeys.GUI_SECTION + ".label.botControl"));
-        drawSectionHeading(graphics, layout.secondX, SECTION_TOP, layout.columnWidth,
-                Component.translatable(LangKeys.GUI_SECTION + ".label.boxResizing"));
-        drawSectionHeading(graphics, layout.secondX, SECOND_SECTION_TOP, layout.columnWidth,
-                Component.translatable(LangKeys.GUI_SECTION + ".label.boxMoving"));
-
-        int commandsX = layout.wide ? layout.thirdX : layout.secondX;
-        int commandsY = layout.wide ? SECTION_TOP : 148;
-        drawSectionHeading(graphics, commandsX, commandsY, layout.columnWidth,
-                Component.translatable(LangKeys.GUI_BUTTON + ".change_menu.command_list_manager"));
-        drawCommandScrollbar(graphics);
-
-        if (hasAdditionalControls()) {
+        if (selectionExpanded) {
+            drawSelectionInfo(graphics, layout);
+            drawSectionHeading(graphics, layout.firstX, SECOND_SECTION_TOP, layout.columnWidth,
+                    Component.translatable(LangKeys.GUI_SECTION + ".label.botControl"));
+            String status = Utils.isActive() ? (Utils.isPaused() ? "PAUSED" : "RUNNING") : "IDLE";
+            int statusColor = Utils.isActive()
+                    ? (Utils.isPaused() ? UiTheme.WARNING : UiTheme.SUCCESS)
+                    : UiTheme.TEXT_MUTED;
+            graphics.text(font, status,
+                    layout.firstX + layout.columnWidth - font.width(status), SECOND_SECTION_TOP, statusColor);
+        }
+        if (boxExpanded) {
+            drawSectionHeading(graphics, layout.secondX, SECOND_SECTION_TOP - 20, layout.columnWidth,
+                    Component.translatable(LangKeys.GUI_SECTION + ".label.boxMoving"));
+        }
+        if (commandsExpanded) {
+            drawCommandScrollbar(graphics);
+        }
+        if (selectionExpanded && hasAdditionalControls()) {
             int additionalWidth = layout.wide
                     ? layout.columnWidth * 2 + layout.columnGap
                     : layout.columnWidth;
@@ -376,15 +423,30 @@ public final class GuiMainMenu extends UiScreen {
                     Component.translatable(LangKeys.GUI_SECTION + ".label.additionalControls"));
         }
 
-        String status = Utils.isActive() ? (Utils.isPaused() ? "PAUSED" : "RUNNING") : "IDLE";
-        int statusColor = Utils.isActive()
-                ? (Utils.isPaused() ? UiTheme.WARNING : UiTheme.SUCCESS)
-                : UiTheme.TEXT_MUTED;
-        graphics.text(font, status,
-                layout.firstX + layout.columnWidth - font.width(status), SECOND_SECTION_TOP, statusColor);
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
     }
 
+    private void drawSelectionInfo(GuiGraphicsExtractor graphics, MainLayout layout) {
+        ISelection[] selections = Utils.BT.getSelectionManager().getSelections();
+        String summary;
+        String corners;
+        if (selections.length == 0) {
+            summary = Component.translatable("btscreen.gui.selection.none").getString();
+            corners = Component.translatable("btscreen.gui.selection.hint").getString();
+        } else {
+            ISelection latest = selections[selections.length - 1];
+            summary = Component.translatable("btscreen.gui.selection.summary",
+                    selections.length, latest.size().getX(), latest.size().getY(),
+                    latest.size().getZ()).getString();
+            corners = latest.pos1().getX() + ", " + latest.pos1().getY() + ", " + latest.pos1().getZ()
+                    + "  →  " + latest.pos2().getX() + ", " + latest.pos2().getY()
+                    + ", " + latest.pos2().getZ();
+        }
+        graphics.text(font, font.plainSubstrByWidth(summary, layout.columnWidth),
+                layout.firstX, 99, UiTheme.TEXT_MUTED);
+        graphics.text(font, font.plainSubstrByWidth(corners, layout.columnWidth),
+                layout.firstX, 110, UiTheme.TEXT_MUTED);
+    }
     private void drawCommandScrollbar(GuiGraphicsExtractor graphics) {
         if (commandGrid == null || !commandGrid.isScrollable()) {
             return;

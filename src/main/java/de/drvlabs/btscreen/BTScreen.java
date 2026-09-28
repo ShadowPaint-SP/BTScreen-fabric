@@ -51,7 +51,7 @@ public class BTScreen implements ClientModInitializer {
         // Configs
         ConfigManager.getInstance().registerConfigHandler(BTScreen.MOD_ID, new Configs());
         Registry.CONFIG_SCREEN.registerConfigScreenFactory(
-                new ModInfo(BTScreen.MOD_ID, BTScreen.MOD_NAME, GuiConfigs::new));
+                new ModInfo(BTScreen.MOD_ID, BTScreen.MOD_NAME, GuiConfigs.Bridge::new));
         // Events
         EventHandler.register();
         InputHandler.register();

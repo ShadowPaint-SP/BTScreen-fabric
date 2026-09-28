@@ -51,7 +51,7 @@ public final class GuiCommandList extends UiScreen {
             UiButton execute = UiButton.create(0, 0, buttonWidth,
                     Component.translatable(LangKeys.GUI_BUTTON + ".customCommand.execute"), (button, input) -> {
                         command.executeCommand();
-                        minecraft.setScreenAndShow(null);
+                        minecraft.gui.setScreen(null);
                     });
             UiButton edit = UiButton.create(0, 0, buttonWidth,
                     Component.translatable(LangKeys.GUI_BUTTON + ".customCommand.configure"),

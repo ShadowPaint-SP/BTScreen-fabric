@@ -1,6 +1,7 @@
 package de.drvlabs.btscreen.gui.ui;
 
 import java.time.Duration;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Tooltip;
@@ -18,6 +19,7 @@ public final class UiButton extends AbstractButton {
     private final PressAction action;
     private boolean selected;
     private boolean destructive;
+    private boolean textOnly;
     private UiGlyph glyph;
 
     public UiButton(int x, int y, int width, int height, Component label, PressAction action) {
@@ -49,6 +51,12 @@ public final class UiButton extends AbstractButton {
         return this;
     }
 
+    /** A left-aligned label that can still show a hover tooltip. */
+    public UiButton textOnly() {
+        this.textOnly = true;
+        return this;
+    }
+
     public UiButton glyph(UiGlyph glyph) {
         this.glyph = glyph;
         return this;
@@ -64,6 +72,13 @@ public final class UiButton extends AbstractButton {
     @Override
     protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         boolean highlighted = isHoveredOrFocused();
+        if (textOnly) {
+            int color = highlighted ? UiTheme.ACCENT : UiTheme.TEXT;
+            var font = Minecraft.getInstance().font;
+            graphics.text(font, font.plainSubstrByWidth(getMessage().getString(), getWidth() - 4), getX() + 2,
+                    getY() + (getHeight() - 8) / 2, color);
+            return;
+        }
         int background = active ? (highlighted ? UiTheme.PANEL_HOVER : UiTheme.CONTROL)
                 : UiTheme.CONTROL_DISABLED;
         int border = !active ? 0xFF3B4449
