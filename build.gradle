@@ -24,14 +24,18 @@ repositories {
 	maven { url = 'https://jitpack.io' }
 	maven { url = 'https://maven.terraformersmc.com/releases/' }
 	//flatDir { dirs 'libs'}
-	maven {
-    	name = "meteorRepositorySnapshots"
-    	url = "https://maven.meteordev.org/snapshots/"
-		// https://maven.meteordev.org/#/snapshots/meteordevelopment
-	}
-	maven {
-    	name = 'babbaj-repo'
-    	url = 'https://babbaj.github.io/maven/'
+	// Baritone is not on a maven, so pull the release jar straight from GitHub.
+	// The "unoptimized" jar keeps internal class names, which our mixins target.
+	exclusiveContent {
+		forRepository {
+			ivy {
+				name = 'cabaletta-baritone-releases'
+				url = 'https://github.com/cabaletta/baritone/releases/download/'
+				patternLayout { artifact 'v[revision]/[module]-unoptimized-fabric-[revision].[ext]' }
+				metadataSources { artifact() }
+			}
+		}
+		filter { includeGroup 'cabaletta' }
 	}
 	maven {
 		name = 'FallenBreath'
@@ -51,8 +55,7 @@ dependencies {
 	implementation "com.github.sakura-ryoko:malilib:${project.malilib_version}" // malilib
 	compileOnly "com.terraformersmc:modmenu:${project.mod_menu_version}" // modmenu
 	//Baritone
-	implementation "meteordevelopment:baritone:${project.baritone_version}"
-	runtimeOnly "dev.babbaj:nether-pathfinder:${project.nether_pathfinder_version}"
+	implementation "cabaletta:baritone:${project.baritone_version}" // bundles nether-pathfinder
 }
 
 // For a mod named 'mymod.jar' in the 'libs' folder     

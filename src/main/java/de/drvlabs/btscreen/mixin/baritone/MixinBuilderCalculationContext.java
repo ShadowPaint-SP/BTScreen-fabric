@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 /** Prevents BuilderProcess paths from mining completed smart-water-clear wall cells. */
 @Mixin(targets = "baritone.process.BuilderProcess$BuilderCalculationContext", remap = false)
 public abstract class MixinBuilderCalculationContext {
-    @Inject(method = "b(IIILnet/minecraft/world/level/block/state/BlockState;)D", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "breakCostMultiplierAt", at = @At("HEAD"), cancellable = true)
     private void protectSmartWaterClearWall(int x, int y, int z, BlockState current,
             CallbackInfoReturnable<Double> cir) {
         if (SmartWaterClear.isProtected(x, y, z)) {

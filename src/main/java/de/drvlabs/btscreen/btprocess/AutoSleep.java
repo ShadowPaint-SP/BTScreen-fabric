@@ -88,8 +88,7 @@ public final class AutoSleep extends BTProcessWithInitializer {
         if (dimension.hasFixedTime() || !dimension.hasSkyLight() || dimension.defaultClock().isEmpty()) {
             return false;
         }
-        long curTime = Utils.MC.level.clockManager().getTotalTicks(dimension.defaultClock().get())
-                % SharedConstants.TICKS_PER_GAME_DAY;
+        long curTime = Utils.MC.level.getDefaultClockTime() % SharedConstants.TICKS_PER_GAME_DAY;
         return (curTime >= 12700 && curTime <= 23000);
     }
 
@@ -102,7 +101,7 @@ public final class AutoSleep extends BTProcessWithInitializer {
         BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.DOWN, pos, false);
         BTScreen.debugLog("Hitting Bed at: " + pos);
         if (Utils.MC.gameMode.useItemOn(Utils.MC.player, InteractionHand.MAIN_HAND, hit).consumesAction()) {
-            Utils.MC.player.swing(InteractionHand.MAIN_HAND);
+            Utils.swingHand(InteractionHand.MAIN_HAND);
         }
     }
 }

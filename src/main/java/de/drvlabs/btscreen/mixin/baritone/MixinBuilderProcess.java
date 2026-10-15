@@ -18,10 +18,13 @@ import net.minecraft.world.level.block.state.BlockState;
 /** Lets the smart process place its filler into flowing liquid. */
 @Mixin(value = BuilderProcess.class, remap = false)
 public abstract class MixinBuilderProcess {
+    // Both injections target the incorrectPositions.forEach lambda in assemble().
+    // javac numbers lambdas by position, so recheck the name when Baritone changes.
+
     // Baritone only recognizes LiquidBlock here. Bubble columns immediately reform
     // after mining, while glow lichen can be replaced without mining it first.
     @WrapOperation(
-            method = "a(Lbaritone/process/BuilderProcess$BuilderCalculationContext;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lbaritone/api/utils/BetterBlockPos;)V",
+            method = "lambda$assemble$0",
             constant = @Constant(classValue = LiquidBlock.class))
     private static boolean treatReplaceableBlocksAsLiquid(Object block, Operation<Boolean> original) {
         boolean canPlaceDirectly = block instanceof BubbleColumnBlock || block instanceof GlowLichenBlock;
@@ -29,11 +32,11 @@ public abstract class MixinBuilderProcess {
     }
 
     @Redirect(
-            method = "a(Lbaritone/process/BuilderProcess$BuilderCalculationContext;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;Ljava/util/List;Lbaritone/api/utils/BetterBlockPos;)V",
+            method = "lambda$assemble$0",
             at = @At(
                     value = "INVOKE",
-                    target = "Lbaritone/pathing/movement/MovementHelper;g(Lnet/minecraft/world/level/block/state/BlockState;)Z"))
+                    target = "Lbaritone/pathing/movement/MovementHelper;possiblyFlowing(Lnet/minecraft/world/level/block/state/BlockState;)Z"))
     private static boolean treatFlowingLiquidAsPlaceable(BlockState state) {
-        return !SmartWaterClear.isRunning() && MovementHelper.g(state);
+        return !SmartWaterClear.isRunning() && MovementHelper.possiblyFlowing(state);
     }
 }
