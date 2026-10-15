@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.InteractionHand;
 
 public class Utils {
     public static final Minecraft MC = Minecraft.getInstance();
@@ -90,5 +91,10 @@ public class Utils {
         if (normalizeCommand.isEmpty())
             return;
         MC.getConnection().sendCommand(normalizeCommand);
+    }
+
+    /** Swings the player's hand with the held item's animation, like vanilla after a predicted interaction. */
+    public static void swingHand(InteractionHand hand) {
+        MC.player.swing(hand, MC.player.getItemInHand(hand).getInteractAnimation(), false);
     }
 }

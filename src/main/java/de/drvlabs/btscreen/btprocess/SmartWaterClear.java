@@ -686,7 +686,7 @@ public final class SmartWaterClear extends BTProcessHelper implements BaritoneEv
 
         Utils.BT.getLookBehavior().updateTarget(rotation.get(), true);
         ItemStack previousItem = Utils.MC.player.getInventory().getSelectedItem();
-        MovementHelper.a(Utils.BT.getPlayerContext(), state);
+        MovementHelper.switchToBestToolFor(Utils.BT.getPlayerContext(), state);
         if (previousItem.equals(Utils.MC.player.getInventory().getSelectedItem())
                 && (Utils.BT.getPlayerContext().isLookingAt(currentGTarget)
                         || Utils.BT.getPlayerContext().playerRotations().isReallyCloseTo(rotation.get()))) {

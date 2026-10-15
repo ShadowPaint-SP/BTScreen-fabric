@@ -23,7 +23,7 @@
     "minecraft": "~${minecraft_version}",
     "java": ">=25",
     "fabric-api": "*",
-    "baritone-meteor": "*",
+    "baritone": "*",
     "malilib": ">=0.28.6-"
   }
 }

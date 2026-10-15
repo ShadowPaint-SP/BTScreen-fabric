@@ -60,8 +60,8 @@ public final class AutoTorch extends BTProcessHelper {
                     InteractionResult result = Utils.MC.gameMode.useItemOn(Utils.MC.player, InteractionHand.MAIN_HAND,
                             new BlockHitResult(Vec3.atCenterOf(blockPos), Direction.UP, blockPos, false));
                     if (result instanceof InteractionResult.Success success) {
-                        if (success.swingSource() == InteractionResult.SwingSource.CLIENT) {
-                            Utils.MC.player.swing(InteractionHand.MAIN_HAND);
+                        if (success.swingSource() == InteractionResult.SwingSource.PREDICTED) {
+                            Utils.swingHand(InteractionHand.MAIN_HAND);
                         }
                     }
                 }

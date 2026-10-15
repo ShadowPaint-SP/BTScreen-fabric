@@ -14,9 +14,6 @@ import baritone.api.command.exception.CommandInvalidStateException;
 import baritone.command.defaults.SetCommand;
 import de.drvlabs.btscreen.implementation.PresetMode;
 
-/*
- * WARNING: class is obfuscated
- */
 @Mixin(value = SetCommand.class, remap = false)
 public abstract class MixinSetCommand {
     private static final List<String> FULL_BLOCKLIST = Arrays.asList("s", "save", "load", "ld");

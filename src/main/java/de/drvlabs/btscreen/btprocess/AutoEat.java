@@ -75,8 +75,8 @@ public final class AutoEat extends BTProcessWithInitializer {
             // accessible method net/minecraft/client/Minecraft startUseItem ()V
             Utils.MC.options.keyUse.setDown(true);
             if (Utils.MC.gameMode.useItem(Utils.MC.player, InteractionHand.OFF_HAND) instanceof Success success) {
-                if (success.swingSource() == SwingSource.CLIENT) {
-                    Utils.MC.player.swing(InteractionHand.OFF_HAND);
+                if (success.swingSource() == SwingSource.PREDICTED) {
+                    Utils.swingHand(InteractionHand.OFF_HAND);
                 }
                 return;
             }

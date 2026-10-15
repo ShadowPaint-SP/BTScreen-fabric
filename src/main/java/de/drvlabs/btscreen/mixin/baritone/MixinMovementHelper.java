@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 @Mixin(value = MovementHelper.class, remap = false)
 public interface MixinMovementHelper {
     @Inject(
-            method = "a(Lbaritone/pathing/movement/CalculationContext;IIILnet/minecraft/world/level/block/state/BlockState;)Z",
+            method = "canWalkThrough(Lbaritone/pathing/movement/CalculationContext;IIILnet/minecraft/world/level/block/state/BlockState;)Z",
             at = @At("HEAD"),
             cancellable = true)
     private static void disallowSmartWaterClearSwimming(CalculationContext context, int x, int y, int z,

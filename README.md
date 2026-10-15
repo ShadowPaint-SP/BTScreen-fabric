@@ -16,11 +16,12 @@ The automation works best in a world or server with a teleportation system such 
 
 ## Supported versions
 
-Current development targets Minecraft 26.2. Older versions have dedicated builds, but they do not receive every new feature and fix.
+Current development targets Minecraft 26.3. Older versions have dedicated builds, but they do not receive every new feature and fix.
 
 | Minecraft | BT Screen | Java | Status |
 | --- | --- | --- | --- |
-| 26.2 | [0.4.8](https://github.com/ShadowPaint-SP/BTScreen-fabric/releases/tag/0.4.8) | 25 or newer | Current |
+| 26.3 | Next release | 25 or newer | Current |
+| 26.2 | [0.4.8](https://github.com/ShadowPaint-SP/BTScreen-fabric/releases/tag/0.4.8) | 25 or newer | Legacy |
 | 1.21.10 | [0.4.6](https://github.com/ShadowPaint-SP/BTScreen-fabric/releases/tag/0.4.6) | 21 or newer | Legacy |
 | 1.21.5 | [0.4.5](https://github.com/ShadowPaint-SP/BTScreen-fabric/releases/tag/0.4.5) | 21 or newer | Legacy |
 | 1.21.4 | [0.3.0](https://github.com/ShadowPaint-SP/BTScreen-fabric/releases/tag/1.21.4-0.3.0) | 21 or newer | Legacy |
@@ -31,20 +32,22 @@ Do not mix mod files made for different Minecraft versions. Fabric Loader will r
 
 1. Install the Fabric Loader for your Minecraft version.
 2. Download the matching BT Screen jar from [GitHub Releases](https://github.com/ShadowPaint-SP/BTScreen-fabric/releases).
-3. Install the matching versions of Fabric API, [Baritone for Meteor](https://maven.meteordev.org/#/snapshots/meteordevelopment/baritone), and MaLiLib.
+3. Install the matching versions of Fabric API, [Baritone](https://github.com/cabaletta/baritone/releases), and MaLiLib. For Baritone, use the `baritone-unoptimized-fabric-<version>.jar`. BT Screen hooks into Baritone internals, which the other Baritone jars rename.
 4. Put all four mod jars in the Minecraft `mods` directory and start the game.
 
 Litematica is optional. Install it if you want to use the `Building` preset.
 
-The current Minecraft 26.2 build uses these versions:
+Upstream Baritone enables `chatControl` by default, so plain chat messages that match a Baritone command (such as `stop`) are handled by Baritone instead of being sent. Run `#set chatControl false` to turn this off.
+
+The current Minecraft 26.3 build uses these versions:
 
 | Dependency | Version |
 | --- | --- |
-| Fabric Loader | 0.19.3 or newer |
-| Fabric API | 0.154.2+26.2 |
-| Baritone for Meteor | 26.2-SNAPSHOT |
-| MaLiLib | 26.2-0.29.2 |
-| Mod Menu | Optional, 20.0.1 |
+| Fabric Loader | 0.19.5 or newer |
+| Fabric API | 0.163.0+26.3 |
+| Baritone | [1.20.0](https://github.com/cabaletta/baritone/releases/tag/v1.20.0) (`baritone-unoptimized-fabric-1.20.0.jar`) |
+| MaLiLib | 26.3-0.30.1 |
+| Mod Menu | Optional, 21.0.0 |
 
 ## Quick start
 
