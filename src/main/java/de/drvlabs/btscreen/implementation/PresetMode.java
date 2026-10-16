@@ -25,7 +25,6 @@ import de.drvlabs.btscreen.utils.Utils;
 import de.drvlabs.btscreen.utils.Waiter;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.config.options.ConfigStringList;
-import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
@@ -36,7 +35,7 @@ public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
         }
 
         @Override
-        public String getCommand(GuiBase gui) {
+        public String getCommand() {
             return "sel cleararea";
         }
     },
@@ -53,7 +52,7 @@ public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
         }
 
         @Override
-        public String getCommand(GuiBase gui) {
+        public String getCommand() {
             return "sel cleararea";
         }
     },
@@ -73,7 +72,7 @@ public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
         }
 
         @Override
-        public String getCommand(GuiBase gui) {
+        public String getCommand() {
             if (SmartWaterClear.activate()) {
                 setSettings();
             }
@@ -99,7 +98,7 @@ public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
         }
 
         @Override
-        public String getCommand(GuiBase gui) {
+        public String getCommand() {
             if (ClearAreaPlus.activate()) {
                 setSettings();
             }
@@ -113,7 +112,7 @@ public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
         }
 
         @Override
-        public String getCommand(GuiBase gui) {
+        public String getCommand() {
             BedrockCleaner.activate();
             return null;
         }
@@ -129,7 +128,7 @@ public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
         }
 
         @Override
-        public String getCommand(GuiBase gui) {
+        public String getCommand() {
             return "farm";
         }
     },
@@ -145,7 +144,7 @@ public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
         }
 
         @Override
-        public String getCommand(GuiBase gui) {
+        public String getCommand() {
             // TODO: Pass number of selected
             return "litematica";
         }
@@ -204,7 +203,7 @@ public enum PresetMode implements StringRepresentable, IConfigOptionListEntry {
 
     public abstract boolean setSettings();
 
-    public abstract String getCommand(GuiBase gui);
+    public abstract String getCommand();
 
     private static <T> Stream<T> getStream(Registry<T> registry, ConfigStringList config) {
         return config.getStrings().stream().map(string -> registry.getValue(Identifier.tryParse(string)))
